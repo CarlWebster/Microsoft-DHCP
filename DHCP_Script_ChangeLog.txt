@@ -1,0 +1,74 @@
+#Original Script created April, 2014 by Carl Webster with a lot of help from Michael B. Smith Exchange MVP
+#webster@carlwebster.com
+#@carlwebster on Twitter
+#http://www.CarlWebster.com
+
+#Version 1.33 13-Feb-2017
+#	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
+
+#Version 1.32 7-Nov-2016
+#	Added Chinese language support
+
+#Version 1.31 24-Oct-2016
+#	Add HTML output
+#	Fix typo on failover status "iitializing" -> "initializing"
+#	Fix numerous issues where I used .day/.hour/.minute instead of .days/.hours/.minutes when formatting times
+
+#Version 1.30 4-May-2016
+#	Fixed numerous issues discovered with the latest update to PowerShell V5
+#	Color variables needed to be [long] and not [int] except for $wdColorBlack which is 0
+#	Changed from using arrays to populating data in tables to strings
+#	Fixed several incorrect variable names that kept PDFs from saving in Windows 10 and Office 2013
+#	Fixed the rest of the $Var -eq $Null to $Null -eq $Var
+#	Removed blocks of old commented out code
+#	Removed the 10 second pauses waiting for Word to save and close.
+#	Added -Dev parameter to create a text file of script errors
+#	Added -ScriptInfo (SI) parameter to create a text file of script information
+#	Added more script information to the console output when script starts
+#	Cleaned up some issues in the help text
+#	Commented out HTML parameters as HTML output is not ready
+#	Added HTML functions to prep for adding HTML output
+
+#Version 1.24 8-Feb-2016
+#	Added specifying an optional output folder
+#	Added the option to email the output file
+#	Fixed several spacing and typo errors
+
+#Version 1.23 1-Feb-2016
+#	Added DNS Dynamic update credentials from protocol properties, advanced tab
+
+#Version 1.22 25-Nov-2015
+#	Updated help text and ReadMe for RSAT for Windows 10
+#	Updated ReadMe with an example of running the script remotely
+#	Tested script on Windows 10 x64 and Word 2016 x64
+
+#Version 1.21 5-Oct-2015
+#	Added Word 2016 support
+
+#Version 1.2 27-Apr-2015
+#	Cleanup some of the console output
+#	Added error checking:
+#	If script is run without -ComputerName, resolve LocalHost to computer name and verify it is a DHCP server
+#	If script is run with -ComputerName, verify it is a DHCP server
+
+#Version 1.1 7-Aug-2014
+#	Cleanup the script's parameters section
+#	Code cleanup and standardization with the master template script
+#	Requires PowerShell V3 or later
+#	Removed support for Word 2007
+#	Word 2007 references in help text removed
+#	Cover page parameter now states only Word 2010 and 2013 are supported
+#	Most Word 2007 references in script removed:
+#		Function ValidateCoverPage
+#		Function SetupWord
+#		Function SaveandCloseDocumentandShutdownWord
+#	Function CheckWord2007SaveAsPDFInstalled removed
+#	If Word 2007 is detected, an error message is now given and the script is aborted
+#	Fix when -ComputerName was entered as LocalHost, output filename said LocalHost and not actual server name
+#	Cleanup Word table code for the first row and background color
+#	Add Iain Brighton's Word table functions
+#Version 1.01 4-Jun-2014
+#	Added an AddDateTime parameter
+
+#Version 1.x script
+#originally released to the community on May 31, 2014
