@@ -6,8 +6,8 @@
 .SYNOPSIS
 	Creates a complete inventory of a Microsoft 2012+ DHCP server.
 .DESCRIPTION
-	Creates a complete inventory of a Microsoft 2012+ DHCP server using Microsoft PowerShell, 
-	Word, plain text or HTML.
+	Creates a complete inventory of a Microsoft 2012+ DHCP server using Microsoft 
+	PowerShell, Word, plain text or HTML.
 	
 	Creates a Word or PDF document, text or HTML file named after the DHCP server.
 
@@ -25,7 +25,8 @@
 	Remote Server Administration Tools for Windows 10
 		http://www.microsoft.com/en-us/download/details.aspx?id=45520
 	
-	For Windows Server 2003, 2008 and 2008 R2, use the following to export and import the DHCP data:
+	For Windows Server 2003, 2008 and 2008 R2, use the following to export and import the 
+	DHCP data:
 		Export from the 2003, 2008 or 2008 R2 server:
 			netsh dhcp server export C:\DHCPExport.txt all
 			
@@ -34,15 +35,20 @@
 		Import on the 2012+ server:
 			netsh dhcp server import c:\DHCPExport.txt all
 			
-		The script can now be run on the 2012+ DHCP server to document the older DHCP information.
+		The script can now be run on the 2012+ DHCP server to document the older DHCP 
+		information.
 
-	For Windows Server 2008 and Server 2008 R2, the 2012+ DHCP Server PowerShell cmdlets can be used for the export and import.
+	For Windows Server 2008 and Server 2008 R2, the 2012+ DHCP Server PowerShell cmdlets 
+	can be used for the export and import.
 		From the 2012+ DHCP server:
-			Export-DhcpServer -ComputerName 2008R2Server.domain.tld -Leases -File C:\DHCPExport.xml 
+			Export-DhcpServer -ComputerName 2008R2Server.domain.tld -Leases -File 
+			C:\DHCPExport.xml 
 			
-			Import-DhcpServer -ComputerName 2012Server.domain.tld -Leases -File C:\DHCPExport.xml -BackupPath C:\dhcp\backup\ 
+			Import-DhcpServer -ComputerName 2012Server.domain.tld -Leases -File 
+			C:\DHCPExport.xml -BackupPath C:\dhcp\backup\ 
 			
-			Note: The c:\dhcp\backup path must exist before the Import-DhcpServer cmdlet is run.
+			Note: The c:\dhcp\backup path must exist before the Import-DhcpServer 
+			cmdlet is run.
 	
 	Using netsh is much faster than using the PowerShell export and import cmdlets.
 	
@@ -64,24 +70,67 @@
 		Spanish
 		Swedish
 		
+.PARAMETER CompanyAddress
+	Company Address to use for the Cover Page, if the Cover Page has the Address field.
+	
+	The following Cover Pages have an Address field:
+		Banded (Word 2013/2016)
+		Contrast (Word 2010)
+		Exposure (Word 2010)
+		Filigree (Word 2013/2016)
+		Ion (Dark) (Word 2013/2016)
+		Retrospect (Word 2013/2016)
+		Semaphore (Word 2013/2016)
+		Tiles (Word 2010)
+		ViewMaster (Word 2013/2016)
+		
+	This parameter is only valid with the MSWORD and PDF output parameters.
+	This parameter has an alias of CA.
+.PARAMETER CompanyEmail
+	Company Email to use for the Cover Page, if the Cover Page has the Email field.  
+	
+	The following Cover Pages have an Email field:
+		Facet (Word 2013/2016)
+	
+	This parameter is only valid with the MSWORD and PDF output parameters.
+	This parameter has an alias of CE.
+.PARAMETER CompanyFax
+	Company Fax to use for the Cover Page, if the Cover Page has the Fax field.  
+	
+	The following Cover Pages have a Fax field:
+		Contrast (Word 2010)
+		Exposure (Word 2010)
+	
+	This parameter is only valid with the MSWORD and PDF output parameters.
+	This parameter has an alias of CF.
 .PARAMETER CompanyName
 	Company Name to use for the Cover Page.  
-	Default value is contained in HKCU:\Software\Microsoft\Office\Common\UserInfo\CompanyName or
-	HKCU:\Software\Microsoft\Office\Common\UserInfo\Company, whichever is populated on the 
-	computer runncing the script.
+	The default value is contained in 
+	HKCU:\Software\Microsoft\Office\Common\UserInfo\CompanyName or
+	HKCU:\Software\Microsoft\Office\Common\UserInfo\Company, whichever is populated 
+	on the computer running the script.
 	This parameter has an alias of CN.
+.PARAMETER CompanyPhone
+	Company Phone to use for the Cover Page if the Cover Page has the Phone field.  
+	
+	The following Cover Pages have a Phone field:
+		Contrast (Word 2010)
+		Exposure (Word 2010)
+	
+	This parameter is only valid with the MSWORD and PDF output parameters.
+	This parameter has an alias of CPh.
 .PARAMETER CoverPage
 	What Microsoft Word Cover Page to use.
 	Only Word 2010, 2013 and 2016 are supported.
 	(default cover pages in Word en-US)
-	
+
 	Valid input is:
 		Alphabet (Word 2010. Works)
 		Annual (Word 2010. Doesn't work well for this report)
 		Austere (Word 2010. Works)
-		Austin (Word 2010/2013/2016. Doesn't work in 2013 or 2016, mostly works in 2010 but 
-						Subtitle/Subject & Author fields need to be moved 
-						after title box is moved up)
+		Austin (Word 2010/2013/2016. Doesn't work in 2013 or 2016, mostly 
+		works in 2010 but Subtitle/Subject & Author fields need to be moved 
+		after title box is moved up)
 		Banded (Word 2013/2016. Works)
 		Conservative (Word 2010. Works)
 		Contrast (Word 2010. Works)
@@ -91,20 +140,22 @@
 		Filigree (Word 2013/2016. Works)
 		Grid (Word 2010/2013/2016. Works in 2010)
 		Integral (Word 2013/2016. Works)
-		Ion (Dark) (Word 2013/2016. Top date doesn't fit; box needs to be manually resized or font 
-						changed to 8 point)
-		Ion (Light) (Word 2013/2016. Top date doesn't fit; box needs to be manually resized or font 
-						changed to 8 point)
+		Ion (Dark) (Word 2013/2016. Top date doesn't fit; box needs to be 
+		manually resized or font changed to 8 point)
+		Ion (Light) (Word 2013/2016. Top date doesn't fit; box needs to be 
+		manually resized or font changed to 8 point)
 		Mod (Word 2010. Works)
-		Motion (Word 2010/2013/2016. Works if top date is manually changed to 36 point)
+		Motion (Word 2010/2013/2016. Works if top date is manually changed to 
+		36 point)
 		Newsprint (Word 2010. Works but date is not populated)
 		Perspective (Word 2010. Works)
 		Pinstripes (Word 2010. Works)
-		Puzzle (Word 2010. Top date doesn't fit; box needs to be manually resized or font 
-					changed to 14 point)
+		Puzzle (Word 2010. Top date doesn't fit; box needs to be manually 
+		resized or font changed to 14 point)
 		Retrospect (Word 2013/2016. Works)
 		Semaphore (Word 2013/2016. Works)
-		Sideline (Word 2010/2013/2016. Doesn't work in 2013 or 2016, works in 2010)
+		Sideline (Word 2010/2013/2016. Doesn't work in 2013 or 2016, works in 
+		2010)
 		Slice (Dark) (Word 2013/2016. Doesn't work)
 		Slice (Light) (Word 2013/2016. Doesn't work)
 		Stacks (Word 2010. Works)
@@ -112,42 +163,45 @@
 		Transcend (Word 2010. Works)
 		ViewMaster (Word 2013/2016. Works)
 		Whisp (Word 2013/2016. Works)
-		
-	Default value is Sideline.
+
+	The default value is Sideline.
 	This parameter has an alias of CP.
 	This parameter is only valid with the MSWORD and PDF output parameters.
 .PARAMETER UserName
-	User name to use for the Cover Page and Footer.
-	Default value is contained in $env:username
+	Username to use for the Cover Page and Footer.
+	The default value is contained in $env:username
 	This parameter has an alias of UN.
-.PARAMETER PDF
-	SaveAs PDF file instead of DOCX file.
-	This parameter is disabled by default.
-	The PDF file is roughly 5X to 10X larger than the DOCX file.
-.PARAMETER Text
-	Creates a formatted text file with a .txt extension.
+	This parameter is only valid with the MSWORD and PDF output parameters.
+.PARAMETER HTML
+	Creates an HTML file with an .html extension.
 	This parameter is disabled by default.
 .PARAMETER MSWord
 	SaveAs DOCX file
 	This parameter is set True if no other output format is selected.
-.PARAMETER HTML
-	Creates an HTML file with an .html extension.
+.PARAMETER PDF
+	SaveAs PDF file instead of DOCX file.
+	This parameter is disabled by default.
+	The PDF file is roughly 5X to 10X larger than the DOCX file.
+	This parameter requires Microsoft Word to be installed.
+	This parameter uses the Word SaveAs PDF capability.
+.PARAMETER Text
+	Creates a formatted text file with a .txt extension.
 	This parameter is disabled by default.
 .PARAMETER ComputerName
 	DHCP server to run the script against.
 	The computername is used for the report title.
 	ComputerName can be entered as the NetBIOS name, FQDN, localhost or IP Address.
 	If entered as localhost, the actual computer name is determined and used.
-	If entered as an IP address, an attempt is made to determine and use the actual computer name.
-	This parameter is required.
+	If entered as an IP address, an attempt is made to determine and use the actual 
+	computer name.
 .PARAMETER IncludeLeases
 	Include DHCP lease information.
 	Default is to not included lease information.
 .PARAMETER AddDateTime
 	Adds a date time stamp to the end of the file name.
 	Time stamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2016 at 6PM is 2016-06-01_1800.
-	Output filename will be ReportName_2016-06-01_1800.docx (or .pdf or .txt).
+	June 1, 2018 at 6PM is 2018-06-01_1800.
+	Output filename will be ReportName_2018-06-01_1800.docx (or .pdf or .txt).
 	This parameter is disabled by default.
 .PARAMETER Folder
 	Specifies the optional output folder to save the output report. 
@@ -179,11 +233,14 @@
 	
 	This parameter is disabled by default.
 	This parameter has an alias of SI.
+.PARAMETER Log
+	Generates a log file for troubleshooting.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer01
 	
 	Will use all Default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -196,7 +253,8 @@
 	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName localhost
 	
 	Will use all Default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -211,7 +269,8 @@
 	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName 192.168.1.222
 	
 	Will use all Default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -226,7 +285,8 @@
 	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -PDF -ComputerName DHCPServer02
 	
 	Will use all Default values and save the document as a PDF file.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -239,7 +299,8 @@
 	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -Text -ComputerName DHCPServer02
 	
 	Will use all Default values and save the document as a formatted text file.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -252,7 +313,8 @@
 	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -HTML -ComputerName DHCPServer02
 	
 	Will use all Default values and save the document as an HTML file.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -265,7 +327,8 @@
 	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -MSWord -ComputerName DHCPServer02
 	
 	Will use all Default values and save the document as a Word DOCX file.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -278,7 +341,8 @@
 	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -HTML -ComputerName DHCPServer02
 	
 	Will use all Default values and save the output as an HTML file.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -290,7 +354,6 @@
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer03 -IncludeLeases
 	
-	Will use all Default values and add additional information for each server about its hardware.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
@@ -302,7 +365,8 @@
 	Script will be run remotely against DHCP server DHCPServer03.
 	Output will contain DHCP lease information.
 .EXAMPLE
-	PS C:\PSScript .\DHCP_Inventory_V1_3.ps1 -CompanyName "Carl Webster Consulting" -CoverPage "Mod" -UserName "Carl Webster" -ComputerName DHCPServer01
+	PS C:\PSScript .\DHCP_Inventory_V1_3.ps1 -CompanyName "Carl Webster Consulting" 
+	-CoverPage "Mod" -UserName "Carl Webster" -ComputerName DHCPServer01
 
 	Will use:
 		Carl Webster Consulting for the Company Name.
@@ -311,7 +375,8 @@
 	
 	Script will be run remotely against DHCP server DHCPServer01.
 .EXAMPLE
-	PS C:\PSScript .\DHCP_Inventory_V1_3.ps1 -CN "Carl Webster Consulting" -CP "Mod" -UN "Carl Webster" -ComputerName DHCPServer02 -IncludeLeases
+	PS C:\PSScript .\DHCP_Inventory_V1_3.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
+	-UN "Carl Webster" -ComputerName DHCPServer02 -IncludeLeases
 
 	Will use:
 		Carl Webster Consulting for the Company Name (alias CN).
@@ -321,10 +386,36 @@
 	Script will be run remotely against DHCP server DHCPServer02.
 	Output will contain DHCP lease information.
 .EXAMPLE
+	PS C:\PSScript .\DHCP_Inventory_V1_3.ps1 -CompanyName "Sherlock Holmes 
+	Consulting"
+	-CoverPage Exposure -UserName "Dr. Watson"
+	-CompanyAddress "221B Baker Street, London, England"
+	-CompanyFax "+44 1753 276600"
+	-CompanyPhone "+44 1753 276200"
+	
+	Will use:
+		Sherlock Holmes Consulting for the Company Name.
+		Exposure for the Cover Page format.
+		Dr. Watson for the User Name.
+		221B Baker Street, London, England for the Company Address.
+		+44 1753 276600 for the Company Fax.
+		+44 1753 276200 for the Company Phone.
+.EXAMPLE
+	PS C:\PSScript .\DHCP_Inventory_V1_3.ps1 -CompanyName "Sherlock Holmes 
+	Consulting"
+	-CoverPage Facet -UserName "Dr. Watson"
+	-CompanyEmail SuperSleuth@SherlockHolmes.com
+
+	Will use:
+		Sherlock Holmes Consulting for the Company Name.
+		Facet for the Cover Page format.
+		Dr. Watson for the User Name.
+		SuperSleuth@SherlockHolmes.com for the Company Email..EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -Folder \\FileServer\ShareName
 	
 	Will use all default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -334,10 +425,13 @@
 	
 	Output file will be saved in the path \\FileServer\ShareName
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer01 -SmtpServer mail.domain.tld -From XDAdmin@domain.tld -To ITGroup@domain.tld -ComputerName DHCPServer01
+	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer01 -SmtpServer 
+	mail.domain.tld -From XDAdmin@domain.tld -To ITGroup@domain.tld -ComputerName 
+	DHCPServer01
 	
 	Will use all Default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -347,13 +441,18 @@
 	
 	Script will be run remotely against DHCP server DHCPServer01.
 	
-	Script will use the email server mail.domain.tld, sending from XDAdmin@domain.tld, sending to ITGroup@domain.tld.
-	If the current user's credentials are not valid to send email, the user will be prompted to enter valid credentials.
+	Script will use the email server mail.domain.tld, sending from XDAdmin@domain.tld, 
+	sending to ITGroup@domain.tld.
+	If the current user's credentials are not valid to send email, the user will be prompted 
+	to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer01 -SmtpServer smtp.office365.com -SmtpPort 587 -UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com
+	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer01 -SmtpServer 
+	smtp.office365.com -SmtpPort 587 -UseSSL -From Webster@CarlWebster.com -To 
+	ITGroup@CarlWebster.com
 	
 	Will use all Default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
 	$env:username = Administrator
 
@@ -363,17 +462,41 @@
 	
 	Script will be run remotely against DHCP server DHCPServer01.
 	
-	Script will use the email server smtp.office365.com on port 587 using SSL, sending from webster@carlwebster.com, sending to ITGroup@carlwebster.com.
-	If the current user's credentials are not valid to send email, the user will be prompted to enter valid credentials.
+	Script will use the email server smtp.office365.com on port 587 using SSL, sending from 
+	webster@carlwebster.com, sending to ITGroup@carlwebster.com.
+	If the current user's credentials are not valid to send email, the user will be prompted 
+	to enter valid credentials.
+.EXAMPLE
+	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -Dev -ScriptInfo -Log
+	
+	Will use all Default values.
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or 
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
+	$env:username = Administrator
+
+	Carl Webster for the Company Name.
+	Sideline for the Cover Page format.
+	Administrator for the User Name.
+	
+	Creates a text file named DHCPInventoryScriptErrors_yyyy-MM-dd_HHmm.txt that 
+	contains up to the last 250 errors reported by the script.
+	
+	Creates a text file named DHCPInventoryScriptInfo_yyyy-MM-dd_HHmm.txt that 
+	contains all the script parameters and other basic information.
+	
+	Creates a text file for transcript logging named 
+	DHCPDocScriptTranscript_yyyy-MM-dd_HHmm.txt.
 .INPUTS
 	None.  You cannot pipe objects to this script.
 .OUTPUTS
-	No objects are output from this script.  This script creates a Word, PDF, HTML or formatted text document.
+	No objects are output from this script.  This script creates a Word, PDF, HTML or 
+	formatted text document.
 .NOTES
 	NAME: DHCP_Inventory_V1_3.ps1
-	VERSION: 1.34
+	VERSION: 1.35
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith)
-	LASTEDIT: February 13, 2017
+	LASTEDIT: February 10, 2018
 #>
 
 
@@ -382,39 +505,39 @@
 
 Param(
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
-	[Switch]$MSWord=$False,
-
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
 	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
-	[Switch]$PDF=$False,
-
-	[parameter(ParameterSetName="Text",Mandatory=$False)] 
+	[Alias("CA")]
+	[ValidateNotNullOrEmpty()]
+	[string]$CompanyAddress="",
+    
+	[parameter(ParameterSetName="Word",Mandatory=$False)] 
+	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
 	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
-	[Switch]$Text=$False,
-
-	[parameter(ParameterSetName="HTML",Mandatory=$False)] 
+	[Alias("CE")]
+	[ValidateNotNullOrEmpty()]
+	[string]$CompanyEmail="",
+    
+	[parameter(ParameterSetName="Word",Mandatory=$False)] 
+	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
 	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
-	[Switch]$HTML=$False,
-
-	[parameter(Mandatory=$False)] 
-	[string]$ComputerName="LocalHost",
-	
-	[parameter(Mandatory=$False)] 
-	[Switch]$IncludeLeases=$False,
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$AddDateTime=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[string]$Folder="",
-	
+	[Alias("CF")]
+	[ValidateNotNullOrEmpty()]
+	[string]$CompanyFax="",
+    
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
 	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CN")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyName="",
+    
+	[parameter(ParameterSetName="Word",Mandatory=$False)] 
+	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Alias("CPh")]
+	[ValidateNotNullOrEmpty()]
+	[string]$CompanyPhone="",
     
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
@@ -430,6 +553,34 @@ Param(
 	[ValidateNotNullOrEmpty()]
 	[string]$UserName=$env:username,
 
+	[parameter(ParameterSetName="HTML",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Switch]$HTML=$False,
+
+	[parameter(ParameterSetName="Word",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Switch]$MSWord=$False,
+
+	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Switch]$PDF=$False,
+
+	[parameter(ParameterSetName="Text",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Switch]$Text=$False,
+
+	[parameter(Mandatory=$False)] 
+	[string]$ComputerName="LocalHost",
+	
+	[parameter(Mandatory=$False)] 
+	[Switch]$IncludeLeases=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$AddDateTime=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[string]$Folder="",
+	
 	[parameter(ParameterSetName="SMTP",Mandatory=$True)] 
 	[string]$SmtpServer="",
 
@@ -450,7 +601,10 @@ Param(
 	
 	[parameter(Mandatory=$False)] 
 	[Alias("SI")]
-	[Switch]$ScriptInfo=$False
+	[Switch]$ScriptInfo=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[Switch]$Log=$False
 	
 	)
 
@@ -531,6 +685,21 @@ Param(
 #Version 1.34 8-Dec-2017
 #	Updated Function WriteHTMLLine with fixes from the script template
 #
+#Version 1.35 10-Feb-2017
+#	Added four new Cover Page properties
+#		Company Address
+#		Company Email
+#		Company Fax
+#		Company Phone
+#	Added Log switch to create a transcript log
+#		Added function TranscriptLogging
+#	Replaced _SetDocumentProperty function with Jim Moyle's Set-DocumentProperty function
+#	Removed code that made sure all Parameters were set to default values if for some reason they did exist or values were $Null
+#	Updated Function ProcessScriptEnd for the new Cover Page properties and Parameters
+#	Updated Function ShowScriptOptions for the new Cover Page properties and Parameters
+#	Updated Function UpdateDocumentProperties for the new Cover Page properties and Parameters
+#	Updated help text
+
 
 Set-StrictMode -Version 2
 
@@ -539,126 +708,24 @@ $PSDefaultParameterValues = @{"*:Verbose"=$True}
 $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
 
-If($Null -eq $PDF)
+#V1.35 added
+If($Log) 
 {
-	$PDF = $False
-}
-If($Null -eq $Text)
-{
-	$Text = $False
-}
-If($Null -eq $MSWord)
-{
-	$MSWord = $False
-}
-If($Null -eq $HTML)
-{
-	$HTML = $False
-}
-If($IncludeLeases -eq $Null)
-{
-	$IncludeLeases = $False
-}
-If($Null -eq $AddDateTime)
-{
-	$AddDateTime = $False
-}
-If($Null -eq $ComputerName)
-{
-	$ComputerName = "LocalHost"
-}
-If($Null -eq $Folder)
-{
-	$Folder = ""
-}
-If($Null -eq $SmtpServer)
-{
-	$SmtpServer = ""
-}
-If($Null -eq $SmtpPort)
-{
-	$SmtpPort = 25
-}
-If($Null -eq $UseSSL)
-{
-	$UseSSL = $False
-}
-If($Null -eq $From)
-{
-	$From = ""
-}
-If($Null -eq $To)
-{
-	$To = ""
-}
-If($Null -eq $Dev)
-{
-	$Dev = $False
-}
-If($Null -eq $ScriptInfo)
-{
-	$ScriptInfo = $False
-}
-
-If(!(Test-Path Variable:PDF))
-{
-	$PDF = $False
-}
-If(!(Test-Path Variable:Text))
-{
-	$Text = $False
-}
-If(!(Test-Path Variable:MSWord))
-{
-	$MSWord = $False
-}
-If(!(Test-Path Variable:HTML))
-{
-	$HTML = $False
-}
-If(!(Test-Path Variable:IncludeLeases))
-{
-	$IncludeLeases = $False
-}
-If(!(Test-Path Variable:AddDateTime))
-{
-	$AddDateTime = $False
-}
-If(!(Test-Path Variable:ComputerName))
-{
-	$ComputerName = "LocalHost"
-}
-If(!(Test-Path Variable:Folder))
-{
-	$Folder = ""
-}
-If(!(Test-Path Variable:SmtpServer))
-{
-	$SmtpServer = ""
-}
-If(!(Test-Path Variable:SmtpPort))
-{
-	$SmtpPort = 25
-}
-If(!(Test-Path Variable:UseSSL))
-{
-	$UseSSL = $False
-}
-If(!(Test-Path Variable:From))
-{
-	$From = ""
-}
-If(!(Test-Path Variable:To))
-{
-	$To = ""
-}
-If(!(Test-Path Variable:Dev))
-{
-	$Dev = $False
-}
-If(!(Test-Path Variable:ScriptInfo))
-{
-	$ScriptInfo = $False
+	#start transcript logging
+	$Script:ThisScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
+	$Script:LogPath = "$Script:ThisScriptPath\DHCPDocScriptTranscript_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	
+	try 
+	{
+		Start-Transcript -Path $Script:LogPath -Force -Verbose:$false | Out-Null
+		Write-Verbose "$(Get-Date): Transcript/log started at $Script:LogPath"
+		$Script:StartLog = $true
+	} 
+	catch 
+	{
+		Write-Verbose "$(Get-Date): Transcript/log failed at $Script:LogPath"
+		$Script:StartLog = $false
+	}
 }
 
 If($Dev)
@@ -2467,21 +2534,44 @@ Function SetWordTableAlternateRowColor
 }
 #endregion
 
-Function _SetDocumentProperty 
-{
-	#jeff hicks
-	Param([object]$Properties,[string]$Name,[string]$Value)
-	#get the property object
-	$prop = $properties | ForEach { 
-		$propname=$_.GetType().InvokeMember("Name","GetProperty",$Null,$_,$Null)
-		If($propname -eq $Name) 
-		{
-			Return $_
-		}
-	} #ForEach
-
-	#set the value
-	$Prop.GetType().InvokeMember("Value","SetProperty",$Null,$prop,$Value)
+Function Set-DocumentProperty {
+    <#
+	.SYNOPSIS
+	Function to set the Title Page document properties in MS Word
+	.DESCRIPTION
+	Long description
+	.PARAMETER Document
+	Current Document Object
+	.PARAMETER DocProperty
+	Parameter description
+	.PARAMETER Value
+	Parameter description
+	.EXAMPLE
+	Set-DocumentProperty -Document $Script:Doc -DocProperty Title -Value 'MyTitle'
+	.EXAMPLE
+	Set-DocumentProperty -Document $Script:Doc -DocProperty Company -Value 'MyCompany'
+	.EXAMPLE
+	Set-DocumentProperty -Document $Script:Doc -DocProperty Author -Value 'Jim Moyle'
+	.EXAMPLE
+	Set-DocumentProperty -Document $Script:Doc -DocProperty Subject -Value 'MySubjectTitle'
+	.NOTES
+	Function Created by Jim Moyle June 2017
+	Twitter : @JimMoyle
+	#>
+    param (
+        [object]$Document,
+        [String]$DocProperty,
+        [string]$Value
+    )
+    try {
+        $binding = "System.Reflection.BindingFlags" -as [type]
+        $builtInProperties = $Document.BuiltInDocumentProperties
+        $property = [System.__ComObject].invokemember("item", $binding::GetProperty, $null, $BuiltinProperties, $DocProperty)
+        [System.__ComObject].invokemember("value", $binding::SetProperty, $null, $property, $Value)
+    }
+    catch {
+        Write-Warning "Failed to set $DocProperty to $Value"
+    }
 }
 
 Function AbortScript
@@ -2969,6 +3059,31 @@ Function validObject( [object] $object, [string] $topLevel )
 	Return $False
 }
 
+Function TranscriptLogging
+{
+	If($Log) 
+	{
+		try 
+		{
+			If($Script:StartLog -eq $false)
+			{
+				Start-Transcript -Path $Script:LogPath -Force -Verbose:$false | Out-Null
+			}
+			Else
+			{
+				Start-Transcript -Path $Script:LogPath -Append -Verbose:$false | Out-Null
+			}
+			Write-Verbose "$(Get-Date): Transcript/log started at $Script:LogPath"
+			$Script:StartLog = $true
+		} 
+		catch 
+		{
+			Write-Verbose "$(Get-Date): Transcript/log failed at $Script:LogPath"
+			$Script:StartLog = $false
+		}
+	}
+}
+
 Function SetupWord
 {
 	Write-Verbose "$(Get-Date): Setting up Word"
@@ -3321,24 +3436,24 @@ Function SetupWord
 Function UpdateDocumentProperties
 {
 	Param([string]$AbstractTitle, [string]$SubjectTitle)
+	#updated 8-Jun-2017 with additional cover page fields
 	#Update document properties
 	If($MSWORD -or $PDF)
 	{
 		If($Script:CoverPagesExist)
 		{
 			Write-Verbose "$(Get-Date): Set Cover Page Properties"
-			_SetDocumentProperty $Script:Doc.BuiltInDocumentProperties "Company" $Script:CoName
-			_SetDocumentProperty $Script:Doc.BuiltInDocumentProperties "Title" $Script:title
-			_SetDocumentProperty $Script:Doc.BuiltInDocumentProperties "Author" $username
-
-			_SetDocumentProperty $Script:Doc.BuiltInDocumentProperties "Subject" $SubjectTitle
+			#8-Jun-2017 put these 4 items in alpha order
+            Set-DocumentProperty -Document $Script:Doc -DocProperty Author -Value $UserName
+            Set-DocumentProperty -Document $Script:Doc -DocProperty Company -Value $Script:CoName
+            Set-DocumentProperty -Document $Script:Doc -DocProperty Subject -Value $SubjectTitle
+            Set-DocumentProperty -Document $Script:Doc -DocProperty Title -Value $Script:title
 
 			#Get the Coverpage XML part
 			$cp = $Script:Doc.CustomXMLParts | Where {$_.NamespaceURI -match "coverPageProps$"}
 
 			#get the abstract XML part
 			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "Abstract"}
-
 			#set the text
 			If([String]::IsNullOrEmpty($Script:CoName))
 			{
@@ -3346,9 +3461,32 @@ Function UpdateDocumentProperties
 			}
 			Else
 			{
-				[string]$abstract = "$($AbstractTitle) for $Script:CoName"
+				[string]$abstract = "$($AbstractTitle) for $($Script:CoName)"
 			}
+			$ab.Text = $abstract
 
+			#added 8-Jun-2017
+			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyAddress"}
+			#set the text
+			[string]$abstract = $CompanyAddress
+			$ab.Text = $abstract
+
+			#added 8-Jun-2017
+			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyEmail"}
+			#set the text
+			[string]$abstract = $CompanyEmail
+			$ab.Text = $abstract
+
+			#added 8-Jun-2017
+			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyFax"}
+			#set the text
+			[string]$abstract = $CompanyFax
+			$ab.Text = $abstract
+
+			#added 8-Jun-2017
+			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyPhone"}
+			#set the text
+			[string]$abstract = $CompanyPhone
 			$ab.Text = $abstract
 
 			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "PublishDate"}
@@ -6535,55 +6673,51 @@ Function ShowScriptOptions
 {
 	Write-Verbose "$(Get-Date): "
 	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): AddDateTime   : $($AddDateTime)"
-	If($MSWORD -or $PDF)
-	{
-		Write-Verbose "$(Get-Date): Company Name  : $($Script:CoName)"
-	}
-	Write-Verbose "$(Get-Date): ComputerName  : $($ComputerName)"
-	If($MSWORD -or $PDF)
-	{
-		Write-Verbose "$(Get-Date): Cover Page    : $($CoverPage)"
-	}
-	Write-Verbose "$(Get-Date): Dev           : $($Dev)"
+	Write-Verbose "$(Get-Date): AddDateTime     : $($AddDateTime)"
+	Write-Verbose "$(Get-Date): Company Name    : $($Script:CoName)"
+	Write-Verbose "$(Get-Date): Company Address : $($CompanyAddress)"
+	Write-Verbose "$(Get-Date): Company Email   : $($CompanyEmail)"
+	Write-Verbose "$(Get-Date): Company Fax     : $($CompanyFax)"
+	Write-Verbose "$(Get-Date): Company Phone   : $($CompanyPhone)"
+	Write-Verbose "$(Get-Date): Cover Page      : $($CoverPage)"
+	Write-Verbose "$(Get-Date): ComputerName    : $($ComputerName)"
+	Write-Verbose "$(Get-Date): Dev             : $($Dev)"
 	If($Dev)
 	{
-		Write-Verbose "$(Get-Date): DevErrorFile  : $($Script:DevErrorFile)"
+		Write-Verbose "$(Get-Date): DevErrorFile    : $($Script:DevErrorFile)"
 	}
-	Write-Verbose "$(Get-Date): Filename1     : $($Script:Filename1)"
+	Write-Verbose "$(Get-Date): Filename1       : $($Script:Filename1)"
 	If($PDF)
 	{
-		Write-Verbose "$(Get-Date): Filename2     : $($Script:Filename2)"
+		Write-Verbose "$(Get-Date): Filename2       : $($Script:Filename2)"
 	}
-	Write-Verbose "$(Get-Date): Folder        : $($Folder)"
-	Write-Verbose "$(Get-Date): From          : $($From)"
-	Write-Verbose "$(Get-Date): Include Leases: $($IncludeLeases)"
-	Write-Verbose "$(Get-Date): Save As HTML  : $($HTML)"
-	Write-Verbose "$(Get-Date): Save As PDF   : $($PDF)"
-	Write-Verbose "$(Get-Date): Save As TEXT  : $($TEXT)"
-	Write-Verbose "$(Get-Date): Save As WORD  : $($MSWORD)"
-	Write-Verbose "$(Get-Date): ScriptInfo    : $($ScriptInfo)"
-	Write-Verbose "$(Get-Date): Smtp Port     : $($SmtpPort)"
-	Write-Verbose "$(Get-Date): Smtp Server   : $($SmtpServer)"
-	Write-Verbose "$(Get-Date): Title         : $($Script:Title)"
-	Write-Verbose "$(Get-Date): To            : $($To)"
-	Write-Verbose "$(Get-Date): Use SSL       : $($UseSSL)"
+	Write-Verbose "$(Get-Date): Folder          : $($Folder)"
+	Write-Verbose "$(Get-Date): From            : $($From)"
+	Write-Verbose "$(Get-Date): Include Leases  : $($IncludeLeases)"
+	Write-Verbose "$(Get-Date): Log             : $($Log)"
+	Write-Verbose "$(Get-Date): Save As HTML    : $($HTML)"
+	Write-Verbose "$(Get-Date): Save As PDF     : $($PDF)"
+	Write-Verbose "$(Get-Date): Save As TEXT    : $($TEXT)"
+	Write-Verbose "$(Get-Date): Save As WORD    : $($MSWORD)"
+	Write-Verbose "$(Get-Date): ScriptInfo      : $($ScriptInfo)"
+	Write-Verbose "$(Get-Date): Smtp Port       : $($SmtpPort)"
+	Write-Verbose "$(Get-Date): Smtp Server     : $($SmtpServer)"
+	Write-Verbose "$(Get-Date): Title           : $($Script:Title)"
+	Write-Verbose "$(Get-Date): To              : $($To)"
+	Write-Verbose "$(Get-Date): Use SSL         : $($UseSSL)"
+	Write-Verbose "$(Get-Date): User Name       : $($UserName)"
+	Write-Verbose "$(Get-Date): "
+	Write-Verbose "$(Get-Date): OS Detected     : $($Script:RunningOS)"
+	Write-Verbose "$(Get-Date): PoSH version    : $($Host.Version)"
+	Write-Verbose "$(Get-Date): PSCulture       : $($PSCulture)"
+	Write-Verbose "$(Get-Date): PSUICulture     : $($PSUICulture)"
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date): User Name     : $($UserName)"
+		Write-Verbose "$(Get-Date): Word language   : $($Script:WordLanguageValue)"
+		Write-Verbose "$(Get-Date): Word version    : $($Script:WordProduct)"
 	}
 	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): OS Detected   : $($Script:RunningOS)"
-	Write-Verbose "$(Get-Date): PoSH version  : $($Host.Version)"
-	Write-Verbose "$(Get-Date): PSCulture     : $($PSCulture)"
-	Write-Verbose "$(Get-Date): PSUICulture   : $($PSUICulture)"
-	If($MSWORD -or $PDF)
-	{
-		Write-Verbose "$(Get-Date): Word language : $($Script:WordLanguageValue)"
-		Write-Verbose "$(Get-Date): Word version  : $($Script:WordProduct)"
-	}
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): Script start  : $($Script:StartTime)"
+	Write-Verbose "$(Get-Date): Script start    : $($Script:StartTime)"
 	Write-Verbose "$(Get-Date): "
 	Write-Verbose "$(Get-Date): "
 
@@ -10161,56 +10295,76 @@ If($ScriptInfo)
 {
 	$SIFile = "$($pwd.Path)\DHCPInventoryScriptInfo_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 	Out-File -FilePath $SIFile -InputObject "" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Add DateTime  : $($AddDateTime)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Add DateTime       : $($AddDateTime)" 4>$Null
 	If($MSWORD -or $PDF)
 	{
-		Out-File -FilePath $SIFile -Append -InputObject "Company Name  : $($Script:CoName)" 4>$Null		
+		Out-File -FilePath $SIFile -Append -InputObject "Company Name       : $($Script:CoName)" 4>$Null		
+		Out-File -FilePath $SIFile -Append -InputObject "Company Address    : $($CompanyAddress)" 4>$Null		
+		Out-File -FilePath $SIFile -Append -InputObject "Company Email      : $($CompanyEmail)" 4>$Null		
+		Out-File -FilePath $SIFile -Append -InputObject "Company Fax        : $($CompanyFax)" 4>$Null		
+		Out-File -FilePath $SIFile -Append -InputObject "Company Phone      : $($CompanyPhone)" 4>$Null		
+		Out-File -FilePath $SIFile -Append -InputObject "Cover Page         : $($CoverPage)" 4>$Null
 	}
-	Out-File -FilePath $SIFile -Append -InputObject "ComputerName  : $($ComputerName)" 4>$Null
-	If($MSWORD -or $PDF)
-	{
-		Out-File -FilePath $SIFile -Append -InputObject "Cover Page    : $($CoverPage)" 4>$Null
-	}
-	Out-File -FilePath $SIFile -Append -InputObject "Dev           : $($Dev)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "ComputerName       : $($ComputerName)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Dev                : $($Dev)" 4>$Null
 	If($Dev)
 	{
-		Out-File -FilePath $SIFile -Append -InputObject "DevErrorFile  : $($Script:DevErrorFile)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "DevErrorFile       : $($Script:DevErrorFile)" 4>$Null
 	}
-	Out-File -FilePath $SIFile -Append -InputObject "Filename1     : $($Script:FileName1)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Filename1          : $($Script:FileName1)" 4>$Null
 	If($PDF)
 	{
-		Out-File -FilePath $SIFile -Append -InputObject "Filename2     : $($Script:FileName2)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Filename2          : $($Script:FileName2)" 4>$Null
 	}
-	Out-File -FilePath $SIFile -Append -InputObject "Folder        : $($Folder)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "From          : $($From)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Include Leases: $($IncludeLeases)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Save As HTML  : $($HTML)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Save As PDF   : $($PDF)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Save As TEXT  : $($TEXT)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Save As WORD  : $($MSWORD)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Script Info   : $($ScriptInfo)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Smtp Port     : $($SmtpPort)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Smtp Server   : $($SmtpServer)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Title         : $($Script:Title)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "To            : $($To)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Use SSL       : $($UseSSL)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Folder             : $($Folder)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "From               : $($From)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Include Leases     : $($IncludeLeases)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Log                : $($Log)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Save As HTML       : $($HTML)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Save As PDF        : $($PDF)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Save As TEXT       : $($TEXT)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Save As WORD       : $($MSWORD)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Script Info        : $($ScriptInfo)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Smtp Port          : $($SmtpPort)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Smtp Server        : $($SmtpServer)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Title              : $($Script:Title)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "To                 : $($To)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Use SSL            : $($UseSSL)" 4>$Null
 	If($MSWORD -or $PDF)
 	{
-		Out-File -FilePath $SIFile -Append -InputObject "User Name     : $($UserName)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "User Name          : $($UserName)" 4>$Null
 	}
 	Out-File -FilePath $SIFile -Append -InputObject "" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "OS Detected   : $($Script:RunningOS)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "PoSH version  : $($Host.Version)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "PSCulture     : $($PSCulture)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "PSUICulture   : $($PSUICulture)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "OS Detected        : $($Script:RunningOS)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "PoSH version       : $($Host.Version)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "PSCulture          : $($PSCulture)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "PSUICulture        : $($PSUICulture)" 4>$Null
 	If($MSWORD -or $PDF)
 	{
-		Out-File -FilePath $SIFile -Append -InputObject "Word language : $($Script:WordLanguageValue)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Word version  : $($Script:WordProduct)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Word language      : $($Script:WordLanguageValue)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Word version       : $($Script:WordProduct)" 4>$Null
 	}
 	Out-File -FilePath $SIFile -Append -InputObject "" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Script start  : $($Script:StartTime)" 4>$Null
-	Out-File -FilePath $SIFile -Append -InputObject "Elapsed time  : $($Str)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Script start       : $($Script:StartTime)" 4>$Null
+	Out-File -FilePath $SIFile -Append -InputObject "Elapsed time       : $($Str)" 4>$Null
+}
+
+#V1.35 added
+#stop transcript logging
+If($Log -eq $True) 
+{
+	If($Script:StartLog -eq $true) 
+	{
+		try 
+		{
+			Stop-Transcript | Out-Null
+			Write-Verbose "$(Get-Date): $Script:LogPath is ready for use"
+		} 
+		catch 
+		{
+			Write-Verbose "$(Get-Date): Transcript/log stop failed"
+		}
+	}
 }
 
 $runtime = $Null
