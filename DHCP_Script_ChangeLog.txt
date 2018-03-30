@@ -3,6 +3,14 @@
 #@carlwebster on Twitter
 #http://www.CarlWebster.com
 
+#Version 1.40
+#	Added Regions
+#		Grouped similar functions into Regions
+#	Added -AllDHCPServers (ALL) parameter to process all Authorized DHCP servers that are online
+#	Added -Hardware parameter
+#		Added functions to output hardware information
+#	Updated help text
+
 #Version 1.35 10-Feb-2017
 #	Added four new Cover Page properties
 #		Company Address
