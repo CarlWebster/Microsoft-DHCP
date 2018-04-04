@@ -555,7 +555,7 @@
 	NAME: DHCP_Inventory_V1_3.ps1
 	VERSION: 1.40
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith)
-	LASTEDIT: March 30, 2018
+	LASTEDIT: April 4, 2018
 #>
 
 #endregion
@@ -771,11 +771,21 @@ Param(
 #	Updated help text
 #
 #Version 1.40
-#	Added Regions
-#		Grouped similar functions into Regions
 #	Added -AllDHCPServers (ALL) parameter to process all Authorized DHCP servers that are online
+#		Added text file of the authorized DHCP servers that are either offline or no longer have DHCP installed
 #	Added -Hardware parameter
 #		Added functions to output hardware information
+#	Added Operating System information to Function OutputComputerItem
+#	Code clean up for most recommendations made by Visual Studio Code
+#	Grouped code into functions and functions into regions
+#	In the Scope Options, if all Scope Options were inherited from Server Options and the only 
+#		scope option is the implied Option ID 51, then blank lines were inserted. This is now 
+#		fixed so "None" is reported, just like all the other items. For some reason, Option ID 
+#		51 is implied and even though it does not show in the console, the PowerShell cmdlet 
+#		exposes it. If I try and retrieve the properties of that option, it can crash the computer 
+#		running the script. Not a good thing if you are running the script on a DHCP server. I now 
+#		check for this specific condition and it is now handled properly for all output types.
+#		Many thanks to my exhaustive tester, David McSpadden, for helping find and fix this logic flaw.
 #	Updated help text
 #endregion
 
@@ -979,43 +989,43 @@ If($MSWord -or $PDF)
 
 If($HTML)
 {
-    Set htmlredmask         -Option AllScope -Value "#FF0000" 4>$Null
-    Set htmlcyanmask        -Option AllScope -Value "#00FFFF" 4>$Null
-    Set htmlbluemask        -Option AllScope -Value "#0000FF" 4>$Null
-    Set htmldarkbluemask    -Option AllScope -Value "#0000A0" 4>$Null
-    Set htmllightbluemask   -Option AllScope -Value "#ADD8E6" 4>$Null
-    Set htmlpurplemask      -Option AllScope -Value "#800080" 4>$Null
-    Set htmlyellowmask      -Option AllScope -Value "#FFFF00" 4>$Null
-    Set htmllimemask        -Option AllScope -Value "#00FF00" 4>$Null
-    Set htmlmagentamask     -Option AllScope -Value "#FF00FF" 4>$Null
-    Set htmlwhitemask       -Option AllScope -Value "#FFFFFF" 4>$Null
-    Set htmlsilvermask      -Option AllScope -Value "#C0C0C0" 4>$Null
-    Set htmlgraymask        -Option AllScope -Value "#808080" 4>$Null
-    Set htmlblackmask       -Option AllScope -Value "#000000" 4>$Null
-    Set htmlorangemask      -Option AllScope -Value "#FFA500" 4>$Null
-    Set htmlmaroonmask      -Option AllScope -Value "#800000" 4>$Null
-    Set htmlgreenmask       -Option AllScope -Value "#008000" 4>$Null
-    Set htmlolivemask       -Option AllScope -Value "#808000" 4>$Null
+    Set-Variable htmlredmask         -Option AllScope -Value "#FF0000" 4>$Null
+    Set-Variable htmlcyanmask        -Option AllScope -Value "#00FFFF" 4>$Null
+    Set-Variable htmlbluemask        -Option AllScope -Value "#0000FF" 4>$Null
+    Set-Variable htmldarkbluemask    -Option AllScope -Value "#0000A0" 4>$Null
+    Set-Variable htmllightbluemask   -Option AllScope -Value "#ADD8E6" 4>$Null
+    Set-Variable htmlpurplemask      -Option AllScope -Value "#800080" 4>$Null
+    Set-Variable htmlyellowmask      -Option AllScope -Value "#FFFF00" 4>$Null
+    Set-Variable htmllimemask        -Option AllScope -Value "#00FF00" 4>$Null
+    Set-Variable htmlmagentamask     -Option AllScope -Value "#FF00FF" 4>$Null
+    Set-Variable htmlwhitemask       -Option AllScope -Value "#FFFFFF" 4>$Null
+    Set-Variable htmlsilvermask      -Option AllScope -Value "#C0C0C0" 4>$Null
+    Set-Variable htmlgraymask        -Option AllScope -Value "#808080" 4>$Null
+    Set-Variable htmlblackmask       -Option AllScope -Value "#000000" 4>$Null
+    Set-Variable htmlorangemask      -Option AllScope -Value "#FFA500" 4>$Null
+    Set-Variable htmlmaroonmask      -Option AllScope -Value "#800000" 4>$Null
+    Set-Variable htmlgreenmask       -Option AllScope -Value "#008000" 4>$Null
+    Set-Variable htmlolivemask       -Option AllScope -Value "#808000" 4>$Null
 
-    Set htmlbold        -Option AllScope -Value 1 4>$Null
-    Set htmlitalics     -Option AllScope -Value 2 4>$Null
-    Set htmlred         -Option AllScope -Value 4 4>$Null
-    Set htmlcyan        -Option AllScope -Value 8 4>$Null
-    Set htmlblue        -Option AllScope -Value 16 4>$Null
-    Set htmldarkblue    -Option AllScope -Value 32 4>$Null
-    Set htmllightblue   -Option AllScope -Value 64 4>$Null
-    Set htmlpurple      -Option AllScope -Value 128 4>$Null
-    Set htmlyellow      -Option AllScope -Value 256 4>$Null
-    Set htmllime        -Option AllScope -Value 512 4>$Null
-    Set htmlmagenta     -Option AllScope -Value 1024 4>$Null
-    Set htmlwhite       -Option AllScope -Value 2048 4>$Null
-    Set htmlsilver      -Option AllScope -Value 4096 4>$Null
-    Set htmlgray        -Option AllScope -Value 8192 4>$Null
-    Set htmlolive       -Option AllScope -Value 16384 4>$Null
-    Set htmlorange      -Option AllScope -Value 32768 4>$Null
-    Set htmlmaroon      -Option AllScope -Value 65536 4>$Null
-    Set htmlgreen       -Option AllScope -Value 131072 4>$Null
-    Set htmlblack       -Option AllScope -Value 262144 4>$Null
+    Set-Variable htmlbold        -Option AllScope -Value 1 4>$Null
+    Set-Variable htmlitalics     -Option AllScope -Value 2 4>$Null
+    Set-Variable htmlred         -Option AllScope -Value 4 4>$Null
+    Set-Variable htmlcyan        -Option AllScope -Value 8 4>$Null
+    Set-Variable htmlblue        -Option AllScope -Value 16 4>$Null
+    Set-Variable htmldarkblue    -Option AllScope -Value 32 4>$Null
+    Set-Variable htmllightblue   -Option AllScope -Value 64 4>$Null
+    Set-Variable htmlpurple      -Option AllScope -Value 128 4>$Null
+    Set-Variable htmlyellow      -Option AllScope -Value 256 4>$Null
+    Set-Variable htmllime        -Option AllScope -Value 512 4>$Null
+    Set-Variable htmlmagenta     -Option AllScope -Value 1024 4>$Null
+    Set-Variable htmlwhite       -Option AllScope -Value 2048 4>$Null
+    Set-Variable htmlsilver      -Option AllScope -Value 4096 4>$Null
+    Set-Variable htmlgray        -Option AllScope -Value 8192 4>$Null
+    Set-Variable htmlolive       -Option AllScope -Value 16384 4>$Null
+    Set-Variable htmlorange      -Option AllScope -Value 32768 4>$Null
+    Set-Variable htmlmaroon      -Option AllScope -Value 65536 4>$Null
+    Set-Variable htmlgreen       -Option AllScope -Value 131072 4>$Null
+    Set-Variable htmlblack       -Option AllScope -Value 262144 4>$Null
 }
 
 If($TEXT)
@@ -1070,7 +1080,7 @@ Function GetComputerWMIInfo
 	
 	If($? -and $Null -ne $Results)
 	{
-		$ComputerItems = $Results | Select Manufacturer, Model, Domain, `
+		$ComputerItems = $Results | Select-Object Manufacturer, Model, Domain, `
 		@{N="TotalPhysicalRam"; E={[math]::round(($_.TotalPhysicalMemory / 1GB),0)}}, `
 		NumberOfProcessors, NumberOfLogicalProcessors
 		$Results = $Null
@@ -1154,7 +1164,7 @@ Function GetComputerWMIInfo
 
 	If($? -and $Null -ne $Results)
 	{
-		$drives = $Results | Select caption, @{N="drivesize"; E={[math]::round(($_.size / 1GB),0)}}, 
+		$drives = $Results | Select-Object caption, @{N="drivesize"; E={[math]::round(($_.size / 1GB),0)}}, 
 		filesystem, @{N="drivefreespace"; E={[math]::round(($_.freespace / 1GB),0)}}, 
 		volumename, drivetype, volumedirty, volumeserialnumber
 		$Results = $Null
@@ -1240,7 +1250,7 @@ Function GetComputerWMIInfo
 
 	If($? -and $Null -ne $Results)
 	{
-		$Processors = $Results | Select availability, name, description, maxclockspeed, 
+		$Processors = $Results | Select-Object availability, name, description, maxclockspeed, 
 		l2cachesize, l3cachesize, numberofcores, numberoflogicalprocessors
 		$Results = $Null
 		ForEach($processor in $processors)
@@ -1321,7 +1331,7 @@ Function GetComputerWMIInfo
 
 	If($? -and $Null -ne $Results)
 	{
-		$Nics = $Results | Where {$Null -ne $_.ipaddress}
+		$Nics = $Results | Where-Object {$Null -ne $_.ipaddress}
 		$Results = $Null
 
 		If($Nics -eq $Null ) 
@@ -1339,7 +1349,7 @@ Function GetComputerWMIInfo
 			{
 				Try
 				{
-					$ThisNic = Get-WmiObject -computername $RemoteComputerName win32_networkadapter | Where {$_.index -eq $nic.index}
+					$ThisNic = Get-WmiObject -computername $RemoteComputerName win32_networkadapter | Where-Object {$_.index -eq $nic.index}
 				}
 				
 				Catch 
@@ -1463,16 +1473,18 @@ Function GetComputerWMIInfo
 
 Function OutputComputerItem
 {
-	Param([object]$Item)
+	Param([object]$Item, [string]$OS)
+	
 	If($MSWord -or $PDF)
 	{
 		[System.Collections.Hashtable[]] $ItemInformation = @()
-		$ItemInformation += @{Data = "Manufacturer"; Value = $Item.manufacturer; }
-		$ItemInformation += @{Data = "Model"; Value = $Item.model; }
-		$ItemInformation += @{Data = "Domain"; Value = $Item.domain; }
-		$ItemInformation += @{Data = "Total Ram"; Value = "$($Item.totalphysicalram) GB"; }
-		$ItemInformation += @{Data = "Physical Processors (sockets)"; Value = $Item.NumberOfProcessors; }
-		$ItemInformation += @{Data = "Logical Processors (cores w/HT)"; Value = $Item.NumberOfLogicalProcessors; }
+		$ItemInformation += @{ Data = "Manufacturer"; Value = $Item.manufacturer; }
+		$ItemInformation += @{ Data = "Model"; Value = $Item.model; }
+		$ItemInformation += @{ Data = "Domain"; Value = $Item.domain; }
+		$ItemInformation += @{ Data = "Operating System"; Value = $OS; }
+		$ItemInformation += @{ Data = "Total Ram"; Value = "$($Item.totalphysicalram) GB"; }
+		$ItemInformation += @{ Data = "Physical Processors (sockets)"; Value = $Item.NumberOfProcessors; }
+		$ItemInformation += @{ Data = "Logical Processors (cores w/HT)"; Value = $Item.NumberOfLogicalProcessors; }
 		$Table = AddWordTable -Hashtable $ItemInformation `
 		-Columns Data,Value `
 		-List `
@@ -1496,6 +1508,7 @@ Function OutputComputerItem
 		Line 2 "Manufacturer`t`t`t: " $Item.manufacturer
 		Line 2 "Model`t`t`t`t: " $Item.model
 		Line 2 "Domain`t`t`t`t: " $Item.domain
+		Line 2 "Operating System`t`t: " $OS
 		Line 2 "Total Ram`t`t`t: $($Item.totalphysicalram) GB"
 		Line 2 "Physical Processors (sockets)`t: " $Item.NumberOfProcessors
 		Line 2 "Logical Processors (cores w/HT)`t: " $Item.NumberOfLogicalProcessors
@@ -1507,14 +1520,15 @@ Function OutputComputerItem
 		$columnHeaders = @("Manufacturer",($htmlsilver -bor $htmlbold),$Item.manufacturer,$htmlwhite)
 		$rowdata += @(,('Model',($htmlsilver -bor $htmlbold),$Item.model,$htmlwhite))
 		$rowdata += @(,('Domain',($htmlsilver -bor $htmlbold),$Item.domain,$htmlwhite))
+		$rowdata += @(,('Operating System',($htmlsilver -bor $htmlbold),$OS,$htmlwhite))
 		$rowdata += @(,('Total Ram',($htmlsilver -bor $htmlbold),"$($Item.totalphysicalram) GB",$htmlwhite))
 		$rowdata += @(,('Physical Processors (sockets)',($htmlsilver -bor $htmlbold),$Item.NumberOfProcessors,$htmlwhite))
 		$rowdata += @(,('Logical Processors (cores w/HT)',($htmlsilver -bor $htmlbold),$Item.NumberOfLogicalProcessors,$htmlwhite))
 
 		$msg = ""
 		$columnWidths = @("150px","200px")
-		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth "350"
-		WriteHTMLLine 0 0 " "
+		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths
+		WriteHTMLLine 0 0 ""
 	}
 }
 
@@ -1775,7 +1789,7 @@ Function OutputNicItem
 {
 	Param([object]$Nic, [object]$ThisNic)
 	
-	$powerMgmt = Get-WmiObject MSPower_DeviceEnable -Namespace root\wmi | where {$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
+	$powerMgmt = Get-WmiObject MSPower_DeviceEnable -Namespace root\wmi | Where-Object {$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
 
 	If($? -and $Null -ne $powerMgmt)
 	{
@@ -2584,7 +2598,7 @@ Function CheckWordPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if winword is running in our session
-	[bool]$wordrunning = ((Get-Process 'WinWord' -ea 0)|?{$_.SessionId -eq $SessionID}) -ne $Null
+	[bool]$wordrunning = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) -ne $Null
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -2881,13 +2895,13 @@ Function SetupWord
 
 	$Script:Word.Templates.LoadBuildingBlocks()
 	#word 2010/2013/2016
-	$BuildingBlocksCollection = $Script:Word.Templates | Where {$_.name -eq "Built-In Building Blocks.dotx"}
+	$BuildingBlocksCollection = $Script:Word.Templates | Where-Object {$_.name -eq "Built-In Building Blocks.dotx"}
 
 	Write-Verbose "$(Get-Date): Attempt to load cover page $($CoverPage)"
 	$part = $Null
 
 	$BuildingBlocksCollection | 
-	ForEach{
+	ForEach-Object {
 		If ($_.BuildingBlockEntries.Item($CoverPage).Name -eq $CoverPage) 
 		{
 			$BuildingBlocks = $_
@@ -3028,10 +3042,10 @@ Function UpdateDocumentProperties
             Set-DocumentProperty -Document $Script:Doc -DocProperty Title -Value $Script:title
 
 			#Get the Coverpage XML part
-			$cp = $Script:Doc.CustomXMLParts | Where {$_.NamespaceURI -match "coverPageProps$"}
+			$cp = $Script:Doc.CustomXMLParts | Where-Object {$_.NamespaceURI -match "coverPageProps$"}
 
 			#get the abstract XML part
-			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "Abstract"}
+			$ab = $cp.documentelement.ChildNodes | Where-Object {$_.basename -eq "Abstract"}
 			#set the text
 			If([String]::IsNullOrEmpty($Script:CoName))
 			{
@@ -3044,30 +3058,30 @@ Function UpdateDocumentProperties
 			$ab.Text = $abstract
 
 			#added 8-Jun-2017
-			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyAddress"}
+			$ab = $cp.documentelement.ChildNodes | Where-Object {$_.basename -eq "CompanyAddress"}
 			#set the text
 			[string]$abstract = $CompanyAddress
 			$ab.Text = $abstract
 
 			#added 8-Jun-2017
-			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyEmail"}
+			$ab = $cp.documentelement.ChildNodes | Where-Object {$_.basename -eq "CompanyEmail"}
 			#set the text
 			[string]$abstract = $CompanyEmail
 			$ab.Text = $abstract
 
 			#added 8-Jun-2017
-			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyFax"}
+			$ab = $cp.documentelement.ChildNodes | Where-Object {$_.basename -eq "CompanyFax"}
 			#set the text
 			[string]$abstract = $CompanyFax
 			$ab.Text = $abstract
 
 			#added 8-Jun-2017
-			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "CompanyPhone"}
+			$ab = $cp.documentelement.ChildNodes | Where-Object {$_.basename -eq "CompanyPhone"}
 			#set the text
 			[string]$abstract = $CompanyPhone
 			$ab.Text = $abstract
 
-			$ab = $cp.documentelement.ChildNodes | Where {$_.basename -eq "PublishDate"}
+			$ab = $cp.documentelement.ChildNodes | Where-Object {$_.basename -eq "PublishDate"}
 			#set the text
 			[string]$abstract = (Get-Date -Format d).ToString()
 			$ab.Text = $abstract
@@ -3173,7 +3187,7 @@ Function SaveandCloseDocumentandShutdownWord
 					$SessionID = (Get-Process -PID $PID).SessionId
 					
 					#Find out if winword is running in our session
-					$wordprocess = ((Get-Process 'WinWord' -ea 0)|?{$_.SessionId -eq $SessionID}).Id
+					$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}).Id
 					If($wordprocess -gt 0)
 					{
 						Write-Verbose "$(Get-Date): Attempting to stop WinWord process # $($wordprocess)"
@@ -3202,7 +3216,7 @@ Function SaveandCloseDocumentandShutdownWord
 
 	#Find out if winword is running in our session
 	$wordprocess = $Null
-	$wordprocess = ((Get-Process 'WinWord' -ea 0)|?{$_.SessionId -eq $SessionID}).Id
+	$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}).Id
 	If($null -ne $wordprocess -and $wordprocess -gt 0)
 	{
 		Write-Verbose "$(Get-Date): WinWord process is still running. Attempting to stop WinWord process # $($wordprocess)"
@@ -3258,11 +3272,6 @@ Function SetFileName1andFileName2
 	{
 		CheckWordPreReq
 		
-		If($DeliveryGroupsUtilization)
-		{
-			CheckExcelPreReq
-		}
-
 		If(!$AddDateTime)
 		{
 			[string]$Script:FileName1 = "$($pwdpath)\$($OutputFileName).docx"
@@ -3450,11 +3459,11 @@ Function OutputWarning
 Function validStateProp( [object] $object, [string] $topLevel, [string] $secondLevel )
 {
 	#function created 8-jan-2014 by Michael B. Smith
-	if( $object )
+	If( $object )
 	{
-		If( ( gm -Name $topLevel -InputObject $object ) )
+		If( ( Get-Member -Name $topLevel -InputObject $object ) )
 		{
-			If( ( gm -Name $secondLevel -InputObject $object.$topLevel ) )
+			If( ( Get-Member -Name $secondLevel -InputObject $object.$topLevel ) )
 			{
 				Return $True
 			}
@@ -3468,7 +3477,7 @@ Function validObject( [object] $object, [string] $topLevel )
 	#function created 8-jan-2014 by Michael B. Smith
 	If( $object )
 	{
-		If((gm -Name $topLevel -InputObject $object))
+		If((Get-Member -Name $topLevel -InputObject $object))
 		{
 			Return $True
 		}
@@ -3595,6 +3604,7 @@ Function TestComputerName
 Function TestComputerName2
 {
 	Param([string]$Cname)
+	
 	If(![String]::IsNullOrEmpty($CName)) 
 	{
 		#get computer name
@@ -3607,6 +3617,7 @@ Function TestComputerName2
 		Else
 		{
 			Write-Verbose "$(Get-Date): Computer $($CName) is offline"
+			Write-Output "$(Get-Date): Computer $($CName) is offline" | Out-File $Script:BadDHCPErrorFile -Append 4>$Null
 			Return "BAD"
 		}
 	}
@@ -3628,6 +3639,7 @@ Function TestComputerName2
 		{
 			#the computer is not a dhcp server
 			Write-Verbose "$(Get-Date): Computer $($CName) is not a DHCP Server"
+			Write-Output "$(Get-Date): Computer $($CName) is not a DHCP Server" | Out-File $Script:BadDHCPErrorFile -Append 4>$Null
 			Return "BAD"
 		}
 	}
@@ -3656,12 +3668,14 @@ Function TestComputerName2
 			{
 				#the computer is not a dhcp server
 				Write-Verbose "$(Get-Date): Computer $($CName) is not a DHCP Server"
+				Write-Output "$(Get-Date): Computer $($CName) is not a DHCP Server" | Out-File $Script:BadDHCPErrorFile -Append 4>$Null
 				Return "BAD"
 			}
 		}
 		Else
 		{
 			Write-Verbose "$(Get-Date): Unable to resolve $($CName) to a hostname"
+			Write-Output "$(Get-Date): Unable to resolve $($CName) to a hostname" | Out-File $Script:BadDHCPErrorFile -Append 4>$Null
 			Return "BAD"
 		}
 	}
@@ -3679,6 +3693,7 @@ Function TestComputerName2
 		{
 			#the computer is not a dhcp server
 			Write-Verbose "$(Get-Date): Computer $($CName) is not a DHCP Server"
+			Write-Output "$(Get-Date): Computer $($CName) is not a DHCP Server" | Out-File $Script:BadDHCPErrorFile -Append 4>$Null
 			Return "BAD"
 		}
 	}
@@ -4000,7 +4015,7 @@ Function WriteHTMLLine
 		}
 	}
 
-	out-file -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null
+	Out-File -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null
 }
 #endregion
 
@@ -4025,8 +4040,6 @@ Function AddHTMLTable
 		$htmlbody = $htmlbody + "<tr>"
 		For($columnIndex = 0; $columnIndex -lt $colCount; $columnindex+=2)
 		{
-			$fontitalics = $False
-			$fontbold = $false
 			$tmp = CheckHTMLColor $rd[$columnIndex+1]
 
 			If($fixedInfo.Length -eq 0)
@@ -4085,7 +4098,7 @@ Function AddHTMLTable
 		}
 		$htmlbody += "</tr>"
 	}
-	out-file -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null 
+	Out-File -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null 
 }
 
 #***********************************************************************************************************
@@ -4268,7 +4281,6 @@ Function FormatHTMLTable
 				}
 				Else
 				{
-					$found = $false
 					For($i=0;$i -lt $columnArray[$columnIndex].length;$i+=2)
 					{
 						If($columnArray[$columnIndex][$i] -eq " ")
@@ -4310,7 +4322,7 @@ Function FormatHTMLTable
 	{
 		$HTMLBody += "</table>"
 	}	
-	out-file -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null 
+	Out-File -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null 
 }
 #endregion
 
@@ -4405,7 +4417,7 @@ Function SetupHTML
 	}
 
 	$htmlhead = "<html><head><meta http-equiv='Content-Language' content='da'><title>" + $Script:Title + "</title></head><body>"
-	out-file -FilePath $Script:Filename1 -Force -InputObject $HTMLHead 4>$Null
+	Out-File -FilePath $Script:Filename1 -Force -InputObject $HTMLHead 4>$Null
 }#endregion
 
 #region Iain's Word table functions
@@ -4502,7 +4514,7 @@ Function AddWordTable
 			{
 				Write-Error "The specified number of columns does not match the specified number of headers.";
 			}
-		} ## end elseif
+		} ## end Elseif
 	} ## end Begin
 
 	Process
@@ -4951,20 +4963,23 @@ Function ProcessServerProperties
 	Write-Verbose "$(Get-Date): "
 
 	Write-Verbose "$(Get-Date): Getting DHCP server information"
+	
+	$tmp = $Script:DHCPServerName.Split(".")
+	$NetBIOSName = $tmp[0]
 	If($MSWord -or $PDF)
 	{
 		$selection.InsertNewPage()
-		WriteWordLine 1 0 "DHCP Server Information: " $Script:DHCPServerName
+		WriteWordLine 1 0 "DHCP Server Information: " $NetBIOSName
 		WriteWordLine 0 0 "Server name: " $Script:DHCPServerName
 	}
 	ElseIf($Text)
 	{
-		Line 0 "DHCP Server Information: " $Script:DHCPServerName
+		Line 0 "DHCP Server Information: " $NetBIOSName
 		Line 1 "Server name`t: " $Script:DHCPServerName
 	}
 	ElseIf($HTML)
 	{
-		WriteHTMLLine 1 0 "DHCP Server Information: " $Script:DHCPServerName
+		WriteHTMLLine 1 0 "DHCP Server Information: " $NetBIOSName
 		WriteHTMLLine 0 0 "Server name: " $Script:DHCPServerName
 	}
 
@@ -5373,14 +5388,14 @@ Function ProcessIPv4Properties
 	#Retrieve an array of string that contain all the subkey names
 	If($Null -ne $regkey1)
 	{
-		$BOOTPTable = $regkey1.GetValue("BootFileTable") 
+		$Script:BOOTPTable = $regkey1.GetValue("BootFileTable") 
 	}
 	Else
 	{
-		$BOOTPTable = $Null
+		$Script:BOOTPTable = $Null
 	}
 
-	If($Null -ne $BOOTPTable)
+	If($Null -ne $Script:BOOTPTable)
 	{
 		If($MSWord -or $PDF)
 		{
@@ -6258,9 +6273,6 @@ Function ProcessIPv4Statistics
 
 Function ProcessIPv4Superscopes
 {
-	Write-Verbose "$(Get-Date):Build array of Allow/Deny filters"
-	$Filters = Get-DHCPServerV4Filter -ComputerName $Script:DHCPServerName -EA 0
-
 	Write-Verbose "$(Get-Date): Getting IPv4 Superscopes"
 	$IPv4Superscopes = Get-DHCPServerV4Superscope -ComputerName $Script:DHCPServerName -EA 0
 
@@ -6383,7 +6395,7 @@ Function ProcessIPv4Superscopes
 						
 						If($? -and $Null -ne $IPv4Scope)
 						{
-							GetIPv4ScopeData $IPv4Scope $StartLevel $filters
+							GetIPv4ScopeData $IPv4Scope $StartLevel
 						}
 						Else
 						{
@@ -6430,19 +6442,22 @@ Function ProcessIPv4Superscopes
 
 Function GetIPv4ScopeData
 {
-	Param([object]$IPv4Scope, [int]$xStartLevel, [object]$filters)
+	Param([object]$IPv4Scope, [int]$xStartLevel)
 	
+	Write-Verbose "$(Get-Date):Build array of Allow/Deny filters"
+	$Filters = Get-DHCPServerV4Filter -ComputerName $Script:DHCPServerName -EA 0
+
 	If($MSWord -or $PDF)
 	{
-		GetIPv4ScopeData_WordPDF $xStartLevel $filters
+		GetIPv4ScopeData_WordPDF $xStartLevel $Filters
 	}
 	ElseIf($Text)
 	{
-		GetIPv4ScopeData_Text $xStartLevel $filters
+		GetIPv4ScopeData_Text $xStartLevel $Filters
 	}
 	ElseIf($HTML)
 	{
-		GetIPv4ScopeData_HTML $xStartLevel $filters
+		GetIPv4ScopeData_HTML $xStartLevel $Filters
 	}
 }
 
@@ -6603,7 +6618,7 @@ Function GetIPv4ScopeData_WordPDF
 				$xRow++
 				$Table.Cell($xRow,1).Range.Text = "Filter"
 				
-				$Filters | % { $index = $Null }{ if( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
+				$Filters | ForEach-Object { $index = $Null }{ If( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
 				If($Null -ne $Index)
 				{
 					$Table.Cell($xRow,2).Range.Text = $Index.List
@@ -6679,8 +6694,8 @@ Function GetIPv4ScopeData_WordPDF
 		ForEach($Exclusion in $Exclusions)
 		{
 			$xRow++
-			$Table.Cell($xRow,1).Range.Text = $Exclusion.StartRange
-			$Table.Cell($xRow,2).Range.Text = $Exclusion.EndRange 
+			$Table.Cell($xRow,1).Range.Text = $Exclusion.StartRange.ToString()
+			$Table.Cell($xRow,2).Range.Text = $Exclusion.EndRange.ToString() 
 		}
 		$Table.Rows.SetLeftIndent($Indent1TabStops,$wdAdjustNone)
 		$table.AutoFitBehavior($wdAutoFitContent)
@@ -6789,7 +6804,17 @@ Function GetIPv4ScopeData_WordPDF
 		}
 		Else
 		{
-			[int]$Rows = 4
+			If($ScopeOptions.OptionId -eq 51)
+			{
+				#if the only scope option is 51, ignore it
+				[int]$Rows = 0
+				WriteWordLine 0 1 "<None>"
+			}
+			Else
+			{
+				#id the only scope option is not 51, add rows for it
+				[int]$Rows = 4
+			}
 		}
 		$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 		$table.Style = $myHash.Word_TableGrid
@@ -6961,6 +6986,8 @@ Function GetIPv4ScopeData_WordPDF
 	#failover
 	Write-Verbose "$(Get-Date):	`t`tGetting failover"
 	WriteWordLine ($xStartLevel + 1) 0 "Failover"
+	
+	$Failovers = $Null
 	$Failovers = Get-DHCPServerV4Failover -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0
 
 	If($? -and $Null -ne $Failovers)
@@ -7318,7 +7345,7 @@ Function GetIPv4ScopeData_HTML
 				}
 				$rowdata += @(,('Probation Expiration',($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
 				
-				$Filters | % { $index = $Null }{ if( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
+				$Filters | ForEach-Object { $index = $Null }{ If( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
 				$tmp = ""
 				If($Null -ne $Index)
 				{
@@ -7366,8 +7393,8 @@ Function GetIPv4ScopeData_HTML
 		$rowdata = @()
 		ForEach($Exclusion in $Exclusions)
 		{
-			$rowdata += @(,($Exclusion.StartRange,$htmlwhite,
-							$Exclusion.EndRange,$htmlwhite))
+			$rowdata += @(,($Exclusion.StartRange.ToString(),$htmlwhite,
+							$Exclusion.EndRange.ToString(),$htmlwhite))
 		}
 
 		$columnHeaders = @('Start IP Address',($htmlsilver -bor $htmlbold),'End IP Address',($htmlsilver -bor $htmlbold))
@@ -7437,6 +7464,23 @@ Function GetIPv4ScopeData_HTML
 
 	If($? -and $Null -ne $ScopeOptions)
 	{
+		If($ScopeOptions -is [array])
+		{
+			#do nothing for html
+		}
+		Else
+		{
+			If($ScopeOptions.OptionId -eq 51)
+			{
+				#if the only scope option is 51, ignore it
+				WriteHTMLLine 0 1 "None"
+			}
+			Else
+			{
+				#do nothing for html
+			}
+		}
+		
 		ForEach($ScopeOption in $ScopeOptions)
 		{
 			If($ScopeOption.OptionId -ne 51)
@@ -7811,7 +7855,7 @@ Function GetIPv4ScopeData_Text
 				}
 				Line 2 "Filter`t`t`t`t: " -NoNewLine
 				
-				$Filters | % { $index = $Null }{ if( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
+				$Filters | ForEach-Object { $index = $Null }{ If( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
 				If($Null -ne $Index)
 				{
 					Line 0 $Index.List
@@ -7852,8 +7896,8 @@ Function GetIPv4ScopeData_Text
 	{
 		ForEach($Exclusion in $Exclusions)
 		{
-			Line 2 "Start IP Address`t: " $Exclusion.StartRange
-			Line 2 "End IP Address`t`t: " $Exclusion.EndRange 
+			Line 2 "Start IP Address`t: " $Exclusion.StartRange.ToString()
+			Line 2 "End IP Address`t`t: " $Exclusion.EndRange.ToString() 
 			Line 0 ""
 		}
 	}
@@ -7914,6 +7958,23 @@ Function GetIPv4ScopeData_Text
 
 	If($? -and $Null -ne $ScopeOptions)
 	{
+		If($ScopeOptions -is [array])
+		{
+			#do nothing for text
+		}
+		Else
+		{
+			If($ScopeOptions.OptionId -eq 51)
+			{
+				#if the only scope option is 51, ignore it
+				Line 2 "<None>"
+			}
+			Else
+			{
+				#do nothing for text
+			}
+		}
+
 		ForEach($ScopeOption in $ScopeOptions)
 		{
 			If($ScopeOption.OptionId -ne 51)
@@ -9317,7 +9378,6 @@ Function ProcessIPv4Scopes
 		}
 	}
 	$IPv4Scopes = $Null
-	$Filters = $Null
 	[gc]::collect() 
 }
 
@@ -9917,7 +9977,7 @@ Function ProcessIPv4MulticastScopes
 Function ProcessIPv4BOOTPTable
 {
 	#bootp table
-	If($Null -ne $BOOTPTable)
+	If($Null -ne $Script:BOOTPTable)
 	{
 		Write-Verbose "$(Get-Date):IPv4 BOOTP Table"
 		
@@ -9928,9 +9988,9 @@ Function ProcessIPv4BOOTPTable
 			
 			$TableRange = $doc.Application.Selection.Range
 			[int]$Columns = 3
-			If($BOOTPTable -is [array])
+			If($Script:BOOTPTable -is [array])
 			{
-				[int]$Rows = $BOOTPTable.Count + 1
+				[int]$Rows = $Script:BOOTPTable.Count + 1
 			}
 			Else
 			{
@@ -9950,7 +10010,7 @@ Function ProcessIPv4BOOTPTable
 			$Table.Cell(1,3).Range.Font.Bold = $True
 			$Table.Cell(1,3).Range.Text = "File Server"
 			[int]$xRow = 1
-			ForEach($Item in $BOOTPTable)
+			ForEach($Item in $Script:BOOTPTable)
 			{
 				$xRow++
 				$ItemParts = $Item.Split(",")
@@ -9973,7 +10033,7 @@ Function ProcessIPv4BOOTPTable
 		{
 			Line 1 "BOOTP Table"
 			
-			ForEach($Item in $BOOTPTable)
+			ForEach($Item in $Script:BOOTPTable)
 			{
 				$ItemParts = $Item.Split(",")
 				Line 2 "Boot Image`t: " $ItemParts[0]
@@ -9987,7 +10047,7 @@ Function ProcessIPv4BOOTPTable
 			WriteHTMLLine 3 0 "BOOTP Table"
 			$rowdata = @()
 			
-			ForEach($Item in $BOOTPTable)
+			ForEach($Item in $Script:BOOTPTable)
 			{
 				$ItemParts = $Item.Split(",")
 				$rowdata += @(,($ItemParts[0],$htmlwhite,
@@ -10022,7 +10082,7 @@ Function ProcessServerOptions
 		WriteHTMLLine 3 0 "Server Options"
 	}
 
-	$ServerOptions = Get-DHCPServerV4OptionValue -All -ComputerName $Script:DHCPServerName -EA 0 | Where {$_.OptionID -ne 81} | Sort-Object OptionId
+	$ServerOptions = Get-DHCPServerV4OptionValue -All -ComputerName $Script:DHCPServerName -EA 0 | Where-Object {$_.OptionID -ne 81} | Sort-Object OptionId
 
 	If($? -and $Null -ne $ServerOptions)
 	{
@@ -11240,7 +11300,7 @@ Function ProcessScriptSetup
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): Retrieving all DHCP servers"
+		Write-Verbose "$(Get-Date): Retrieving all DHCP servers in domain"
 		$ComputerName = "All DHCP Servers"
 		
 		$ALLServers = Get-DHCPServerInDc -EA 0
@@ -11265,6 +11325,8 @@ Function ProcessScriptSetup
 				Write-Verbose "$(Get-Date): $($cnt) DHCP server was found"
 			}
 			
+			$Script:BadDHCPErrorFile = "$($pwd.Path)\BadDHCPServers_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+
 			ForEach($Server in $AllServers)
 			{
 				$Result = TestComputerName2 $Server.DnsName
