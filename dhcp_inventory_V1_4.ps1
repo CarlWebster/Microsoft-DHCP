@@ -555,7 +555,7 @@
 	NAME: DHCP_Inventory_V1_3.ps1
 	VERSION: 1.40
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith)
-	LASTEDIT: April 4, 2018
+	LASTEDIT: April 5, 2018
 #>
 
 #endregion
@@ -770,21 +770,22 @@ Param(
 #	Updated Function UpdateDocumentProperties for the new Cover Page properties and Parameters
 #	Updated help text
 #
-#Version 1.40
+#Version 1.40 5-Apr-2018
 #	Added -AllDHCPServers (ALL) parameter to process all Authorized DHCP servers that are online
-#		Added text file of the authorized DHCP servers that are either offline or no longer have DHCP installed
+#		Added text file (BadDHCPServers_yyyy-MM-dd_HHmm.txt) of the authorized DHCP servers that 
+#		are either offline or no longer have DHCP installed
 #	Added -Hardware parameter
 #		Added functions to output hardware information
-#	Added Operating System information to Function OutputComputerItem
-#	Code clean up for most recommendations made by Visual Studio Code
+#	Code clean-up for most recommendations made by Visual Studio Code
+#	Fixed several minor issues found during testing from the code cleanup
 #	Grouped code into functions and functions into regions
-#	In the Scope Options, if all Scope Options were inherited from Server Options and the only 
-#		scope option is the implied Option ID 51, then blank lines were inserted. This is now 
+#	In the Scope Options, if all Scope Options inherit from Server Options and the only 
+#		scope option is the implied Option ID 51; then blank lines were inserted. This is now 
 #		fixed so "None" is reported, just like all the other items. For some reason, Option ID 
 #		51 is implied and even though it does not show in the console, the PowerShell cmdlet 
 #		exposes it. If I try and retrieve the properties of that option, it can crash the computer 
 #		running the script. Not a good thing if you are running the script on a DHCP server. I now 
-#		check for this specific condition and it is now handled properly for all output types.
+#		check for this specific condition, and it is now handled properly for all output types.
 #		Many thanks to my exhaustive tester, David McSpadden, for helping find and fix this logic flaw.
 #	Updated help text
 #endregion
@@ -1046,6 +1047,7 @@ Function GetComputerWMIInfo
 	# http://blog.myvirtualvision.com
 	# modified 1-May-2014 to work in trusted AD Forests and using different domain admin credentials	
 	# modified 17-Aug-2016 to fix a few issues with Text and HTML output
+	# modified 2-Aug-2018 to add ComputerOS information
 
 	#Get Computer info
 	Write-Verbose "$(Get-Date): `t`tProcessing WMI Computer information"
@@ -1084,10 +1086,11 @@ Function GetComputerWMIInfo
 		@{N="TotalPhysicalRam"; E={[math]::round(($_.TotalPhysicalMemory / 1GB),0)}}, `
 		NumberOfProcessors, NumberOfLogicalProcessors
 		$Results = $Null
+		[string]$ComputerOS = (Get-WmiObject -class Win32_OperatingSystem -computername $RemoteComputerName -EA 0).Caption
 
 		ForEach($Item in $ComputerItems)
 		{
-			OutputComputerItem $Item
+			OutputComputerItem $Item $ComputerOS
 		}
 	}
 	ElseIf(!$?)
@@ -1467,13 +1470,14 @@ Function GetComputerWMIInfo
 	}
 	ElseIf($HTML)
 	{
-		WriteHTMLLine 0 0 " "
+		WriteHTMLLine 0 0 ""
 	}
 }
 
 Function OutputComputerItem
 {
 	Param([object]$Item, [string]$OS)
+	# modified 2-Aug-2018 to add Operating System information
 	
 	If($MSWord -or $PDF)
 	{
@@ -3095,6 +3099,27 @@ Function UpdateDocumentProperties
 		}
 	}
 }
+
+Function ValidateWordTableValues 
+{
+	Param([int]$Rows, [string]$DHCPServer, [string]$DoingWhat)
+	
+	If(($Rows -lt 1) -or ($Rows -gt 32767))
+	{
+		Write-Host "`n`n`t`tUh Oh! Something bad unexpected happened" -ForegroundColor Red
+		Write-Host "`n`n`t`tThe Word variable Rows is an unexpected value of $Rows" -ForegroundColor Red
+		Write-Host "`n`n`t`tThe DHCP server being processed is $DHCPServer" -ForegroundColor Red
+		Write-Host "`n`n`t`tOther info: $DoingWhat" -ForegroundColor Red
+		Write-Host "`n`n`t`tPlease email webster@carlwebster.com with this information (screenshot would be helpful)`n`n" -ForegroundColor Red
+		Write-Error "`n`n`t`tScript cannot continue.`n`n"
+		ProcessScriptEnd
+		AbortScript
+	}
+	Else
+	{
+		Return
+	}
+}
 #endregion
 
 #region general script functions
@@ -3366,12 +3391,15 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date): "
 	Write-Verbose "$(Get-Date): "
 	Write-Verbose "$(Get-Date): AddDateTime     : $($AddDateTime)"
-	Write-Verbose "$(Get-Date): Company Name    : $($Script:CoName)"
-	Write-Verbose "$(Get-Date): Company Address : $($CompanyAddress)"
-	Write-Verbose "$(Get-Date): Company Email   : $($CompanyEmail)"
-	Write-Verbose "$(Get-Date): Company Fax     : $($CompanyFax)"
-	Write-Verbose "$(Get-Date): Company Phone   : $($CompanyPhone)"
-	Write-Verbose "$(Get-Date): Cover Page      : $($CoverPage)"
+	If($MSWord -or $PDF)
+	{
+		Write-Verbose "$(Get-Date): Company Name    : $($Script:CoName)"
+		Write-Verbose "$(Get-Date): Company Address : $($CompanyAddress)"
+		Write-Verbose "$(Get-Date): Company Email   : $($CompanyEmail)"
+		Write-Verbose "$(Get-Date): Company Fax     : $($CompanyFax)"
+		Write-Verbose "$(Get-Date): Company Phone   : $($CompanyPhone)"
+		Write-Verbose "$(Get-Date): Cover Page      : $($CoverPage)"
+	}
 	Write-Verbose "$(Get-Date): ComputerName    : $($ComputerName)"
 	Write-Verbose "$(Get-Date): Dev             : $($Dev)"
 	If($Dev)
@@ -5675,6 +5703,7 @@ Function ProcessIPv4Properties
 			{
 				[int]$Rows = 7
 			}
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function ProcessIPv4Properties Failovers"
 			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 			$table.Style = $myHash.Word_TableGrid
 			$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -6113,6 +6142,7 @@ Function ProcessIPv4Statistics
 			[int]$Columns = 2
 			[int]$Rows = 16
 			Write-Verbose "$(Get-Date): `tAdd IPv4 statistics table to doc"
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function ProcessIPv4Statistics Statistics"
 			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 			$table.Style = $myHash.Word_TableGrid
 			$table.Borders.InsideLineStyle = $wdLineStyleSingle
@@ -6472,6 +6502,7 @@ Function GetIPv4ScopeData_WordPDF
 	$TableRange = $doc.Application.Selection.Range
 	[int]$Columns = 2
 	[int]$Rows = 5
+	ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv4ScopeData_WordPDF Scope [$($IPv4Scope.ScopeId)] $($IPv4Scope.Name)"
 	$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 	$table.Style = $myHash.Word_TableGrid
 	$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -6529,6 +6560,7 @@ Function GetIPv4ScopeData_WordPDF
 			{
 				[int]$Rows = 10
 			}
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv4ScopeData_WordPDF Getting leases"
 			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 			$table.Style = $myHash.Word_TableGrid
 			$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -6618,7 +6650,17 @@ Function GetIPv4ScopeData_WordPDF
 				$xRow++
 				$Table.Cell($xRow,1).Range.Text = "Filter"
 				
-				$Filters | ForEach-Object { $index = $Null }{ If( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
+				#$Filters | ForEach-Object { $index = $Null }{ If( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
+				
+				$Index = $Null
+				ForEach($Filter in $Filters)
+				{
+					If( (ValidObject $Filter MacAddress) -and ($Filter.MacAddress -eq $Lease.ClientID) )
+					{
+						$Index = $Filter
+					}
+				}
+				
 				If($Null -ne $Index)
 				{
 					$Table.Cell($xRow,2).Range.Text = $Index.List
@@ -6680,6 +6722,7 @@ Function GetIPv4ScopeData_WordPDF
 		{
 			[int]$Rows = 2
 		}
+		ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv4ScopeData_WordPDF Getting exclusions"
 		$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 		$table.Style = $myHash.Word_TableGrid
 		$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -6736,6 +6779,7 @@ Function GetIPv4ScopeData_WordPDF
 			{
 				[int]$Rows = 5
 			}
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv4ScopeData_WordPDF Getting reservations"
 			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 			$table.Style = $myHash.Word_TableGrid
 			$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -6816,61 +6860,66 @@ Function GetIPv4ScopeData_WordPDF
 				[int]$Rows = 4
 			}
 		}
-		$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
-		$table.Style = $myHash.Word_TableGrid
-		$table.Borders.InsideLineStyle = $wdLineStyleNone
-		$table.Borders.OutsideLineStyle = $wdLineStyleNone
-		[int]$xRow = 0
-		ForEach($ScopeOption in $ScopeOptions)
+		
+		If($Rows -gt 0)
 		{
-			If($ScopeOption.OptionId -ne 51)
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv4ScopeData_WordPDF ScopeOptions"
+			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
+			$table.Style = $myHash.Word_TableGrid
+			$table.Borders.InsideLineStyle = $wdLineStyleNone
+			$table.Borders.OutsideLineStyle = $wdLineStyleNone
+			[int]$xRow = 0
+			ForEach($ScopeOption in $ScopeOptions)
 			{
-				Write-Verbose "$(Get-Date):	`t`t`tProcessing option name $($ScopeOption.Name)"
-				$xRow++
-				$Table.Cell($xRow,1).Range.Text = "Option Name"
-				$Table.Cell($xRow,2).Range.Text = "$($ScopeOption.OptionId.ToString("00000")) $($ScopeOption.Name)" 
-				
-				$xRow++
-				$Table.Cell($xRow,1).Range.Text = "Vendor"
-				If([string]::IsNullOrEmpty($ScopeOption.VendorClass))
+				If($ScopeOption.OptionId -ne 51)
 				{
-					$Table.Cell($xRow,2).Range.Text = "Standard" 
-				}
-				Else
-				{
-					$Table.Cell($xRow,2).Range.Text = $ScopeOption.VendorClass 
-				}
+					Write-Verbose "$(Get-Date):	`t`t`tProcessing option name $($ScopeOption.Name)"
+					$xRow++
+					$Table.Cell($xRow,1).Range.Text = "Option Name"
+					$Table.Cell($xRow,2).Range.Text = "$($ScopeOption.OptionId.ToString("00000")) $($ScopeOption.Name)" 
+					
+					$xRow++
+					$Table.Cell($xRow,1).Range.Text = "Vendor"
+					If([string]::IsNullOrEmpty($ScopeOption.VendorClass))
+					{
+						$Table.Cell($xRow,2).Range.Text = "Standard" 
+					}
+					Else
+					{
+						$Table.Cell($xRow,2).Range.Text = $ScopeOption.VendorClass 
+					}
+					
+					$xRow++
+					$Table.Cell($xRow,1).Range.Text = "Value"
+					$Table.Cell($xRow,2).Range.Text = "$($ScopeOption.Value)" 
+					
+					$xRow++
+					$Table.Cell($xRow,1).Range.Text = "Policy Name"
+					
+					If([string]::IsNullOrEmpty($ScopeOption.PolicyName))
+					{
+						$Table.Cell($xRow,2).Range.Text = "<None>"
+					}
+					Else
+					{
+						$Table.Cell($xRow,2).Range.Text = $ScopeOption.PolicyName
+					}
 				
-				$xRow++
-				$Table.Cell($xRow,1).Range.Text = "Value"
-				$Table.Cell($xRow,2).Range.Text = "$($ScopeOption.Value)" 
-				
-				$xRow++
-				$Table.Cell($xRow,1).Range.Text = "Policy Name"
-				
-				If([string]::IsNullOrEmpty($ScopeOption.PolicyName))
-				{
-					$Table.Cell($xRow,2).Range.Text = "<None>"
+					#for spacing
+					$xRow++
 				}
-				Else
-				{
-					$Table.Cell($xRow,2).Range.Text = $ScopeOption.PolicyName
-				}
-			
-				#for spacing
-				$xRow++
 			}
+			$Table.Rows.SetLeftIndent($Indent1TabStops,$wdAdjustNone)
+			$table.AutoFitBehavior($wdAutoFitContent)
+
+			#return focus back to document
+			$doc.ActiveWindow.ActivePane.view.SeekView = $wdSeekMainDocument
+
+			#move to the end of the current document
+			$selection.EndKey($wdStory,$wdMove) | Out-Null
+			$TableRange = $Null
+			$Table = $Null
 		}
-		$Table.Rows.SetLeftIndent($Indent1TabStops,$wdAdjustNone)
-		$table.AutoFitBehavior($wdAutoFitContent)
-
-		#return focus back to document
-		$doc.ActiveWindow.ActivePane.view.SeekView = $wdSeekMainDocument
-
-		#move to the end of the current document
-		$selection.EndKey($wdStory,$wdMove) | Out-Null
-		$TableRange = $Null
-		$Table = $Null
 	}
 	ElseIf(!$?)
 	{
@@ -6898,6 +6947,7 @@ Function GetIPv4ScopeData_WordPDF
 		{
 			[int]$Rows = 6
 		}
+		ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv4ScopeData_WordPDF Getting policies"
 		$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 		$table.Style = $myHash.Word_TableGrid
 		$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -7003,6 +7053,7 @@ Function GetIPv4ScopeData_WordPDF
 		{
 			[int]$Rows = 9
 		}
+		ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv4ScopeData_WordPDF Getting failover"
 		$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 		$table.Style = $myHash.Word_TableGrid
 		$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -7345,7 +7396,17 @@ Function GetIPv4ScopeData_HTML
 				}
 				$rowdata += @(,('Probation Expiration',($htmlsilver -bor $htmlbold),$tmp,$htmlwhite))
 				
-				$Filters | ForEach-Object { $index = $Null }{ If( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
+				#$Filters | ForEach-Object { $index = $Null }{ If( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
+				
+				$Index = $Null
+				ForEach($Filter in $Filters)
+				{
+					If( (ValidObject $Filter MacAddress) -and ($Filter.MacAddress -eq $Lease.ClientID) )
+					{
+						$Index = $Filter
+					}
+				}
+				
 				$tmp = ""
 				If($Null -ne $Index)
 				{
@@ -7855,7 +7916,17 @@ Function GetIPv4ScopeData_Text
 				}
 				Line 2 "Filter`t`t`t`t: " -NoNewLine
 				
-				$Filters | ForEach-Object { $index = $Null }{ If( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
+				#$Filters | ForEach-Object { $index = $Null }{ If( $_.MacAddress -eq $Lease.ClientID ) { $index = $_ } }
+				
+				$Index = $Null
+				ForEach($Filter in $Filters)
+				{
+					If( (ValidObject $Filter MacAddress) -and ($Filter.MacAddress -eq $Lease.ClientID) )
+					{
+						$Index = $Filter
+					}
+				}
+				
 				If($Null -ne $Index)
 				{
 					Line 0 $Index.List
@@ -8252,6 +8323,7 @@ Function GetIPv6ScopeData_WordPDF
 	{
 		[int]$Rows = 5
 	}
+	ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv6ScopeData_WordPDF Getting IPv6 scope data for scope $($IPv6Scope.Name)"
 	$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 	$table.Style = $myHash.Word_TableGrid
 	$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -8347,6 +8419,7 @@ Function GetIPv6ScopeData_WordPDF
 			{
 				[int]$Rows = 7
 			}
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv6ScopeData_WordPDF Getting leases"
 			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 			$table.Style = $myHash.Word_TableGrid
 			$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -8435,6 +8508,7 @@ Function GetIPv6ScopeData_WordPDF
 		{
 			[int]$Rows = 2
 		}
+		ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv6ScopeData_WordPDF Getting exclusions"
 		$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 		$table.Style = $myHash.Word_TableGrid
 		$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -8491,6 +8565,7 @@ Function GetIPv6ScopeData_WordPDF
 			{
 				[int]$Rows = 5
 			}
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv6ScopeData_WordPDF Processing reservation $($Reservation.Name)"
 			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 			$table.Style = $myHash.Word_TableGrid
 			$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -8558,6 +8633,7 @@ Function GetIPv6ScopeData_WordPDF
 		{
 			[int]$Rows = 3
 		}
+		ValidateWordTableValues $Rows $Script:DHCPServerName "Function GetIPv6ScopeData_WordPDF Getting IPv6 scope options"
 		$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 		$table.Style = $myHash.Word_TableGrid
 		$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -9468,6 +9544,7 @@ Function ProcessIPv4MulticastScopes
 						{
 							[int]$Rows = 2
 						}
+						ValidateWordTableValues $Rows $Script:DHCPServerName "Function ProcessIPv4MulticastScopes Getting exclusions"
 						$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 						$table.Style = $myHash.Word_TableGrid
 						$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -9525,6 +9602,7 @@ Function ProcessIPv4MulticastScopes
 							{
 								[int]$Rows = 6
 							}
+							ValidateWordTableValues $Rows $Script:DHCPServerName "Function ProcessIPv4MulticastScopes Getting leases"
 							$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 							$table.Style = $myHash.Word_TableGrid
 							$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -10098,6 +10176,7 @@ Function ProcessServerOptions
 			{
 				[int]$Rows = 4
 			}
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function ProcessServerOptions Server Options"
 			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 			$table.Style = $myHash.Word_TableGrid
 			$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -10284,6 +10363,7 @@ Function ProcessPolicies
 			{
 				[int]$Rows = 5
 			}
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function ProcessPolicies Policies"
 			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 			$table.Style = $myHash.Word_TableGrid
 			$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -10452,6 +10532,7 @@ Function ProcessIPv4Filters
 			{
 				[int]$Rows = 2
 			}
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function ProcessIPv4Filters Allow filters"
 			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 			$table.Style = $myHash.Word_TableGrid
 			$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -10555,6 +10636,7 @@ Function ProcessIPv4Filters
 			{
 				[int]$Rows = 2
 			}
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function ProcessIPv4Filters Deny filters"
 			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 			$table.Style = $myHash.Word_TableGrid
 			$table.Borders.InsideLineStyle = $wdLineStyleNone
@@ -10843,6 +10925,7 @@ Function ProcessIPv6Properties
 			{
 				[int]$Rows = 3
 			}
+			ValidateWordTableValues $Rows $Script:DHCPServerName "Function ProcessIPv6Properties Server Options"
 			$Table = $doc.Tables.Add($TableRange, $Rows, $Columns)
 			$table.Style = $myHash.Word_TableGrid
 			$table.Borders.InsideLineStyle = $wdLineStyleNone

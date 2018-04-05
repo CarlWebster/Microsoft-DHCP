@@ -3,21 +3,22 @@
 #@carlwebster on Twitter
 #http://www.CarlWebster.com
 
-#Version 1.40
+#Version 1.40 5-Apr-2018
 #	Added -AllDHCPServers (ALL) parameter to process all Authorized DHCP servers that are online
-#		Added text file of the authorized DHCP servers that are either offline or no longer have DHCP installed
+#		Added text file (BadDHCPServers_yyyy-MM-dd_HHmm.txt) of the authorized DHCP servers that 
+#		are either offline or no longer have DHCP installed
 #	Added -Hardware parameter
 #		Added functions to output hardware information
-#	Added Operating System information to Function OutputComputerItem
-#	Code clean up for most recommendations made by Visual Studio Code
+#	Code clean-up for most recommendations made by Visual Studio Code
+#	Fixed several minor issues found during testing from the code cleanup
 #	Grouped code into functions and functions into regions
-#	In the Scope Options, if all Scope Options were inherited from Server Options and the only 
-#		scope option is the implied Option ID 51, then blank lines were inserted. This is now 
+#	In the Scope Options, if all Scope Options inherit from Server Options and the only 
+#		scope option is the implied Option ID 51; then blank lines were inserted. This is now 
 #		fixed so "None" is reported, just like all the other items. For some reason, Option ID 
 #		51 is implied and even though it does not show in the console, the PowerShell cmdlet 
 #		exposes it. If I try and retrieve the properties of that option, it can crash the computer 
 #		running the script. Not a good thing if you are running the script on a DHCP server. I now 
-#		check for this specific condition and it is now handled properly for all output types.
+#		check for this specific condition, and it is now handled properly for all output types.
 #		Many thanks to my exhaustive tester, David McSpadden, for helping find and fix this logic flaw.
 #	Updated help text
 
