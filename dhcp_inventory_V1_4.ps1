@@ -72,6 +72,34 @@
 		Spanish
 		Swedish
 		
+.PARAMETER AddDateTime
+	Adds a date time stamp to the end of the file name.
+	Time stamp is in the format of yyyy-MM-dd_HHmm.
+	June 1, 2018 at 6PM is 2018-06-01_1800.
+	Output filename will be ReportName_2018-06-01_1800.docx (or .pdf or .txt).
+	This parameter is disabled by default.
+.PARAMETER HTML
+	Creates an HTML file with an .html extension.
+	This parameter is disabled by default.
+.PARAMETER MSWord
+	SaveAs DOCX file
+	This parameter is set True if no other output format is selected.
+.PARAMETER PDF
+	SaveAs PDF file instead of DOCX file.
+	This parameter is disabled by default.
+	The PDF file is roughly 5X to 10X larger than the DOCX file.
+	This parameter requires Microsoft Word to be installed.
+	This parameter uses the Word SaveAs PDF capability.
+.PARAMETER Text
+	Creates a formatted text file with a .txt extension.
+	This parameter is disabled by default.
+.PARAMETER AllDHCPServers
+	The script will process all Authorized DHCP servers that are online.
+	"All DHCP Servers" is used for the report title.
+	This parameter is disabled by default.
+	
+	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
+	This parameter has an alias of ALL.
 .PARAMETER CompanyAddress
 	Company Address to use for the Cover Page, if the Cover Page has the Address field.
 	
@@ -174,21 +202,6 @@
 	The default value is contained in $env:username
 	This parameter has an alias of UN.
 	This parameter is only valid with the MSWORD and PDF output parameters.
-.PARAMETER HTML
-	Creates an HTML file with an .html extension.
-	This parameter is disabled by default.
-.PARAMETER MSWord
-	SaveAs DOCX file
-	This parameter is set True if no other output format is selected.
-.PARAMETER PDF
-	SaveAs PDF file instead of DOCX file.
-	This parameter is disabled by default.
-	The PDF file is roughly 5X to 10X larger than the DOCX file.
-	This parameter requires Microsoft Word to be installed.
-	This parameter uses the Word SaveAs PDF capability.
-.PARAMETER Text
-	Creates a formatted text file with a .txt extension.
-	This parameter is disabled by default.
 .PARAMETER ComputerName
 	DHCP server to run the script against.
 	The computername is used for the report title.
@@ -198,27 +211,6 @@
 	computer name.
 	
 	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
-.PARAMETER AllDHCPServers
-	The script will process all Authorized DHCP servers that are online.
-	"All DHCP Servers" is used for the report title.
-	This parameter is disabled by default.
-	
-	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
-	This parameter has an alias of ALL.
-.PARAMETER IncludeLeases
-	Include DHCP lease information.
-	Default is to not included lease information.
-.PARAMETER Hardware
-	Use WMI to gather hardware information on: Computer System, Disks, Processor and 
-	Network Interface Cards
-	This parameter is disabled by default.
-	This parameter has an alias of HW.
-.PARAMETER AddDateTime
-	Adds a date time stamp to the end of the file name.
-	Time stamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2018 at 6PM is 2018-06-01_1800.
-	Output filename will be ReportName_2018-06-01_1800.docx (or .pdf or .txt).
-	This parameter is disabled by default.
 .PARAMETER Folder
 	Specifies the optional output folder to save the output report. 
 .PARAMETER Hardware
@@ -234,6 +226,9 @@
 
 	This parameter is disabled by default.
 	This parameter has an alias of HW.
+.PARAMETER IncludeLeases
+	Include DHCP lease information.
+	Default is to not included lease information.
 .PARAMETER SmtpServer
 	Specifies the optional email server to send the output report. 
 .PARAMETER SmtpPort
@@ -265,7 +260,7 @@
 .PARAMETER Log
 	Generates a log file for troubleshooting.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer01
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -ComputerName DHCPServer01
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -279,7 +274,7 @@
 	
 	Script will be run remotely against DHCP server DHCPServer01.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName localhost
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -ComputerName localhost
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -295,7 +290,7 @@
 	Script will be run remotely against DHCP server DHCPServer01 and not localhost.
 	Output file name will use the server name DHCPServer01 and not localhost.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName 192.168.1.222
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -ComputerName 192.168.1.222
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -311,7 +306,7 @@
 	Script will be run remotely against DHCP server DHCPServer01 and not 192.18.1.222.
 	Output file name will use the server name DHCPServer01 and not 192.168.1.222.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -PDF -ComputerName DHCPServer02
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -PDF -ComputerName DHCPServer02
 	
 	Will use all Default values and save the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -325,15 +320,15 @@
 	
 	Script will be run remotely against DHCP server DHCPServer02.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -Text -ComputerName DHCPServer02
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -Text -ComputerName DHCPServer02
 	
 	Script will be run remotely against DHCP server DHCPServer02.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -HTML -ComputerName DHCPServer02
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -HTML -ComputerName DHCPServer02
 	
 	Script will be run remotely against DHCP server DHCPServer02.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -MSWord -ComputerName DHCPServer02
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -MSWord -ComputerName DHCPServer02
 	
 	Will use all Default values and save the document as a Word DOCX file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -347,7 +342,7 @@
 	
 	Script will be run remotely against DHCP server DHCPServer02.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -Hardware -ComputerName DHCPServer02
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -Hardware -ComputerName DHCPServer02
 	
 	Will use all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -361,11 +356,11 @@
 	
 	Script will be run remotely against DHCP server DHCPServer02.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -HTML -ComputerName DHCPServer02
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -HTML -ComputerName DHCPServer02
 	
 	Script will be run remotely against DHCP server DHCPServer02.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer03 -IncludeLeases
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -ComputerName DHCPServer03 -IncludeLeases
 	
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or
@@ -379,7 +374,7 @@
 	Script will be run remotely against DHCP server DHCPServer03.
 	Output will contain DHCP lease information.
 .EXAMPLE
-	PS C:\PSScript .\DHCP_Inventory_V1_3.ps1 -CompanyName "Carl Webster Consulting" 
+	PS C:\PSScript .\DHCP_Inventory_V1_4.ps1 -CompanyName "Carl Webster Consulting" 
 	-CoverPage "Mod" -UserName "Carl Webster" -ComputerName DHCPServer01
 
 	Will use:
@@ -389,7 +384,7 @@
 	
 	Script will be run remotely against DHCP server DHCPServer01.
 .EXAMPLE
-	PS C:\PSScript .\DHCP_Inventory_V1_3.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
+	PS C:\PSScript .\DHCP_Inventory_V1_4.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -ComputerName DHCPServer02 -IncludeLeases
 
 	Will use:
@@ -400,7 +395,7 @@
 	Script will be run remotely against DHCP server DHCPServer02.
 	Output will contain DHCP lease information.
 .EXAMPLE
-	PS C:\PSScript .\DHCP_Inventory_V1_3.ps1 -CompanyName "Sherlock Holmes 
+	PS C:\PSScript .\DHCP_Inventory_V1_4.ps1 -CompanyName "Sherlock Holmes 
 	Consulting"
 	-CoverPage Exposure -UserName "Dr. Watson"
 	-CompanyAddress "221B Baker Street, London, England"
@@ -415,7 +410,7 @@
 		+44 1753 276600 for the Company Fax.
 		+44 1753 276200 for the Company Phone.
 .EXAMPLE
-	PS C:\PSScript .\DHCP_Inventory_V1_3.ps1 -CompanyName "Sherlock Holmes 
+	PS C:\PSScript .\DHCP_Inventory_V1_4.ps1 -CompanyName "Sherlock Holmes 
 	Consulting"
 	-CoverPage Facet -UserName "Dr. Watson"
 	-CompanyEmail SuperSleuth@SherlockHolmes.com
@@ -425,7 +420,7 @@
 		Facet for the Cover Page format.
 		Dr. Watson for the User Name.
 		SuperSleuth@SherlockHolmes.com for the Company Email..EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -Folder \\FileServer\ShareName
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -Folder \\FileServer\ShareName
 	
 	Will use all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -439,7 +434,7 @@
 	
 	Output file will be saved in the path \\FileServer\ShareName
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer01 -SmtpServer 
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -ComputerName DHCPServer01 -SmtpServer 
 	mail.domain.tld -From XDAdmin@domain.tld -To ITGroup@domain.tld -ComputerName 
 	DHCPServer01
 	
@@ -460,7 +455,7 @@
 	If the current user's credentials are not valid to send email, the user will be prompted 
 	to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer01 -SmtpServer 
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -ComputerName DHCPServer01 -SmtpServer 
 	smtp.office365.com -SmtpPort 587 -UseSSL -From Webster@CarlWebster.com -To 
 	ITGroup@CarlWebster.com
 	
@@ -481,7 +476,7 @@
 	If the current user's credentials are not valid to send email, the user will be prompted 
 	to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -Dev -ScriptInfo -Log
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -Dev -ScriptInfo -Log
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -502,7 +497,7 @@
 	Creates a text file for transcript logging named 
 	DHCPDocScriptTranscript_yyyy-MM-dd_HHmm.txt.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer01 -Hardware
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -ComputerName DHCPServer01 -Hardware
 	
 	Will use all Default values and add additional information for each server about its 
 	hardware.
@@ -517,7 +512,7 @@
 	
 	The script will be run remotely against DHCP server DHCPServer01.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -AllDHCPServers
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -AllDHCPServers
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -532,7 +527,7 @@
 	The script will find all Authorized DHCP servers and will process all servers that are 
 	online.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_3.ps1 -ComputerName DHCPServer01 -AllDHCPServers
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -ComputerName DHCPServer01 -AllDHCPServers
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -552,10 +547,10 @@
 	No objects are output from this script.  This script creates a Word, PDF, HTML or 
 	formatted text document.
 .NOTES
-	NAME: DHCP_Inventory_V1_3.ps1
-	VERSION: 1.40
+	NAME: DHCP_Inventory_V1_4.ps1
+	VERSION: 1.41
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith)
-	LASTEDIT: April 5, 2018
+	LASTEDIT: January 8, 2019
 #>
 
 #endregion
@@ -566,6 +561,29 @@
 [CmdletBinding(SupportsShouldProcess = $False, ConfirmImpact = "None", DefaultParameterSetName = "Word") ]
 
 Param(
+	[parameter(Mandatory=$False)] 
+	[Switch]$AddDateTime=$False,
+	
+	[parameter(ParameterSetName="HTML",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Switch]$HTML=$False,
+
+	[parameter(ParameterSetName="Word",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Switch]$MSWord=$False,
+
+	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Switch]$PDF=$False,
+
+	[parameter(ParameterSetName="Text",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Switch]$Text=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Alias("ALL")]
+	[Switch]$AllDHCPServers=$False,
+	
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
 	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
@@ -615,34 +633,8 @@ Param(
 	[ValidateNotNullOrEmpty()]
 	[string]$UserName=$env:username,
 
-	[parameter(ParameterSetName="HTML",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
-	[Switch]$HTML=$False,
-
-	[parameter(ParameterSetName="Word",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
-	[Switch]$MSWord=$False,
-
-	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
-	[Switch]$PDF=$False,
-
-	[parameter(ParameterSetName="Text",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
-	[Switch]$Text=$False,
-
 	[parameter(Mandatory=$False)] 
 	[string]$ComputerName="LocalHost",
-	
-	[parameter(Mandatory=$False)] 
-	[Alias("ALL")]
-	[Switch]$AllDHCPServers=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[Switch]$IncludeLeases=$False,
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$AddDateTime=$False,
 	
 	[parameter(Mandatory=$False)] 
 	[string]$Folder="",
@@ -650,6 +642,9 @@ Param(
 	[parameter(Mandatory=$False)] 
 	[Alias("HW")]
 	[Switch]$Hardware=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$IncludeLeases=$False,
 
 	[parameter(ParameterSetName="SMTP",Mandatory=$True)] 
 	[string]$SmtpServer="",
