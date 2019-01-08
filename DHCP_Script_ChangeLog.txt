@@ -3,6 +3,10 @@
 #@carlwebster on Twitter
 #http://www.CarlWebster.com
 
+#Version 1.41 8-Jan-2019
+#	Cleaned up help text
+#	Reorganized parameters
+
 #Version 1.40 5-Apr-2018
 #	Added -AllDHCPServers (ALL) parameter to process all Authorized DHCP servers that are online
 #		Added text file (BadDHCPServers_yyyy-MM-dd_HHmm.txt) of the authorized DHCP servers that 
