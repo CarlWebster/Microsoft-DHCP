@@ -783,6 +783,11 @@ Param(
 #		check for this specific condition, and it is now handled properly for all output types.
 #		Many thanks to my exhaustive tester, David McSpadden, for helping find and fix this logic flaw.
 #	Updated help text
+#
+#Version 1.41 8-Jan-2019
+#	Cleaned up help text
+#	Reorganized parameters
+#
 #endregion
 
 
