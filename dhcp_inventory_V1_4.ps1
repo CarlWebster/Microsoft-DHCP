@@ -75,8 +75,8 @@
 .PARAMETER AddDateTime
 	Adds a date time stamp to the end of the file name.
 	Time stamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2018 at 6PM is 2018-06-01_1800.
-	Output filename will be ReportName_2018-06-01_1800.docx (or .pdf or .txt).
+	June 1, 2020 at 6PM is 2020-06-01_1800.
+	Output filename will be ReportName_2020-06-01_1800.docx (or .pdf or .txt).
 	This parameter is disabled by default.
 .PARAMETER HTML
 	Creates an HTML file with an .html extension.
@@ -548,9 +548,9 @@
 	formatted text document.
 .NOTES
 	NAME: DHCP_Inventory_V1_4.ps1
-	VERSION: 1.41
-	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith)
-	LASTEDIT: January 8, 2019
+	VERSION: 1.42
+	AUTHOR: Carl Webster and Michael B. Smith
+	LASTEDIT: December 17, 2019
 #>
 
 #endregion
@@ -675,95 +675,30 @@ Param(
 #endregion
 
 #region script change log	
+#Created by Carl Webster and Michael B. Smith
 #webster@carlwebster.com
 #@carlwebster on Twitter
-#http://www.CarlWebster.com
+#https://www.CarlWebster.com
+#
+#michael@smithcons.com
+#@essentialexch on Twitter
+#https://www.essential.exchange/blog/
+#
 #Created on April 10, 2014
 
 #Version 1.0 released to the community on May 31, 2014
-#
-#Version 1.01
-#	Added an AddDateTime parameter
-#Version 1.1
-#	Cleanup the script's parameters section
-#	Code cleanup and standardization with the master template script
-#	Requires PowerShell V3 or later
-#	Removed support for Word 2007
-#	Word 2007 references in help text removed
-#	Cover page parameter now states only Word 2010 and 2013 are supported
-#	Most Word 2007 references in script removed:
-#		Function ValidateCoverPage
-#		Function SetupWord
-#		Function SaveandCloseDocumentandShutdownWord
-#	Function CheckWord2007SaveAsPDFInstalled removed
-#	If Word 2007 is detected, an error message is now given and the script is aborted
-#	Fix when -ComputerName was entered as LocalHost, output filename said LocalHost and not actual server name
-#	Cleanup Word table code for the first row and background color
-#	Add Iain Brighton's Word table functions
-#Version 1.2
-#	Cleanup some of the console output
-#	Added error checking:
-#	If script is run without -ComputerName, resolve LocalHost to computer and very it is a DHCP server
-#	If script is run with -ComputerName, very it is a DHCP server
-#
-#Version 1.21 5-Oct-2015
-#	Added support for Word 2016
-#
-#Version 1.22 25-Nov-2015
-#	Updated help text and ReadMe for RSAT for Windows 10
-#	Updated ReadMe with an example of running the script remotely
-#	Tested script on Windows 10 x64 and Word 2016 x64
-#
-#Version 1.23 1-Feb-2016
-#	Added DNS Dynamic update credentials from protocol properties, advanced tab
-#
-#Version 1.24 8-Feb-2016
-#	Added specifying an optional output folder
-#	Added the option to email the output file
-#	Fixed several spacing and typo errors
-#
-#Version 1.30 4-May-2016
-#	Fixed numerous issues discovered with the latest update to PowerShell V5
-#	Color variables needed to be [long] and not [int] except for $wdColorBlack which is 0
-#	Changed from using arrays to populating data in tables to strings
-#	Fixed several incorrect variable names that kept PDFs from saving in Windows 10 and Office 2013
-#	Fixed the rest of the $Var -eq $Null to $Null -eq $Var
-#	Removed blocks of old commented out code
-#	Removed the 10 second pauses waiting for Word to save and close.
-#	Added -Dev parameter to create a text file of script errors
-#	Added -ScriptInfo (SI) parameter to create a text file of script information
-#	Added more script information to the console output when script starts
-#	Cleaned up some issues in the help text
-#	Commented out HTML parameters as HTML output is not ready
-#	Added HTML functions to prep for adding HTML output
-#
-#Version 1.31 24-Oct-2016
-#	Add HTML output
-#	Fix typo on failover status "iitializing" -> "initializing"
-#	Fix numerous issues where I used .day/.hour/.minute instead of .days/.hours/.minutes when formatting times
-#
-#Version 1.32 7-Nov-2016
-#	Added Chinese language support
-#
-#Version 1.33 13-Feb-2017
-#	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
-#
-#Version 1.34 8-Dec-2017
-#	Updated Function WriteHTMLLine with fixes from the script template
-#
-#Version 1.35 10-Feb-2017
-#	Added four new Cover Page properties
-#		Company Address
-#		Company Email
-#		Company Fax
-#		Company Phone
-#	Added Log switch to create a transcript log
-#	Replaced _SetDocumentProperty function with Jim Moyle's Set-DocumentProperty function
-#	Removed code that made sure all Parameters were set to default values if for some reason they did exist or values were $Null
-#	Updated Function ProcessScriptEnd for the new Cover Page properties and Parameters
-#	Updated Function ShowScriptOptions for the new Cover Page properties and Parameters
-#	Updated Function UpdateDocumentProperties for the new Cover Page properties and Parameters
+
+#Version 1.42 17-Dec-2019
+#	Fix Swedish Table of Contents (Thanks to Johan Kallio)
+#		From 
+#			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+#		To
+#			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
 #	Updated help text
+#
+#Version 1.41 8-Jan-2019
+#	Cleaned up help text
+#	Reorganized parameters
 #
 #Version 1.40 5-Apr-2018
 #	Added -AllDHCPServers (ALL) parameter to process all Authorized DHCP servers that are online
@@ -784,9 +719,90 @@ Param(
 #		Many thanks to my exhaustive tester, David McSpadden, for helping find and fix this logic flaw.
 #	Updated help text
 #
-#Version 1.41 8-Jan-2019
-#	Cleaned up help text
-#	Reorganized parameters
+#Version 1.35 10-Feb-2017
+#	Added four new Cover Page properties
+#		Company Address
+#		Company Email
+#		Company Fax
+#		Company Phone
+#	Added Log switch to create a transcript log
+#	Replaced _SetDocumentProperty function with Jim Moyle's Set-DocumentProperty function
+#	Removed code that made sure all Parameters were set to default values if for some reason they did exist or values were $Null
+#	Updated Function ProcessScriptEnd for the new Cover Page properties and Parameters
+#	Updated Function ShowScriptOptions for the new Cover Page properties and Parameters
+#	Updated Function UpdateDocumentProperties for the new Cover Page properties and Parameters
+#	Updated help text
+#
+#Version 1.34 8-Dec-2017
+#	Updated Function WriteHTMLLine with fixes from the script template
+#
+#Version 1.33 13-Feb-2017
+#	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
+#
+#Version 1.32 7-Nov-2016
+#	Added Chinese language support
+#
+#Version 1.31 24-Oct-2016
+#	Add HTML output
+#	Fix typo on failover status "iitializing" -> "initializing"
+#	Fix numerous issues where I used .day/.hour/.minute instead of .days/.hours/.minutes when formatting times
+#
+#Version 1.30 4-May-2016
+#	Fixed numerous issues discovered with the latest update to PowerShell V5
+#	Color variables needed to be [long] and not [int] except for $wdColorBlack which is 0
+#	Changed from using arrays to populating data in tables to strings
+#	Fixed several incorrect variable names that kept PDFs from saving in Windows 10 and Office 2013
+#	Fixed the rest of the $Var -eq $Null to $Null -eq $Var
+#	Removed blocks of old commented out code
+#	Removed the 10 second pauses waiting for Word to save and close.
+#	Added -Dev parameter to create a text file of script errors
+#	Added -ScriptInfo (SI) parameter to create a text file of script information
+#	Added more script information to the console output when script starts
+#	Cleaned up some issues in the help text
+#	Commented out HTML parameters as HTML output is not ready
+#	Added HTML functions to prep for adding HTML output
+#
+#Version 1.24 8-Feb-2016
+#	Added specifying an optional output folder
+#	Added the option to email the output file
+#	Fixed several spacing and typo errors
+#
+#Version 1.23 1-Feb-2016
+#	Added DNS Dynamic update credentials from protocol properties, advanced tab
+#
+#Version 1.22 25-Nov-2015
+#	Updated help text and ReadMe for RSAT for Windows 10
+#	Updated ReadMe with an example of running the script remotely
+#	Tested script on Windows 10 x64 and Word 2016 x64
+#
+#Version 1.21 5-Oct-2015
+#	Added support for Word 2016
+#
+#Version 1.2
+#	Cleanup some of the console output
+#	Added error checking:
+#	If script is run without -ComputerName, resolve LocalHost to computer and very it is a DHCP server
+#	If script is run with -ComputerName, very it is a DHCP server
+#
+#Version 1.1
+#	Cleanup the script's parameters section
+#	Code cleanup and standardization with the master template script
+#	Requires PowerShell V3 or later
+#	Removed support for Word 2007
+#	Word 2007 references in help text removed
+#	Cover page parameter now states only Word 2010 and 2013 are supported
+#	Most Word 2007 references in script removed:
+#		Function ValidateCoverPage
+#		Function SetupWord
+#		Function SaveandCloseDocumentandShutdownWord
+#	Function CheckWord2007SaveAsPDFInstalled removed
+#	If Word 2007 is detected, an error message is now given and the script is aborted
+#	Fix when -ComputerName was entered as LocalHost, output filename said LocalHost and not actual server name
+#	Cleanup Word table code for the first row and background color
+#	Add Iain Brighton's Word table functions
+#
+#Version 1.01
+#	Added an AddDateTime parameter
 #
 #endregion
 
@@ -2251,7 +2267,8 @@ Function SetWordHashTable
 			'nb-'	{ 'Automatisk tabell 2'; Break }
 			'nl-'	{ 'Automatische inhoudsopgave 2'; Break }
 			'pt-'	{ 'Sumário Automático 2'; Break }
-			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+			# fix in 1.42 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
 			'zh-'	{ '自动目录 2'; Break }
 		}
 	)
@@ -11535,6 +11552,12 @@ Function ProcessScriptEnd
 	$runtime = $Null
 	$Str = $Null
 	$ErrorActionPreference = $SaveEAPreference
+			
+	Write-Host "                                                                                    " -BackgroundColor Black -ForegroundColor White
+	Write-Host "               This FREE script was brought to you by Conversant Group              " -BackgroundColor Black -ForegroundColor White
+	Write-Host "We design, build, and manage infrastructure for a secure, dependable user experience" -BackgroundColor Black -ForegroundColor White
+	Write-Host "                       Visit our website conversantgroup.com                        " -BackgroundColor Black -ForegroundColor White
+	Write-Host "                                                                                    " -BackgroundColor Black -ForegroundColor White
 }
 #endregion
 
