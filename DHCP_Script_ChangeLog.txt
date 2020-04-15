@@ -8,6 +8,26 @@
 #@essentialexch on Twitter
 #https://www.essential.exchange/blog/
 
+#Version 1.43
+#	Add parameter IncludeOptions to add DHCP Options to report.
+#		New Function ProcessDHCPOptions
+#		Update Functions ShowScriptOptions and ProcessScriptEnd 
+#		Update Help Text
+#	Reorder parameters
+#	Update Function SendEmail to handle anonymous unauthenticated email
+#		Update Help Text with examples
+#	Update script to match updates to other documentation scripts
+#		Checking for multiple output formats selected
+#		Change Text output to use [System.Text.StringBuilder]
+#		Function Line
+#		Function SaveandCloseTextDocument
+#		Function WriteWordLine
+#		Function WriteHTMLLine
+#		Function AddHTMLTable
+#		Function FormatHTMLTable
+#		Function FormatHTMLTable
+#		Function CheckHTMLColor
+
 #Version 1.42 17-Dec-2019
 #	Fix Swedish Table of Contents (Thanks to Johan Kallio)
 #		From 
