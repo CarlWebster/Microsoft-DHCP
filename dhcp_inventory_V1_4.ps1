@@ -382,7 +382,7 @@
 	
 	The script will find all Authorized DHCP servers and will process all servers that are 
 	online.
-	Output will contains DHCP Options information.
+	Output will contain DHCP Options information.
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V1_4.ps1 -CompanyName "Carl Webster Consulting" 
 	-CoverPage "Mod" -UserName "Carl Webster" -ComputerName DHCPServer01
@@ -611,7 +611,7 @@
 	NAME: DHCP_Inventory_V1_4.ps1
 	VERSION: 1.43
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: April 15, 2020
+	LASTEDIT: April 16, 2020
 #>
 
 #endregion
@@ -752,7 +752,7 @@ Param(
 
 #Version 1.0 released to the community on May 31, 2014
 
-#Version 1.43
+#Version 1.43 17-Apr-2020
 #	Add parameter IncludeOptions to add DHCP Options to report.
 #		New Function ProcessDHCPOptions
 #		Update Functions ShowScriptOptions and ProcessScriptEnd 
@@ -761,6 +761,7 @@ Param(
 #	In the GetIPv4ScopeData functions, ignore Option ID 81
 #		This Option ID is set when Name Protection is disabled in the DNS
 #		tab in a Scope's Properties. Option ID 81 is not in the Predefined Options.
+#		https://carlwebster.com/the-mysterious-microsoft-dhcp-option-id-81/
 #	Reorder parameters
 #	Update Function SendEmail to handle anonymous unauthenticated email
 #		Update Help Text with examples
@@ -6160,7 +6161,7 @@ Function ProcessIPv4Properties
 			[int]$xRow = 0
 			ForEach($Failover in $Failovers)
 			{
-				Write-Verbose "$(Get-Date):`t`tProcessing failover $($Failover.Name)"
+				Write-Verbose "$(Get-Date): `t`tProcessing failover $($Failover.Name)"
 				$xRow++
 				$Table.Cell($xRow,1).Range.Text = "Relationship name"
 				$Table.Cell($xRow,2).Range.Text = $Failover.Name
@@ -6283,7 +6284,7 @@ Function ProcessIPv4Properties
 		{
 			ForEach($Failover in $Failovers)
 			{
-				Write-Verbose "$(Get-Date):`t`tProcessing failover $($Failover.Name)"
+				Write-Verbose "$(Get-Date): `t`tProcessing failover $($Failover.Name)"
 				Line 2 "Relationship name: " $Failover.Name
 						
 				Line 2 "State of the server`t: " -NoNewLine
@@ -6376,7 +6377,7 @@ Function ProcessIPv4Properties
 		{
 			ForEach($Failover in $Failovers)
 			{
-				Write-Verbose "$(Get-Date):`t`tProcessing failover $($Failover.Name)"
+				Write-Verbose "$(Get-Date): `t`tProcessing failover $($Failover.Name)"
 				$rowdata = @()
 				$columnHeaders = @("Relationship name",($htmlsilver -bor $htmlbold),$Failover.Name,$htmlwhite)
 						
@@ -6923,7 +6924,7 @@ Function GetIPv4ScopeData
 {
 	Param([object]$IPv4Scope, [int]$xStartLevel)
 	
-	Write-Verbose "$(Get-Date):Build array of Allow/Deny filters"
+	Write-Verbose "$(Get-Date): `tBuild array of Allow/Deny filters"
 	$Filters = Get-DHCPServerV4Filter -ComputerName $Script:DHCPServerName -EA 0
 
 	If($MSWord -or $PDF)
@@ -7323,6 +7324,8 @@ Function GetIPv4ScopeData_WordPDF
 				If($ScopeOption.OptionId -eq 51 -or $ScopeOption.OptionId -eq 81)
 				{
 					#ignore these two option IDs
+					https://carlwebster.com/the-mysterious-microsoft-dhcp-option-id-81/
+					https://jimswirelessworld.wordpress.com/2019/01/03/you-should-care-about-dhcp-option-51/
 				}
 				Else
 				{
@@ -8000,6 +8003,8 @@ Function GetIPv4ScopeData_HTML
 			If($ScopeOption.OptionId -eq 51 -or $ScopeOption.OptionId -eq 81)
 			{
 				#ignore these two option IDs
+				https://carlwebster.com/the-mysterious-microsoft-dhcp-option-id-81/
+				https://jimswirelessworld.wordpress.com/2019/01/03/you-should-care-about-dhcp-option-51/
 			}
 			Else
 			{
@@ -8277,7 +8282,7 @@ Function GetIPv4ScopeData_Text
 {
 	Param([int] $xStartLevel, [object]$filters)
 
-	Write-Verbose "$(Get-Date):`tGetting IPv4 scope data for scope $($IPv4Scope.Name)"
+	Write-Verbose "$(Get-Date): `tGetting IPv4 scope data for scope $($IPv4Scope.Name)"
 	Line 0 "Scope [$($IPv4Scope.ScopeId)] $($IPv4Scope.Name)"
 	Line 1 "Address Pool:"
 	Line 2 "Start IP Address`t: " $IPv4Scope.StartRange
@@ -8304,7 +8309,7 @@ Function GetIPv4ScopeData_Text
 
 	If($IncludeLeases)
 	{
-		Write-Verbose "$(Get-Date):`t`tGetting leases"
+		Write-Verbose "$(Get-Date): `t`tGetting leases"
 		
 		Line 1 "Address Leases:"
 		$Leases = Get-DHCPServerV4Lease -ComputerName $Script:DHCPServerName -ScopeId  $IPv4Scope.ScopeId -EA 0 | Sort-Object IPAddress
@@ -8312,7 +8317,7 @@ Function GetIPv4ScopeData_Text
 		{
 			ForEach($Lease in $Leases)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 				If($Null -ne $Lease.LeaseExpiryTime)
 				{
 					$LeaseStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -8417,7 +8422,7 @@ Function GetIPv4ScopeData_Text
 		$Leases = $Null
 	}
 
-	Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+	Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 	Line 1 "Exclusions:"
 	$Exclusions = Get-DHCPServerV4ExclusionRange -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0 | Sort-Object StartRange
 	If($? -and $Null -ne $Exclusions)
@@ -8439,14 +8444,14 @@ Function GetIPv4ScopeData_Text
 	}
 	$Exclusions = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting reservations"
+	Write-Verbose "$(Get-Date): `t`tGetting reservations"
 	Line 1 "Reservations:"
 	$Reservations = Get-DHCPServerV4Reservation -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0 | Sort-Object IPAddress
 	If($? -and $Null -ne $Reservations)
 	{
 		ForEach($Reservation in $Reservations)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing reservation $($Reservation.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing reservation $($Reservation.Name)"
 			Line 2 "Reservation name`t: " $Reservation.Name
 			Line 2 "IP address`t`t: " $Reservation.IPAddress
 			Line 2 "MAC address`t`t: " $Reservation.ClientId
@@ -8456,7 +8461,7 @@ Function GetIPv4ScopeData_Text
 				Line 2 "Description`t`t: " $Reservation.Description
 			}
 
-			Write-Verbose "$(Get-Date):`t`t`t`tGetting DNS settings"
+			Write-Verbose "$(Get-Date): `t`t`t`tGetting DNS settings"
 			$DNSSettings = Get-DHCPServerV4DnsSetting -ComputerName $Script:DHCPServerName -IPAddress $Reservation.IPAddress -EA 0
 			If($? -and $Null -ne $DNSSettings)
 			{
@@ -8480,7 +8485,7 @@ Function GetIPv4ScopeData_Text
 	}
 	$Reservations = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting scope options"
+	Write-Verbose "$(Get-Date): `t`tGetting scope options"
 	Line 1 "Scope Options:"
 	$ScopeOptions = Get-DHCPServerV4OptionValue -All -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0 | Sort-Object OptionId
 
@@ -8508,10 +8513,12 @@ Function GetIPv4ScopeData_Text
 			If($ScopeOption.OptionId -eq 51 -or $ScopeOption.OptionId -eq 81)
 			{
 				#ignore these two option IDs
+				https://carlwebster.com/the-mysterious-microsoft-dhcp-option-id-81/
+				https://jimswirelessworld.wordpress.com/2019/01/03/you-should-care-about-dhcp-option-51/
 			}
 			Else
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ScopeOption.Name)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ScopeOption.Name)"
 				Line 2 "Option Name`t: $($ScopeOption.OptionId.ToString("00000")) $($ScopeOption.Name)" 
 				Line 2 "Vendor`t`t: " -NoNewLine
 				If([string]::IsNullOrEmpty($ScopeOption.VendorClass))
@@ -8549,7 +8556,7 @@ Function GetIPv4ScopeData_Text
 	}
 	$ScopeOptions = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting policies"
+	Write-Verbose "$(Get-Date): `t`tGetting policies"
 	Line 1 "Policies:"
 	$ScopePolicies = Get-DHCPServerV4Policy -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0 | Sort-Object ProcessingOrder
 
@@ -8557,7 +8564,7 @@ Function GetIPv4ScopeData_Text
 	{
 		ForEach($Policy in $ScopePolicies)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing policy name $($Policy.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing policy name $($Policy.Name)"
 			Line 2 "Policy Name`t`t: " $Policy.Name
 			If(![string]::IsNullOrEmpty($Policy.Description))
 			{
@@ -8598,7 +8605,7 @@ Function GetIPv4ScopeData_Text
 	}
 	$ScopePolicies = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting DNS"
+	Write-Verbose "$(Get-Date): `t`tGetting DNS"
 	Line 1 "DNS:"
 	$DNSSettings = Get-DHCPServerV4DnsSetting -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0
 	If($? -and $Null -ne $DNSSettings)
@@ -8614,7 +8621,7 @@ Function GetIPv4ScopeData_Text
 	#next tab is Network Access Protection but I can't find anything that gives me that info
 	
 	#failover
-	Write-Verbose "$(Get-Date):`t`tGetting Failover"
+	Write-Verbose "$(Get-Date): `t`tGetting Failover"
 	Line 1 "Failover:"
 	
 	$Failovers = Get-DHCPServerV4Failover -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0
@@ -8623,7 +8630,7 @@ Function GetIPv4ScopeData_Text
 	{
 		ForEach($Failover in $Failovers)
 		{
-			Write-Verbose "$(Get-Date):`t`tProcessing failover $($Failover.Name)"
+			Write-Verbose "$(Get-Date): `t`tProcessing failover $($Failover.Name)"
 			Line 2 "Relationship name: " $Failover.Name
 			Line 2 "Partner Server`t`t`t: " $Failover.PartnerServer
 			Line 2 "Mode`t`t`t`t: " $Failover.Mode
@@ -8749,7 +8756,7 @@ Function GetIPv4ScopeData_Text
 	}
 	$Failovers = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting Scope statistics"
+	Write-Verbose "$(Get-Date): `t`tGetting Scope statistics"
 	Line 1 "Statistics:"
 
 	$Statistics = Get-DHCPServerV4ScopeStatistics -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0
@@ -8771,7 +8778,7 @@ Function GetIPv4ScopeData_Text
 
 Function GetIPv6ScopeData_WordPDF
 {
-	Write-Verbose "$(Get-Date):`tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
+	Write-Verbose "$(Get-Date): `tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
 	WriteWordLine 3 0 "Scope [$($IPv6Scope.Prefix)] $($IPv6Scope.Name)"
 	WriteWordLine 4 0 "General"
 	$TableRange = $doc.Application.Selection.Range
@@ -8815,7 +8822,7 @@ Function GetIPv6ScopeData_WordPDF
 	$TableRange = $Null
 	$Table = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting scope DNS settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope DNS settings"
 	WriteWordLine 4 0 "DNS"
 	$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
 	If($? -and $Null -ne $DNSSettings)
@@ -8828,7 +8835,7 @@ Function GetIPv6ScopeData_WordPDF
 	}
 	$DNSSettings = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting scope lease settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope lease settings"
 	WriteWordLine 4 0 "Lease"
 	
 	$PrefStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -8865,7 +8872,7 @@ Function GetIPv6ScopeData_WordPDF
 	
 	If($IncludeLeases)
 	{
-		Write-Verbose "$(Get-Date):`t`tGetting leases"
+		Write-Verbose "$(Get-Date): `t`tGetting leases"
 		WriteWordLine 4 0 "Address Leases"
 		$Leases = Get-DHCPServerV6Lease -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 		If($? -and $Null -ne $Leases)
@@ -8888,7 +8895,7 @@ Function GetIPv6ScopeData_WordPDF
 			[int]$xRow = 0
 			ForEach($Lease in $Leases)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 				$xRow++
 				If($Null -ne $Lease.LeaseExpiryTime)
 				{
@@ -8954,7 +8961,7 @@ Function GetIPv6ScopeData_WordPDF
 		$Leases = $Null
 	}
 
-	Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+	Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 	WriteWordLine 4 0 "Exclusions"
 	$Exclusions = Get-DHCPServerV6ExclusionRange -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object StartRange
 	If($? -and $Null -ne $Exclusions)
@@ -9008,14 +9015,14 @@ Function GetIPv6ScopeData_WordPDF
 	}
 	$Exclusions = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting reservations"
+	Write-Verbose "$(Get-Date): `t`tGetting reservations"
 	WriteWordLine 4 0 "Reservations"
 	$Reservations = Get-DHCPServerV6Reservation -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 	If($? -and $Null -ne $Reservations)
 	{
 		ForEach($Reservation in $Reservations)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing reservation $($Reservation.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing reservation $($Reservation.Name)"
 			$TableRange = $doc.Application.Selection.Range
 			[int]$Columns = 2
 			If([string]::IsNullOrEmpty($Reservation.Description))
@@ -9055,7 +9062,7 @@ Function GetIPv6ScopeData_WordPDF
 			$TableRange = $Null
 			$Table = $Null
 
-			Write-Verbose "$(Get-Date):`t`t`t`tGetting DNS settings"
+			Write-Verbose "$(Get-Date): `t`t`t`tGetting DNS settings"
 			$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -IPAddress $Reservation.IPAddress -EA 0
 			If($? -and $Null -ne $DNSSettings)
 			{
@@ -9102,7 +9109,7 @@ Function GetIPv6ScopeData_WordPDF
 		[int]$xRow = 0
 		ForEach($ScopeOption in $ScopeOptions)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ScopeOption.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ScopeOption.Name)"
 			$xRow++
 			$Table.Cell($xRow,1).Range.Text = "Option Name"
 			$Table.Cell($xRow,2).Range.Text = "$($ScopeOption.OptionId.ToString("00000")) $($ScopeOption.Name)" 
@@ -9146,7 +9153,7 @@ Function GetIPv6ScopeData_WordPDF
 	}
 	$ScopeOptions = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting Scope statistics"
+	Write-Verbose "$(Get-Date): `t`tGetting Scope statistics"
 	WriteWordLine 4 0 "Statistics"
 
 	$Statistics = Get-DHCPServerV6ScopeStatistics -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
@@ -9168,7 +9175,7 @@ Function GetIPv6ScopeData_WordPDF
 
 Function GetIPv6ScopeData_HTML
 {
-	Write-Verbose "$(Get-Date):`tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
+	Write-Verbose "$(Get-Date): `tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
 	WriteHTMLLine 3 0 "Scope [$($IPv6Scope.Prefix)] $($IPv6Scope.Name)"
 	WriteHTMLLine 4 0 "General"
 	$rowdata = @()
@@ -9187,7 +9194,7 @@ Function GetIPv6ScopeData_HTML
 	FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "300"
 	InsertBlankLine
 
-	Write-Verbose "$(Get-Date):`t`tGetting scope DNS settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope DNS settings"
 	WriteHTMLLine 4 0 "DNS"
 	$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
 	If($? -and $Null -ne $DNSSettings)
@@ -9200,7 +9207,7 @@ Function GetIPv6ScopeData_HTML
 	}
 	$DNSSettings = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting scope lease settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope lease settings"
 	WriteHTMLLine 4 0 "Lease"
 	
 	$PrefStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -9223,14 +9230,14 @@ Function GetIPv6ScopeData_HTML
 	
 	If($IncludeLeases)
 	{
-		Write-Verbose "$(Get-Date):`t`tGetting leases"
+		Write-Verbose "$(Get-Date): `t`tGetting leases"
 		WriteHTMLLine 4 0 "Address Leases"
 		$Leases = Get-DHCPServerV6Lease -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 		If($? -and $Null -ne $Leases)
 		{
 			ForEach($Lease in $Leases)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 				If($Null -ne $Lease.LeaseExpiryTime)
 				{
 					$LeaseStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -9269,7 +9276,7 @@ Function GetIPv6ScopeData_HTML
 		$Leases = $Null
 	}
 
-	Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+	Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 	WriteHTMLLine 4 0 "Exclusions"
 	$Exclusions = Get-DHCPServerV6ExclusionRange -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object StartRange
 	If($? -and $Null -ne $Exclusions)
@@ -9296,14 +9303,14 @@ Function GetIPv6ScopeData_HTML
 	}
 	$Exclusions = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting reservations"
+	Write-Verbose "$(Get-Date): `t`tGetting reservations"
 	WriteHTMLLine 4 0 "Reservations"
 	$Reservations = Get-DHCPServerV6Reservation -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 	If($? -and $Null -ne $Reservations)
 	{
 		ForEach($Reservation in $Reservations)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing reservation $($Reservation.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing reservation $($Reservation.Name)"
 			$rowdata = @()
 			$columnHeaders = @("Reservation name",($htmlsilver -bor $htmlbold),$Reservation.Name,$htmlwhite)
 			$rowdata += @(,('IPv6 address',($htmlsilver -bor $htmlbold),$Reservation.IPAddress.ToString(),$htmlwhite))
@@ -9318,7 +9325,7 @@ Function GetIPv6ScopeData_HTML
 			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "300"
 			InsertBlankLine
 
-			Write-Verbose "$(Get-Date):`t`t`t`tGetting DNS settings"
+			Write-Verbose "$(Get-Date): `t`t`t`tGetting DNS settings"
 			$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -IPAddress $Reservation.IPAddress -EA 0
 			If($? -and $Null -ne $DNSSettings)
 			{
@@ -9349,7 +9356,7 @@ Function GetIPv6ScopeData_HTML
 	{
 		ForEach($ScopeOption in $ScopeOptions)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ScopeOption.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ScopeOption.Name)"
 			$rowdata = @()
 			$columnHeaders = @("Option Name",($htmlsilver -bor $htmlbold),"$($ScopeOption.OptionId.ToString("00000")) $($ScopeOption.Name)",$htmlwhite)
 			
@@ -9381,7 +9388,7 @@ Function GetIPv6ScopeData_HTML
 	}
 	$ScopeOptions = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting Scope statistics"
+	Write-Verbose "$(Get-Date): `t`tGetting Scope statistics"
 	WriteHTMLLine 4 0 "Statistics"
 
 	$Statistics = Get-DHCPServerV6ScopeStatistics -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
@@ -9403,7 +9410,7 @@ Function GetIPv6ScopeData_HTML
 
 Function GetIPv6ScopeData_Text
 {
-	Write-Verbose "$(Get-Date):`tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
+	Write-Verbose "$(Get-Date): `tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
 	Line 0 "Scope [$($IPv6Scope.Prefix)] $($IPv6Scope.Name)"
 	Line 1 "General"
 	Line 2 "Prefix`t`t: " $IPv6Scope.Prefix
@@ -9416,7 +9423,7 @@ Function GetIPv6ScopeData_Text
 		Line 2 "Description`t: " $IPv6Scope.Description
 	}
 
-	Write-Verbose "$(Get-Date):`t`tGetting scope DNS settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope DNS settings"
 	Line 1 "DNS"
 	$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
 	If($? -and $Null -ne $DNSSettings)
@@ -9429,7 +9436,7 @@ Function GetIPv6ScopeData_Text
 	}
 	$DNSSettings = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting scope lease settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope lease settings"
 	Line 1 "Lease"
 	
 	$PrefStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -9446,14 +9453,14 @@ Function GetIPv6ScopeData_Text
 
 	If($IncludeLeases)
 	{
-		Write-Verbose "$(Get-Date):`t`tGetting leases"
+		Write-Verbose "$(Get-Date): `t`tGetting leases"
 		Line 1 "Address Leases:"
 		$Leases = Get-DHCPServerV6Lease -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 		If($? -and $Null -ne $Leases)
 		{
 			ForEach($Lease in $Leases)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 				If($Null -ne $Lease.LeaseExpiryTime)
 				{
 					$LeaseStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -9492,7 +9499,7 @@ Function GetIPv6ScopeData_Text
 		$Leases = $Null
 	}
 
-	Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+	Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 	Line 1 "Exclusions:"
 	$Exclusions = Get-DHCPServerV6ExclusionRange -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object StartRange
 	If($? -and $Null -ne $Exclusions)
@@ -9514,14 +9521,14 @@ Function GetIPv6ScopeData_Text
 	}
 	$Exclusions = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting reservations"
+	Write-Verbose "$(Get-Date): `t`tGetting reservations"
 	Line 1 "Reservations:"
 	$Reservations = Get-DHCPServerV6Reservation -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 	If($? -and $Null -ne $Reservations)
 	{
 		ForEach($Reservation in $Reservations)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing reservation $($Reservation.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing reservation $($Reservation.Name)"
 			Line 2 "Reservation name: " $Reservation.Name
 			Line 2 "IPv6 address: " $Reservation.IPAddress
 			Line 2 "DUID`t`t: " $Reservation.ClientDuid
@@ -9531,7 +9538,7 @@ Function GetIPv6ScopeData_Text
 				Line 2 "Description`t: " $Reservation.Description
 			}
 
-			Write-Verbose "$(Get-Date):`t`t`t`tGetting DNS settings"
+			Write-Verbose "$(Get-Date): `t`t`t`tGetting DNS settings"
 			$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -IPAddress $Reservation.IPAddress -EA 0
 			If($? -and $Null -ne $DNSSettings)
 			{
@@ -9562,7 +9569,7 @@ Function GetIPv6ScopeData_Text
 	{
 		ForEach($ScopeOption in $ScopeOptions)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ScopeOption.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ScopeOption.Name)"
 			Line 2 "Option Name`t: $($ScopeOption.OptionId.ToString("00000")) $($ScopeOption.Name)" 
 			Line 2 "Vendor`t`t: " -NoNewLine
 			If([string]::IsNullOrEmpty($ScopeOption.VendorClass))
@@ -9589,7 +9596,7 @@ Function GetIPv6ScopeData_Text
 	}
 	$ScopeOptions = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting Scope statistics"
+	Write-Verbose "$(Get-Date): `t`tGetting Scope statistics"
 	Line 1 "Statistics:"
 
 	$Statistics = Get-DHCPServerV6ScopeStatistics -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
@@ -9990,7 +9997,7 @@ Function ProcessIPv4MulticastScopes
 						WriteWordLine 0 0 "Multicast scope expires on $($IPv4MulticastScope.ExpiryTime)"
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+					Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 					WriteWordLine 4 0 "Exclusions"
 					$Exclusions = Get-DHCPServerV4MulticastExclusionRange -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
 					If($? -and $Null -ne $Exclusions)
@@ -10046,7 +10053,7 @@ Function ProcessIPv4MulticastScopes
 					#leases
 					If($IncludeLeases)
 					{
-						Write-Verbose "$(Get-Date):`t`tGetting leases"
+						Write-Verbose "$(Get-Date): `t`tGetting leases"
 						
 						WriteWordLine 4 0 "Address Leases"
 						$Leases = Get-DHCPServerV4MulticastLease -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0 | Sort-Object IPAddress
@@ -10071,7 +10078,7 @@ Function ProcessIPv4MulticastScopes
 							[int]$xRow = 0
 							ForEach($Lease in $Leases)
 							{
-								Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+								Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 								If($Null -ne $Lease.LeaseExpiryTime)
 								{
 									$LeaseEndStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -10159,7 +10166,7 @@ Function ProcessIPv4MulticastScopes
 						$Leases = $Null
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting Multicast Scope statistics"
+					Write-Verbose "$(Get-Date): `t`tGetting Multicast Scope statistics"
 					WriteWordLine 4 0 "Statistics"
 
 					$Statistics = Get-DHCPServerV4MulticastScopeStatistics -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
@@ -10204,7 +10211,7 @@ Function ProcessIPv4MulticastScopes
 						Line 0 "Multicast scope expires on $($IPv4MulticastScope.ExpiryTime)"
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+					Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 					Line 1 "Exclusions:"
 					$Exclusions = Get-DHCPServerV4MulticastExclusionRange -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
 					If($? -and $Null -ne $Exclusions)
@@ -10228,7 +10235,7 @@ Function ProcessIPv4MulticastScopes
 					#leases
 					If($IncludeLeases)
 					{
-						Write-Verbose "$(Get-Date):`t`tGetting leases"
+						Write-Verbose "$(Get-Date): `t`tGetting leases"
 						
 						Line 1 "Address Leases:"
 						$Leases = Get-DHCPServerV4MulticastLease -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0 | Sort-Object IPAddress
@@ -10236,7 +10243,7 @@ Function ProcessIPv4MulticastScopes
 						{
 							ForEach($Lease in $Leases)
 							{
-								Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+								Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 								If($Null -ne $Lease.LeaseExpiryTime)
 								{
 									$LeaseEndStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -10301,7 +10308,7 @@ Function ProcessIPv4MulticastScopes
 						$Leases = $Null
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting Multicast Scope statistics"
+					Write-Verbose "$(Get-Date): `t`tGetting Multicast Scope statistics"
 					Line 1 "Statistics:"
 
 					$Statistics = Get-DHCPServerV4MulticastScopeStatistics -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
@@ -10349,7 +10356,7 @@ Function ProcessIPv4MulticastScopes
 						WriteHTMLLine 0 1 "Multicast scope lifetime: Multicast scope expires on $($IPv4MulticastScope.ExpiryTime)"
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+					Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 					WriteHTMLLine 4 0 "Exclusions"
 					$Exclusions = Get-DHCPServerV4MulticastExclusionRange -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
 					If($? -and $Null -ne $Exclusions)
@@ -10378,7 +10385,7 @@ Function ProcessIPv4MulticastScopes
 					#leases
 					If($IncludeLeases)
 					{
-						Write-Verbose "$(Get-Date):`t`tGetting leases"
+						Write-Verbose "$(Get-Date): `t`tGetting leases"
 						
 						WriteHTMLLine 4 0 "Address Leases"
 						$Leases = Get-DHCPServerV4MulticastLease -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0 | Sort-Object IPAddress
@@ -10386,7 +10393,7 @@ Function ProcessIPv4MulticastScopes
 						{
 							ForEach($Lease in $Leases)
 							{
-								Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+								Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 								If($Null -ne $Lease.LeaseExpiryTime)
 								{
 									$LeaseEndStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -10457,7 +10464,7 @@ Function ProcessIPv4MulticastScopes
 						$Leases = $Null
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting Multicast Scope statistics"
+					Write-Verbose "$(Get-Date): `t`tGetting Multicast Scope statistics"
 					WriteHTMLLine 4 0 "Statistics"
 
 					$Statistics = Get-DHCPServerV4MulticastScopeStatistics -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
@@ -10645,7 +10652,7 @@ Function ProcessServerOptions
 			[int]$xRow = 0
 			ForEach($ServerOption in $ServerOptions)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ServerOption.Name)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ServerOption.Name)"
 				$xRow++
 				$Table.Cell($xRow,1).Range.Text = "Option Name"
 				$Table.Cell($xRow,2).Range.Text = "$($ServerOption.OptionId.ToString("000")) $($ServerOption.Name)"
@@ -10693,7 +10700,7 @@ Function ProcessServerOptions
 		{
 			ForEach($ServerOption in $ServerOptions)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ServerOption.Name)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ServerOption.Name)"
 				Line 2 "Option Name`t: $($ServerOption.OptionId.ToString("000")) $($ServerOption.Name)"
 				Line 2 "Vendor`t`t: " -NoNewLine
 				If([string]::IsNullOrEmpty($ServerOption.VendorClass))
@@ -10723,7 +10730,7 @@ Function ProcessServerOptions
 		{
 			ForEach($ServerOption in $ServerOptions)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ServerOption.Name)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ServerOption.Name)"
 				$rowdata = @()
 				$columnHeaders = @("Option Name",($htmlsilver -bor $htmlbold),"$($ServerOption.OptionId.ToString("000")) $($ServerOption.Name)",$htmlwhite)
 				
@@ -10975,7 +10982,7 @@ Function ProcessIPv4Filters
 		WriteHTMLLine 3 0 "Filters"
 	}
 
-	Write-Verbose "$(Get-Date):`tAllow filters"
+	Write-Verbose "$(Get-Date): `tAllow filters"
 	$AllowFilters = Get-DHCPServerV4Filter -List Allow -ComputerName $Script:DHCPServerName -EA 0 | Sort-Object MacAddress
 
 	If($? -and $Null -ne $AllowFilters)
@@ -11080,7 +11087,7 @@ Function ProcessIPv4Filters
 	$AllowFilters = $Null
 	[gc]::collect() 
 
-	Write-Verbose "$(Get-Date):`tDeny filters"
+	Write-Verbose "$(Get-Date): `tDeny filters"
 	$DenyFilters = Get-DHCPServerV4Filter -List Deny -ComputerName $Script:DHCPServerName -EA 0 | Sort-Object MacAddress
 	If($? -and $Null -ne $DenyFilters)
 	{
@@ -11863,20 +11870,20 @@ Function ProcessDHCPOptions
 					$Item.Description, 
 					$Item.Type, 
 					$Item.VendorClass, 
-					$( If( $null –ne $Item.DefaultValue ) { $Item.DefaultValue –join ';' } Else { ' ' } ), 
+					$( If( $null -ne $Item.DefaultValue ) { $Item.DefaultValue -join ';' } Else { ' ' } ), 
 					$Item.MultiValued.ToString() 
 				)
 			}
 			ElseIf($HTML)
 			{
-				$tmpDV = $Item.DefaultValue.SyncRoot
+				#$tmpDV = $Item.DefaultValue.SyncRoot
 				$rowdata += @(,(
 					$Item.OptionId,$htmlwhite,
 					$Item.Name,$htmlwhite,
 					$Item.Description,$htmlwhite,
 					$Item.Type,$htmlwhite,
 					$Item.VendorClass,$htmlwhite,
-					$tmpDV,$htmlwhite,
+					$Item.DefaultValue.SyncRoot,$htmlwhite,
 					$Item.MultiValued.ToString(),$htmlwhite
 				))
 			}
