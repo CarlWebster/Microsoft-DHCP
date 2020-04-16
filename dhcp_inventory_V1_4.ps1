@@ -380,7 +380,8 @@
 	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -AllDHCPServer -HTML -IncludeOptions
 	
 	
-	The script will find all Authorized DHCP servers and will process all servers that are online.
+	The script will find all Authorized DHCP servers and will process all servers that are 
+	online.
 	Output will contains DHCP Options information.
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V1_4.ps1 -CompanyName "Carl Webster Consulting" 
@@ -421,7 +422,8 @@
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V1_4.ps1 -CompanyName "Sherlock Holmes 
 	Consulting"
-	-CoverPage Facet -UserName "Dr. Watson"
+	-CoverPage Facet 
+	-UserName "Dr. Watson"
 	-CompanyEmail SuperSleuth@SherlockHolmes.com
 
 	Will use:
@@ -755,6 +757,10 @@ Param(
 #		New Function ProcessDHCPOptions
 #		Update Functions ShowScriptOptions and ProcessScriptEnd 
 #		Update Help Text
+#	Cleanup spacing in some of the Write-Verbose statements
+#	In the GetIPv4ScopeData functions, ignore Option ID 81
+#		This Option ID is set when Name Protection is disabled in the DNS
+#		tab in a Scope's Properties. Option ID 81 is not in the Predefined Options.
 #	Reorder parameters
 #	Update Function SendEmail to handle anonymous unauthenticated email
 #		Update Help Text with examples
@@ -7314,7 +7320,11 @@ Function GetIPv4ScopeData_WordPDF
 			[int]$xRow = 0
 			ForEach($ScopeOption in $ScopeOptions)
 			{
-				If($ScopeOption.OptionId -ne 51)
+				If($ScopeOption.OptionId -eq 51 -or $ScopeOption.OptionId -eq 81)
+				{
+					#ignore these two option IDs
+				}
+				Else
 				{
 					Write-Verbose "$(Get-Date):	`t`t`tProcessing option name $($ScopeOption.Name)"
 					$xRow++
@@ -7987,7 +7997,11 @@ Function GetIPv4ScopeData_HTML
 		
 		ForEach($ScopeOption in $ScopeOptions)
 		{
-			If($ScopeOption.OptionId -ne 51)
+			If($ScopeOption.OptionId -eq 51 -or $ScopeOption.OptionId -eq 81)
+			{
+				#ignore these two option IDs
+			}
+			Else
 			{
 				Write-Verbose "$(Get-Date):	`t`t`tProcessing option name $($ScopeOption.Name)"
 				$rowdata = @()
@@ -8491,7 +8505,11 @@ Function GetIPv4ScopeData_Text
 
 		ForEach($ScopeOption in $ScopeOptions)
 		{
-			If($ScopeOption.OptionId -ne 51)
+			If($ScopeOption.OptionId -eq 51 -or $ScopeOption.OptionId -eq 81)
+			{
+				#ignore these two option IDs
+			}
+			Else
 			{
 				Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ScopeOption.Name)"
 				Line 2 "Option Name`t: $($ScopeOption.OptionId.ToString("00000")) $($ScopeOption.Name)" 
@@ -9060,7 +9078,7 @@ Function GetIPv6ScopeData_WordPDF
 	}
 	$Reservations = $Null
 
-	Write-Verbose "$(Get-Date):Getting IPv6 scope options"
+	Write-Verbose "$(Get-Date): Getting IPv6 scope options"
 	WriteWordLine 4 0 "Scope Options"
 	$ScopeOptions = Get-DHCPServerV6OptionValue -All -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object OptionId
 
@@ -9323,7 +9341,7 @@ Function GetIPv6ScopeData_HTML
 	}
 	$Reservations = $Null
 
-	Write-Verbose "$(Get-Date):Getting IPv6 scope options"
+	Write-Verbose "$(Get-Date): Getting IPv6 scope options"
 	WriteHTMLLine 4 0 "Scope Options"
 	$ScopeOptions = Get-DHCPServerV6OptionValue -All -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object OptionId
 
@@ -9536,7 +9554,7 @@ Function GetIPv6ScopeData_Text
 	}
 	$Reservations = $Null
 
-	Write-Verbose "$(Get-Date):Getting IPv6 scope options"
+	Write-Verbose "$(Get-Date): Getting IPv6 scope options"
 	Line 1 "Scope Options:"
 	$ScopeOptions = Get-DHCPServerV6OptionValue -All -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object OptionId
 
@@ -10587,7 +10605,7 @@ Function ProcessIPv4BOOTPTable
 Function ProcessServerOptions
 {
 	#Server Options
-	Write-Verbose "$(Get-Date):Getting IPv4 server options"
+	Write-Verbose "$(Get-Date): Getting IPv4 server options"
 
 	If($MSWord -or $PDF)
 	{
@@ -10776,7 +10794,7 @@ Function ProcessServerOptions
 Function ProcessPolicies
 {
 	#Policies
-	Write-Verbose "$(Get-Date):Getting IPv4 policies"
+	Write-Verbose "$(Get-Date): Getting IPv4 policies"
 	If($MSWord -or $PDF)
 	{
 		WriteWordLine 3 0 "Policies"
@@ -10943,7 +10961,7 @@ Function ProcessPolicies
 Function ProcessIPv4Filters
 {
 	#Filters
-	Write-Verbose "$(Get-Date):Getting IPv4 filters"
+	Write-Verbose "$(Get-Date): Getting IPv4 filters"
 	If($MSWord -or $PDF)
 	{
 		WriteWordLine 3 0 "Filters"
@@ -11329,7 +11347,7 @@ Function ProcessIPv6Properties
 		}
 		$Statistics = $Null
 
-		Write-Verbose "$(Get-Date):Getting IPv6 scopes"
+		Write-Verbose "$(Get-Date): Getting IPv6 scopes"
 		$IPv6Scopes = Get-DHCPServerV6Scope -ComputerName $Script:DHCPServerName -EA 0
 
 		If($? -and $Null -ne $IPv6Scopes)
@@ -11350,7 +11368,7 @@ Function ProcessIPv6Properties
 		}
 		$IPv6Scopes = $Null
 
-		Write-Verbose "$(Get-Date):Getting IPv6 server options"
+		Write-Verbose "$(Get-Date): Getting IPv6 server options"
 		$selection.InsertNewPage()
 		WriteWordLine 3 0 "Server Options"
 
@@ -11553,7 +11571,7 @@ Function ProcessIPv6Properties
 		
 		$Statistics = $Null
 
-		Write-Verbose "$(Get-Date):Getting IPv6 scopes"
+		Write-Verbose "$(Get-Date): Getting IPv6 scopes"
 		$IPv6Scopes = Get-DHCPServerV6Scope -ComputerName $Script:DHCPServerName -EA 0
 
 		If($? -and $Null -ne $IPv6Scopes)
@@ -11729,7 +11747,7 @@ Function ProcessIPv6Properties
 		}
 		$Statistics = $Null
 
-		Write-Verbose "$(Get-Date):Getting IPv6 scopes"
+		Write-Verbose "$(Get-Date): Getting IPv6 scopes"
 		$IPv6Scopes = Get-DHCPServerV6Scope -ComputerName $Script:DHCPServerName -EA 0
 
 		If($? -and $Null -ne $IPv6Scopes)
@@ -11750,7 +11768,7 @@ Function ProcessIPv6Properties
 		}
 		$IPv6Scopes = $Null
 
-		Write-Verbose "$(Get-Date):Getting IPv6 server options"
+		Write-Verbose "$(Get-Date): Getting IPv6 server options"
 		WriteHTMLLine 3 0 "Server Options"
 
 		$ServerOptions = Get-DHCPServerV6OptionValue -All -ComputerName $Script:DHCPServerName -EA 0 | Sort-Object OptionId
@@ -11794,7 +11812,7 @@ Function ProcessIPv6Properties
 
 Function ProcessDHCPOptions
 {
-	Write-Verbose "$(Get-Date):Getting DHCP Options"
+	Write-Verbose "$(Get-Date): Getting DHCP Options"
 	
 	$DHCPOptions = Get-DhcpServerV4OptionDefinition -ComputerName $Script:DHCPServerName -EA 0
 	

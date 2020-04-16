@@ -13,6 +13,10 @@
 #		New Function ProcessDHCPOptions
 #		Update Functions ShowScriptOptions and ProcessScriptEnd 
 #		Update Help Text
+#	Cleanup spacing in some of the Write-Verbose statements
+#	In the GetIPv4ScopeData functions, ignore Option ID 81
+#		This Option ID is set when Name Protection is disabled in the DNS
+#		tab in a Scope's Properties. Option ID 81 is not in the Predefined Options.
 #	Reorder parameters
 #	Update Function SendEmail to handle anonymous unauthenticated email
 #		Update Help Text with examples
