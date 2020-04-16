@@ -8,6 +8,31 @@
 #@essentialexch on Twitter
 #https://www.essential.exchange/blog/
 
+#Version 1.43 17-Apr-2020
+#	Add parameter IncludeOptions to add DHCP Options to report.
+#		New Function ProcessDHCPOptions
+#		Update Functions ShowScriptOptions and ProcessScriptEnd 
+#		Update Help Text
+#	Cleanup spacing in some of the Write-Verbose statements
+#	In the GetIPv4ScopeData functions, ignore Option ID 81
+#		This Option ID is set when Name Protection is disabled in the DNS
+#		tab in a Scope's Properties. Option ID 81 is not in the Predefined Options.
+#		https://carlwebster.com/the-mysterious-microsoft-dhcp-option-id-81/
+#	Reorder parameters
+#	Update Function SendEmail to handle anonymous unauthenticated email
+#		Update Help Text with examples
+#	Update script to match updates to other documentation scripts
+#		Checking for multiple output formats selected
+#		Change Text output to use [System.Text.StringBuilder]
+#		Function Line
+#		Function SaveandCloseTextDocument
+#		Function WriteWordLine
+#		Function WriteHTMLLine
+#		Function AddHTMLTable
+#		Function FormatHTMLTable
+#		Function FormatHTMLTable
+#		Function CheckHTMLColor
+
 #Version 1.42 17-Dec-2019
 #	Fix Swedish Table of Contents (Thanks to Johan Kallio)
 #		From 

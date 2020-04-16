@@ -72,12 +72,6 @@
 		Spanish
 		Swedish
 		
-.PARAMETER AddDateTime
-	Adds a date time stamp to the end of the file name.
-	Time stamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be ReportName_2020-06-01_1800.docx (or .pdf or .txt).
-	This parameter is disabled by default.
 .PARAMETER HTML
 	Creates an HTML file with an .html extension.
 	This parameter is disabled by default.
@@ -92,6 +86,12 @@
 	This parameter uses the Word SaveAs PDF capability.
 .PARAMETER Text
 	Creates a formatted text file with a .txt extension.
+	This parameter is disabled by default.
+.PARAMETER AddDateTime
+	Adds a date time stamp to the end of the file name.
+	Time stamp is in the format of yyyy-MM-dd_HHmm.
+	June 1, 2020 at 6PM is 2020-06-01_1800.
+	Output filename will be ReportName_2020-06-01_1800.docx (or .pdf or .txt).
 	This parameter is disabled by default.
 .PARAMETER AllDHCPServers
 	The script will process all Authorized DHCP servers that are online.
@@ -197,11 +197,6 @@
 	The default value is Sideline.
 	This parameter has an alias of CP.
 	This parameter is only valid with the MSWORD and PDF output parameters.
-.PARAMETER UserName
-	Username to use for the Cover Page and Footer.
-	The default value is contained in $env:username
-	This parameter has an alias of UN.
-	This parameter is only valid with the MSWORD and PDF output parameters.
 .PARAMETER ComputerName
 	DHCP server to run the script against.
 	The computername is used for the report title.
@@ -211,6 +206,14 @@
 	computer name.
 	
 	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
+.PARAMETER Dev
+	Clears errors at the beginning of the script.
+	Outputs all errors to a text file at the end of the script.
+	
+	This is used when the script developer requests more troubleshooting data.
+	Text file is placed in the same folder from where the script is run.
+	
+	This parameter is disabled by default.
 .PARAMETER Folder
 	Specifies the optional output folder to save the output report. 
 .PARAMETER Hardware
@@ -229,6 +232,17 @@
 .PARAMETER IncludeLeases
 	Include DHCP lease information.
 	Default is to not included lease information.
+.PARAMETER IncludeOptions
+	Include DHCP Options information.
+	Default is to not included Options information.
+.PARAMETER Log
+	Generates a log file for troubleshooting.
+.PARAMETER ScriptInfo
+	Outputs information about the script to a text file.
+	Text file is placed in the same folder from where the script is run.
+	
+	This parameter is disabled by default.
+	This parameter has an alias of SI.
 .PARAMETER SmtpServer
 	Specifies the optional email server to send the output report. 
 .PARAMETER SmtpPort
@@ -243,22 +257,11 @@
 .PARAMETER To
 	Specifies the username for the To email address.
 	If SmtpServer is used, this is a required parameter.
-.PARAMETER Dev
-	Clears errors at the beginning of the script.
-	Outputs all errors to a text file at the end of the script.
-	
-	This is used when the script developer requests more troubleshooting data.
-	Text file is placed in the same folder from where the script is run.
-	
-	This parameter is disabled by default.
-.PARAMETER ScriptInfo
-	Outputs information about the script to a text file.
-	Text file is placed in the same folder from where the script is run.
-	
-	This parameter is disabled by default.
-	This parameter has an alias of SI.
-.PARAMETER Log
-	Generates a log file for troubleshooting.
+.PARAMETER UserName
+	Username to use for the Cover Page and Footer.
+	The default value is contained in $env:username
+	This parameter has an alias of UN.
+	This parameter is only valid with the MSWORD and PDF output parameters.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -ComputerName DHCPServer01
 	
@@ -374,6 +377,13 @@
 	Script will be run remotely against DHCP server DHCPServer03.
 	Output will contain DHCP lease information.
 .EXAMPLE
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -AllDHCPServer -HTML -IncludeOptions
+	
+	
+	The script will find all Authorized DHCP servers and will process all servers that are 
+	online.
+	Output will contain DHCP Options information.
+.EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V1_4.ps1 -CompanyName "Carl Webster Consulting" 
 	-CoverPage "Mod" -UserName "Carl Webster" -ComputerName DHCPServer01
 
@@ -412,14 +422,16 @@
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V1_4.ps1 -CompanyName "Sherlock Holmes 
 	Consulting"
-	-CoverPage Facet -UserName "Dr. Watson"
+	-CoverPage Facet 
+	-UserName "Dr. Watson"
 	-CompanyEmail SuperSleuth@SherlockHolmes.com
 
 	Will use:
 		Sherlock Holmes Consulting for the Company Name.
 		Facet for the Cover Page format.
 		Dr. Watson for the User Name.
-		SuperSleuth@SherlockHolmes.com for the Company Email..EXAMPLE
+		SuperSleuth@SherlockHolmes.com for the Company Email.
+.EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -Folder \\FileServer\ShareName
 	
 	Will use all default values.
@@ -434,9 +446,48 @@
 	
 	Output file will be saved in the path \\FileServer\ShareName
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -ComputerName DHCPServer01 -SmtpServer 
-	mail.domain.tld -From XDAdmin@domain.tld -To ITGroup@domain.tld -ComputerName 
-	DHCPServer01
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
+	-SmtpServer mailrelay.domain.tld
+	-From Anonymous@domain.tld 
+	-To ITGroup@domain.tld	
+
+	***SENDING UNAUTHENTICATED EMAIL***
+
+	The script will use the email server mailrelay.domain.tld, sending from 
+	anonymous@domain.tld, sending to ITGroup@domain.tld.
+
+	To send unauthenticated email using an email relay server requires the From email account 
+	to use the name Anonymous.
+
+	The script will use the default SMTP port 25 and will not use SSL.
+	
+	***GMAIL/G SUITE SMTP RELAY***
+	https://support.google.com/a/answer/2956491?hl=en
+	https://support.google.com/a/answer/176600?hl=en
+
+	To send email using a Gmail or g-suite account, you may have to turn ON
+	the "Less secure app access" option on your account.
+	***GMAIL/G SUITE SMTP RELAY***
+
+	The script will generate an anonymous secure password for the anonymous@domain.tld 
+	account.
+
+	Will use all Default values.
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
+	$env:username = Administrator
+
+	Carl Webster for the Company Name.
+	Sideline for the Cover Page format.
+	Administrator for the User Name.
+.EXAMPLE
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
+	-ComputerName DHCPServer01 
+	-SmtpServer mail.domain.tld 
+	-From XDAdmin@domain.tld 
+	-To ITGroup@domain.tld 
+	-ComputerName DHCPServer01
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -455,9 +506,13 @@
 	If the current user's credentials are not valid to send email, the user will be prompted 
 	to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -ComputerName DHCPServer01 -SmtpServer 
-	smtp.office365.com -SmtpPort 587 -UseSSL -From Webster@CarlWebster.com -To 
-	ITGroup@CarlWebster.com
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
+	-ComputerName DHCPServer01 
+	-SmtpServer smtp.office365.com 
+	-SmtpPort 587 
+	-UseSSL 
+	-From Webster@CarlWebster.com 
+	-To ITGroup@CarlWebster.com
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -471,8 +526,14 @@
 	
 	Script will be run remotely against DHCP server DHCPServer01.
 	
+	*** NOTE ***
+	To send email using a Gmail or g-suite account, you may have to turn ON
+	the "Less secure app access" option on your account.
+	*** NOTE ***
+	
 	Script will use the email server smtp.office365.com on port 587 using SSL, sending from 
 	webster@carlwebster.com, sending to ITGroup@carlwebster.com.
+
 	If the current user's credentials are not valid to send email, the user will be prompted 
 	to enter valid credentials.
 .EXAMPLE
@@ -548,9 +609,9 @@
 	formatted text document.
 .NOTES
 	NAME: DHCP_Inventory_V1_4.ps1
-	VERSION: 1.42
+	VERSION: 1.43
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: December 17, 2019
+	LASTEDIT: April 16, 2020
 #>
 
 #endregion
@@ -561,9 +622,6 @@
 [CmdletBinding(SupportsShouldProcess = $False, ConfirmImpact = "None", DefaultParameterSetName = "Word") ]
 
 Param(
-	[parameter(Mandatory=$False)] 
-	[Switch]$AddDateTime=$False,
-	
 	[parameter(ParameterSetName="HTML",Mandatory=$False)] 
 	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Switch]$HTML=$False,
@@ -580,6 +638,9 @@ Param(
 	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Switch]$Text=$False,
 
+	[parameter(Mandatory=$False)] 
+	[Switch]$AddDateTime=$False,
+	
 	[parameter(Mandatory=$False)] 
 	[Alias("ALL")]
 	[Switch]$AllDHCPServers=$False,
@@ -626,15 +687,11 @@ Param(
 	[ValidateNotNullOrEmpty()]
 	[string]$CoverPage="Sideline", 
 
-	[parameter(ParameterSetName="Word",Mandatory=$False)] 
-	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
-	[Alias("UN")]
-	[ValidateNotNullOrEmpty()]
-	[string]$UserName=$env:username,
-
 	[parameter(Mandatory=$False)] 
 	[string]$ComputerName="LocalHost",
+	
+	[parameter(Mandatory=$False)] 
+	[Switch]$Dev=$False,
 	
 	[parameter(Mandatory=$False)] 
 	[string]$Folder="",
@@ -645,6 +702,23 @@ Param(
 
 	[parameter(Mandatory=$False)] 
 	[Switch]$IncludeLeases=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$IncludeOptions=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$Log=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[Alias("SI")]
+	[Switch]$ScriptInfo=$False,
+	
+	[parameter(ParameterSetName="Word",Mandatory=$False)] 
+	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
+	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[Alias("UN")]
+	[ValidateNotNullOrEmpty()]
+	[string]$UserName=$env:username,
 
 	[parameter(ParameterSetName="SMTP",Mandatory=$True)] 
 	[string]$SmtpServer="",
@@ -659,18 +733,8 @@ Param(
 	[string]$From="",
 
 	[parameter(ParameterSetName="SMTP",Mandatory=$True)] 
-	[string]$To="",
+	[string]$To=""
 
-	[parameter(Mandatory=$False)] 
-	[Switch]$Dev=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[Alias("SI")]
-	[Switch]$ScriptInfo=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[Switch]$Log=$False
-	
 	)
 #endregion
 
@@ -688,6 +752,31 @@ Param(
 
 #Version 1.0 released to the community on May 31, 2014
 
+#Version 1.43 17-Apr-2020
+#	Add parameter IncludeOptions to add DHCP Options to report.
+#		New Function ProcessDHCPOptions
+#		Update Functions ShowScriptOptions and ProcessScriptEnd 
+#		Update Help Text
+#	Cleanup spacing in some of the Write-Verbose statements
+#	In the GetIPv4ScopeData functions, ignore Option ID 81
+#		This Option ID is set when Name Protection is disabled in the DNS
+#		tab in a Scope's Properties. Option ID 81 is not in the Predefined Options.
+#		https://carlwebster.com/the-mysterious-microsoft-dhcp-option-id-81/
+#	Reorder parameters
+#	Update Function SendEmail to handle anonymous unauthenticated email
+#		Update Help Text with examples
+#	Update script to match updates to other documentation scripts
+#		Checking for multiple output formats selected
+#		Change Text output to use [System.Text.StringBuilder]
+#		Function Line
+#		Function SaveandCloseTextDocument
+#		Function WriteWordLine
+#		Function WriteHTMLLine
+#		Function AddHTMLTable
+#		Function FormatHTMLTable
+#		Function FormatHTMLTable
+#		Function CheckHTMLColor
+#
 #Version 1.42 17-Dec-2019
 #	Fix Swedish Table of Contents (Thanks to Johan Kallio)
 #		From 
@@ -808,7 +897,7 @@ Param(
 
 
 #region initial variable testing and setup
-Set-StrictMode -Version 2
+Set-StrictMode -Version Latest
 
 #force  on
 $PSDefaultParameterValues = @{"*:Verbose"=$True}
@@ -859,6 +948,37 @@ If($MSWord -eq $False -and $PDF -eq $False -and $Text -eq $False -and $HTML -eq 
 }
 
 Write-Verbose "$(Get-Date): Testing output parameters"
+
+#added in V2.21
+$OutputCnt = 0
+
+If($MSWord)
+{
+	$OutputCnt++
+}
+If($PDF)
+{
+	$OutputCnt++
+}
+If($Text)
+{
+	$OutputCnt++
+}
+If($HTML)
+{
+	$OutputCnt++
+}
+
+If($OutputCnt -eq 0)
+{
+	Write-Error "No output parameter detected.  Script cannot continue"
+	Exit
+}
+ElseIf($OutputCnt -gt 1)
+{
+	Write-Error "Multiple output parameters detected.  Script cannot continue"
+	Exit
+}
 
 If($MSWord)
 {
@@ -954,7 +1074,7 @@ If($MSWord -or $PDF)
 	[int]$wdSeekMainDocument = 0
 	[int]$wdSeekPrimaryFooter = 4
 	[int]$wdStory = 6
-	[long]$wdColorRed = 255
+	[int]$wdColorRed = 255
 	[int]$wdColorBlack = 0
 	[int]$wdWord2007 = 12
 	[int]$wdWord2010 = 14
@@ -995,6 +1115,7 @@ If($MSWord -or $PDF)
 	[int]$wdStyleHeading4 = -5
 	[int]$wdStyleNoSpacing = -158
 	[int]$wdTableGrid = -155
+	[int]$wdTableLightListAccent3 = -206
 
 	#http://groovy.codehaus.org/modules/scriptom/1.6.0/scriptom-office-2K3-tlb/apidocs/org/codehaus/groovy/scriptom/tlb/office/word/WdLineStyle.html
 	[int]$wdLineStyleNone = 0
@@ -1002,52 +1123,84 @@ If($MSWord -or $PDF)
 
 	[int]$wdHeadingFormatTrue = -1
 	[int]$wdHeadingFormatFalse = 0 
+	
+	[string]$Script:RunningOS = (Get-WmiObject -class Win32_OperatingSystem -EA 0).Caption
+}
+Else
+{
+	$Script:CoName = ""
 }
 
 If($HTML)
 {
-    Set-Variable htmlredmask         -Option AllScope -Value "#FF0000" 4>$Null
-    Set-Variable htmlcyanmask        -Option AllScope -Value "#00FFFF" 4>$Null
-    Set-Variable htmlbluemask        -Option AllScope -Value "#0000FF" 4>$Null
-    Set-Variable htmldarkbluemask    -Option AllScope -Value "#0000A0" 4>$Null
-    Set-Variable htmllightbluemask   -Option AllScope -Value "#ADD8E6" 4>$Null
-    Set-Variable htmlpurplemask      -Option AllScope -Value "#800080" 4>$Null
-    Set-Variable htmlyellowmask      -Option AllScope -Value "#FFFF00" 4>$Null
-    Set-Variable htmllimemask        -Option AllScope -Value "#00FF00" 4>$Null
-    Set-Variable htmlmagentamask     -Option AllScope -Value "#FF00FF" 4>$Null
-    Set-Variable htmlwhitemask       -Option AllScope -Value "#FFFFFF" 4>$Null
-    Set-Variable htmlsilvermask      -Option AllScope -Value "#C0C0C0" 4>$Null
-    Set-Variable htmlgraymask        -Option AllScope -Value "#808080" 4>$Null
-    Set-Variable htmlblackmask       -Option AllScope -Value "#000000" 4>$Null
-    Set-Variable htmlorangemask      -Option AllScope -Value "#FFA500" 4>$Null
-    Set-Variable htmlmaroonmask      -Option AllScope -Value "#800000" 4>$Null
-    Set-Variable htmlgreenmask       -Option AllScope -Value "#008000" 4>$Null
-    Set-Variable htmlolivemask       -Option AllScope -Value "#808000" 4>$Null
+	#V2.23 Prior versions used Set-Variable. That hid the variables
+	#from @code. So MBS switched to using $global:
 
-    Set-Variable htmlbold        -Option AllScope -Value 1 4>$Null
-    Set-Variable htmlitalics     -Option AllScope -Value 2 4>$Null
-    Set-Variable htmlred         -Option AllScope -Value 4 4>$Null
-    Set-Variable htmlcyan        -Option AllScope -Value 8 4>$Null
-    Set-Variable htmlblue        -Option AllScope -Value 16 4>$Null
-    Set-Variable htmldarkblue    -Option AllScope -Value 32 4>$Null
-    Set-Variable htmllightblue   -Option AllScope -Value 64 4>$Null
-    Set-Variable htmlpurple      -Option AllScope -Value 128 4>$Null
-    Set-Variable htmlyellow      -Option AllScope -Value 256 4>$Null
-    Set-Variable htmllime        -Option AllScope -Value 512 4>$Null
-    Set-Variable htmlmagenta     -Option AllScope -Value 1024 4>$Null
-    Set-Variable htmlwhite       -Option AllScope -Value 2048 4>$Null
-    Set-Variable htmlsilver      -Option AllScope -Value 4096 4>$Null
-    Set-Variable htmlgray        -Option AllScope -Value 8192 4>$Null
-    Set-Variable htmlolive       -Option AllScope -Value 16384 4>$Null
-    Set-Variable htmlorange      -Option AllScope -Value 32768 4>$Null
-    Set-Variable htmlmaroon      -Option AllScope -Value 65536 4>$Null
-    Set-Variable htmlgreen       -Option AllScope -Value 131072 4>$Null
-    Set-Variable htmlblack       -Option AllScope -Value 262144 4>$Null
+    $global:htmlredmask       = "#FF0000" 4>$Null
+    $global:htmlcyanmask      = "#00FFFF" 4>$Null
+    $global:htmlbluemask      = "#0000FF" 4>$Null
+    $global:htmldarkbluemask  = "#0000A0" 4>$Null
+    $global:htmllightbluemask = "#ADD8E6" 4>$Null
+    $global:htmlpurplemask    = "#800080" 4>$Null
+    $global:htmlyellowmask    = "#FFFF00" 4>$Null
+    $global:htmllimemask      = "#00FF00" 4>$Null
+    $global:htmlmagentamask   = "#FF00FF" 4>$Null
+    $global:htmlwhitemask     = "#FFFFFF" 4>$Null
+    $global:htmlsilvermask    = "#C0C0C0" 4>$Null
+    $global:htmlgraymask      = "#808080" 4>$Null
+    $global:htmlblackmask     = "#000000" 4>$Null
+    $global:htmlorangemask    = "#FFA500" 4>$Null
+    $global:htmlmaroonmask    = "#800000" 4>$Null
+    $global:htmlgreenmask     = "#008000" 4>$Null
+    $global:htmlolivemask     = "#808000" 4>$Null
+
+    $global:htmlbold        = 1 4>$Null
+    $global:htmlitalics     = 2 4>$Null
+    $global:htmlred         = 4 4>$Null
+    $global:htmlcyan        = 8 4>$Null
+    $global:htmlblue        = 16 4>$Null
+    $global:htmldarkblue    = 32 4>$Null
+    $global:htmllightblue   = 64 4>$Null
+    $global:htmlpurple      = 128 4>$Null
+    $global:htmlyellow      = 256 4>$Null
+    $global:htmllime        = 512 4>$Null
+    $global:htmlmagenta     = 1024 4>$Null
+    $global:htmlwhite       = 2048 4>$Null
+    $global:htmlsilver      = 4096 4>$Null
+    $global:htmlgray        = 8192 4>$Null
+    $global:htmlolive       = 16384 4>$Null
+    $global:htmlorange      = 32768 4>$Null
+    $global:htmlmaroon      = 65536 4>$Null
+    $global:htmlgreen       = 131072 4>$Null
+	$global:htmlblack       = 262144 4>$Null
+
+	$global:htmlsb          = ( $htmlsilver -bor $htmlBold ) ## point optimization
+
+	$global:htmlColor = 
+	@{
+		$htmlred       = $htmlredmask
+		$htmlcyan      = $htmlcyanmask
+		$htmlblue      = $htmlbluemask
+		$htmldarkblue  = $htmldarkbluemask
+		$htmllightblue = $htmllightbluemask
+		$htmlpurple    = $htmlpurplemask
+		$htmlyellow    = $htmlyellowmask
+		$htmllime      = $htmllimemask
+		$htmlmagenta   = $htmlmagentamask
+		$htmlwhite     = $htmlwhitemask
+		$htmlsilver    = $htmlsilvermask
+		$htmlgray      = $htmlgraymask
+		$htmlolive     = $htmlolivemask
+		$htmlorange    = $htmlorangemask
+		$htmlmaroon    = $htmlmaroonmask
+		$htmlgreen     = $htmlgreenmask
+		$htmlblack     = $htmlblackmask
+	}
 }
 
 If($TEXT)
 {
-	$global:output = ""
+	[System.Text.StringBuilder] $global:Output = New-Object System.Text.StringBuilder( 16384 )
 }
 #endregion
 
@@ -3273,7 +3426,7 @@ Function SaveandCloseTextDocument
 		$Script:FileName1 += "_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 	}
 
-	Write-Output $Global:Output | Out-File $Script:Filename1 4>$Null
+	Write-Output $Global:Output.ToString() | Out-File $Script:Filename1 4>$Null
 }
 
 Function SaveandCloseHTMLDocument
@@ -3432,6 +3585,7 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date): From            : $($From)"
 	Write-Verbose "$(Get-Date): HW Inventory    : $($Hardware)"
 	Write-Verbose "$(Get-Date): Include Leases  : $($IncludeLeases)"
+	Write-Verbose "$(Get-Date): Include Options : $($IncludeOptions)"
 	Write-Verbose "$(Get-Date): Log             : $($Log)"
 	Write-Verbose "$(Get-Date): Save As HTML    : $($HTML)"
 	Write-Verbose "$(Get-Date): Save As PDF     : $($PDF)"
@@ -3776,21 +3930,35 @@ Function Get-RegistryValue($path, $name)
 #region word, text and html line output functions
 Function line
 #function created by Michael B. Smith, Exchange MVP
-#@essentialexchange on Twitter
-#http://TheEssentialExchange.com
+#@essentialexch on Twitter
+#https://essential.exchange/blog
 #for creating the formatted text report
 #created March 2011
 #updated March 2014
+# updated March 2019 to use StringBuilder (about 100 times more efficient than simple strings)
 {
-	Param( [int]$tabs = 0, [string]$name = '', [string]$value = '', [string]$newline = "`r`n", [switch]$nonewline )
-	While( $tabs -gt 0 ) { $Global:Output += "`t"; $tabs--; }
+	Param
+	(
+		[Int]    $tabs = 0, 
+		[String] $name = '', 
+		[String] $value = '', 
+		[String] $newline = [System.Environment]::NewLine, 
+		[Switch] $nonewline
+	)
+
+	while( $tabs -gt 0 )
+	{
+		$null = $global:Output.Append( "`t" )
+		$tabs--
+	}
+
 	If( $nonewline )
 	{
-		$Global:Output += $name + $value
+		$null = $global:Output.Append( $name + $value )
 	}
 	Else
 	{
-		$Global:Output += $name + $value + $newline
+		$null = $global:Output.AppendLine( $name + $value )
 	}
 }
 	
@@ -3962,105 +4130,120 @@ Function WriteHTMLLine
 #Function created to make output to HTML easy in this script
 #headings fixed 12-Oct-2016 by Webster
 #errors with $HTMLStyle fixed 7-Dec-2017 by Webster
+# re-implemented/re-based by Michael B. Smith
 {
-	Param([int]$style=0, 
-	[int]$tabs = 0, 
-	[string]$name = '', 
-	[string]$value = '', 
-	[string]$fontName="Calibri",
-	[int]$fontSize=1,
-	[int]$options=$htmlblack)
+	Param
+	(
+		[Int]    $style    = 0, 
+		[Int]    $tabs     = 0, 
+		[String] $name     = '', 
+		[String] $value    = '', 
+		[String] $fontName = $null,
+		[Int]    $fontSize = 1,
+		[Int]    $options  = $htmlblack
+	)
 
+	## FIXME - long story short, this function was wrong and had been wrong for a long time. 
+	## The function generated invalid HTML, and ignored fontname and fontsize parameters. I fixed
+	## those items, but that made the report unreadable, because all of the formatting had been based
+	## on this function not working properly.
 
-	#Build output style
-	[string]$output = ""
+	## here is a typical H1 previously generated:
+	## <h1>///&nbsp;&nbsp;Forest Information&nbsp;&nbsp;\\\<font face='Calibri' color='#000000' size='1'></h1></font>
 
-	If([String]::IsNullOrEmpty($Name))	
+	## fixing the function generated this (unreadably small):
+	## <h1><font face='Calibri' color='#000000' size='1'>///&nbsp;&nbsp;Forest Information&nbsp;&nbsp;\\\</font></h1>
+
+	## So I took all the fixes out. This routine now generates valid HTML, but the fontName, fontSize,
+	## and options parameters are ignored; so the routine generates equivalent output as before. I took
+	## the fixes out instead of fixing all the call sites, because there are 225 call sites! If you are
+	## willing to update all the call sites, you can easily re-instate the fixes. They have only been
+	## commented out with '##' below.
+
+	## if( [String]::IsNullOrEmpty( $fontName ) )
+	## {
+	##	$fontName = 'Calibri'
+	## }
+	## if( $fontSize -le 0 )
+	## {
+	##	$fontSize = 1
+	## }
+
+	## ## output data is stored here
+	## [String] $output = ''
+	[System.Text.StringBuilder] $sb = New-Object System.Text.StringBuilder( 1024 )
+
+	If( [String]::IsNullOrEmpty( $name ) )	
 	{
-		$HTMLBody = "<p></p>"
+		## $HTMLBody = '<p></p>'
+		$null = $sb.Append( '<p></p>' )
 	}
 	Else
 	{
-		$color = CheckHTMLColor $options
+		[Bool] $ital = $options -band $htmlitalics
+		[Bool] $bold = $options -band $htmlBold
+		## $color = $global:htmlColor[ $options -band 0xffffc ]
 
-		#build # of tabs
+		## ## build the HTML output string
+##		$HTMLBody = ''
+##		if( $ital ) { $HTMLBody += '<i>' }
+##		if( $bold ) { $HTMLBody += '<b>' } 
+		if( $ital ) { $null = $sb.Append( '<i>' ) }
+		if( $bold ) { $null = $sb.Append( '<b>' ) } 
 
-		While($tabs -gt 0)
-		{ 
-			$output += "&nbsp;&nbsp;&nbsp;&nbsp;"; $tabs--; 
+		switch( $style )
+		{
+			1 { $HTMLOpen = '<h1>'; $HTMLClose = '</h1>'; Break }
+			2 { $HTMLOpen = '<h2>'; $HTMLClose = '</h2>'; Break }
+			3 { $HTMLOpen = '<h3>'; $HTMLClose = '</h3>'; Break }
+			4 { $HTMLOpen = '<h4>'; $HTMLClose = '</h4>'; Break }
+			Default { $HTMLOpen = ''; $HTMLClose = ''; Break }
 		}
 
-		$HTMLFontName = $fontName		
+		## $HTMLBody += $HTMLOpen
+		$null = $sb.Append( $HTMLOpen )
 
-		$HTMLBody = ""
-
-		If($options -band $htmlitalics) 
-		{
-			$HTMLBody += "<i>"
-		} 
-
-		If($options -band $htmlbold) 
-		{
-			$HTMLBody += "<b>"
-		} 
-
-		#output the rest of the parameters.
-		$output += $name + $value
-
-		Switch ($style)
-		{
-			1 {$HTMLStyle = "<h1>"; Break}
-			2 {$HTMLStyle = "<h2>"; Break}
-			3 {$HTMLStyle = "<h3>"; Break}
-			4 {$HTMLStyle = "<h4>"; Break}
-			Default {$HTMLStyle = ""; Break}
-		}
-
-		$HTMLBody += $HTMLStyle + $output
-
-		Switch ($style)
-		{
-			1 {$HTMLStyle = "</h1>"; Break}
-			2 {$HTMLStyle = "</h2>"; Break}
-			3 {$HTMLStyle = "</h3>"; Break}
-			4 {$HTMLStyle = "</h4>"; Break}
-			Default {$HTMLStyle = ""; Break}
-		}
-
-		#added by webster 12-oct-2016
-		#if a heading, don't add the <br>
-		#moved to after the two switch statements on 7-Dec-2017 to fix $HTMLStyle has not been set error
-		If($HTMLStyle -eq "")
-		{
-			$HTMLBody += "<br><font face='" + $HTMLFontName + "' " + "color='" + $color + "' size='"  + $fontsize + "'>"
-		}
-		Else
-		{
-			$HTMLBody += "<font face='" + $HTMLFontName + "' " + "color='" + $color + "' size='"  + $fontsize + "'>"
-		}
+		## if($HTMLClose -eq '')
+		## {
+		##	$HTMLBody += "<br><font face='" + $fontName + "' " + "color='" + $color + "' size='"  + $fontSize + "'>"
+		## }
+		## else
+		## {
+		##	$HTMLBody += "<font face='" + $fontName + "' " + "color='" + $color + "' size='"  + $fontSize + "'>"
+		## }
 		
-		$HTMLBody += $HTMLStyle +  "</font>"
+##		while( $tabs -gt 0 )
+##		{ 
+##			$output += '&nbsp;&nbsp;&nbsp;&nbsp;'
+##			$tabs--
+##		}
+		## output the rest of the parameters.
+##		$output += $name + $value
+		## $HTMLBody += $output
+		$null = $sb.Append( ( '&nbsp;&nbsp;&nbsp;&nbsp;' * $tabs ) + $name + $value )
 
-		If($options -band $htmlitalics) 
-		{
-			$HTMLBody += "</i>"
-		} 
+		## $HTMLBody += '</font>'
+##		if( $HTMLClose -eq '' ) { $HTMLBody += '<br>'     }
+##		else                    { $HTMLBody += $HTMLClose }
 
-		If($options -band $htmlbold) 
-		{
-			$HTMLBody += "</b>"
-		} 
+##		if( $ital ) { $HTMLBody += '</i>' }
+##		if( $bold ) { $HTMLBody += '</b>' } 
 
-		#added by webster 12-oct-2016
-		#if a heading, don't add the <br />
-		#moved to inside the Else statement on 7-Dec-2017 to fix $HTMLStyle has not been set error
-		If($HTMLStyle -eq "")
-		{
-			$HTMLBody += "<br />"
-		}
+##		if( $HTMLClose -eq '' ) { $HTMLBody += '<br />' }
+
+		if( $HTMLClose -eq '' ) { $null = $sb.Append( '<br>' )     }
+		else                    { $null = $sb.Append( $HTMLClose ) }
+
+		if( $ital ) { $null = $sb.Append( '</i>' ) }
+		if( $bold ) { $null = $sb.Append( '</b>' ) } 
+
+		if( $HTMLClose -eq '' ) { $null = $sb.Append( '<br />' ) }
 	}
+	##$HTMLBody += $crlf
+	$null = $sb.AppendLine( '' )
 
-	Out-File -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null
+##	Out-File -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null
+	Out-File -FilePath $Script:FileName1 -Append -InputObject $sb.ToString() 4>$Null
 }
 #endregion
 
@@ -4069,110 +4252,254 @@ Function WriteHTMLLine
 # AddHTMLTable - Called from FormatHTMLTable function
 # Created by Ken Avram
 # modified by Jake Rutski
+# re-implemented by Michael B. Smith for v2.23. Also made the documentation match reality.
 #***********************************************************************************************************
 Function AddHTMLTable
 {
-	Param([string]$fontName="Calibri",
-	[int]$fontSize=2,
-	[int]$colCount=0,
-	[int]$rowCount=0,
-	[object[]]$rowInfo=@(),
-	[object[]]$fixedInfo=@())
+	Param
+	(
+		[String]   $fontName  = 'Calibri',
+		[Int]      $fontSize  = 2,
+		[Int]      $colCount  = 0,
+		[Int]      $rowCount  = 0,
+		[Object[]] $rowInfo   = $null,
+		[Object[]] $fixedInfo = $null
+	)
+	## Use StringBuilder - MBS
+	## In the normal case, tables are only a few dozen cells. But in the case
+	## of Sites, OUs, and Users - there may be many hundreds of thousands of 
+	## cells. Using normal strings is too slow.
 
-	For($rowidx = $RowIndex;$rowidx -le $rowCount;$rowidx++)
+	## if( $ExtraSpecialVerbose )
+	## {
+	##	$global:rowInfo1 = $rowInfo
+	## }
+<#
+	if( $SuperVerbose )
 	{
-		$rd = @($rowInfo[$rowidx - 2])
-		$htmlbody = $htmlbody + "<tr>"
-		For($columnIndex = 0; $columnIndex -lt $colCount; $columnindex+=2)
+		wv "AddHTMLTable: fontName '$fontName', fontsize $fontSize, colCount $colCount, rowCount $rowCount"
+		if( $null -ne $rowInfo -and $rowInfo.Count -gt 0 )
 		{
-			$tmp = CheckHTMLColor $rd[$columnIndex+1]
-
-			If($fixedInfo.Length -eq 0)
+			wv "AddHTMLTable: rowInfo has $( $rowInfo.Count ) elements"
+			if( $ExtraSpecialVerbose )
 			{
-				$htmlbody += "<td style=""background-color:$($tmp)""><font face='$($fontName)' size='$($fontSize)'>"
-			}
-			Else
-			{
-				$htmlbody += "<td style=""width:$($fixedInfo[$columnIndex/2]); background-color:$($tmp)""><font face='$($fontName)' size='$($fontSize)'>"
-			}
-
-			If($rd[$columnIndex+1] -band $htmlbold)
-			{
-				$htmlbody += "<b>"
-			}
-			If($rd[$columnIndex+1] -band $htmlitalics)
-			{
-				$htmlbody += "<i>"
-			}
-			If($Null -ne $rd[$columnIndex])
-			{
-				$cell = $rd[$columnIndex].tostring()
-				If($cell -eq " " -or $cell.length -eq 0)
+				wv "AddHTMLTable: rowInfo length $( $rowInfo.Length )"
+				for( $ii = 0; $ii -lt $rowInfo.Length; $ii++ )
 				{
-					$htmlbody += "&nbsp;&nbsp;&nbsp;"
-				}
-				Else
-				{
-					For($i=0;$i -lt $cell.length;$i++)
+					$row = $rowInfo[ $ii ]
+					wv "AddHTMLTable: index $ii, type $( $row.GetType().FullName ), length $( $row.Length )"
+					for( $yyy = 0; $yyy -lt $row.Length; $yyy++ )
 					{
-						If($cell[$i] -eq " ")
-						{
-							$htmlbody += "&nbsp;"
-						}
-						If($cell[$i] -ne " ")
-						{
-							Break
-						}
+						wv "AddHTMLTable: index $ii, yyy = $yyy, val = '$( $row[ $yyy ] )'"
 					}
-					$htmlbody += $cell
+					wv "AddHTMLTable: done"
 				}
 			}
-			Else
-			{
-				$htmlbody += "&nbsp;&nbsp;&nbsp;"
-			}
-			If($rd[$columnIndex+1] -band $htmlbold)
-			{
-				$htmlbody += "</b>"
-			}
-			If($rd[$columnIndex+1] -band $htmlitalics)
-			{
-				$htmlbody += "</i>"
-			}
-			$htmlbody += "</font></td>"
 		}
-		$htmlbody += "</tr>"
+		else
+		{
+			wv "AddHTMLTable: rowInfo is empty"
+		}
+		if( $null -ne $fixedInfo -and $fixedInfo.Count -gt 0 )
+		{
+			wv "AddHTMLTable: fixedInfo has $( $fixedInfo.Count ) elements"
+		}
+		else
+		{
+			wv "AddHTMLTable: fixedInfo is empty"
+		}
 	}
-	Out-File -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null 
+#>
+
+	##$htmlbody = ''
+	[System.Text.StringBuilder] $sb = New-Object System.Text.StringBuilder( 8192 )
+
+	if( $rowInfo -and $rowInfo.Length -lt $rowCount )
+	{
+##		$oldCount = $rowCount
+		$rowCount = $rowInfo.Length
+##		if( $SuperVerbose )
+##		{
+##			wv "AddHTMLTable: updated rowCount to $rowCount from $oldCount, based on rowInfo.Length"
+##		}
+	}
+
+	for( $rowCountIndex = 0; $rowCountIndex -lt $rowCount; $rowCountIndex++ )
+	{
+		$null = $sb.AppendLine( '<tr>' )
+		## $htmlbody += '<tr>'
+		## $htmlbody += $crlf - make the HTML readable
+
+		## each row of rowInfo is an array
+		## each row consists of tuples: an item of text followed by an item of formatting data
+<#		
+		$row = $rowInfo[ $rowCountIndex ]
+		if( $ExtraSpecialVerbose )
+		{
+			wv "!!!!! AddHTMLTable: rowCountIndex = $rowCountIndex, row.Length = $( $row.Length ), row gettype = $( $row.GetType().FullName )"
+			wv "!!!!! AddHTMLTable: colCount $colCount"
+			wv "!!!!! AddHTMLTable: row[0].Length $( $row[0].Length )"
+			wv "!!!!! AddHTMLTable: row[0].GetType $( $row[0].GetType().FullName )"
+			$subRow = $row
+			if( $subRow -is [Array] -and $subRow[ 0 ] -is [Array] )
+			{
+				$subRow = $subRow[ 0 ]
+				wv "!!!!! AddHTMLTable: deref subRow.Length $( $subRow.Length ), subRow.GetType $( $subRow.GetType().FullName )"
+			}
+
+			for( $columnIndex = 0; $columnIndex -lt $subRow.Length; $columnIndex += 2 )
+			{
+				$item = $subRow[ $columnIndex ]
+				wv "!!!!! AddHTMLTable: item.GetType $( $item.GetType().FullName )"
+				## if( !( $item -is [String] ) -and $item -is [Array] )
+##				if( $item -is [Array] -and $item[ 0 ] -is [Array] )				
+##				{
+##					$item = $item[ 0 ]
+##					wv "!!!!! AddHTMLTable: dereferenced item.GetType $( $item.GetType().FullName )"
+##				}
+				wv "!!!!! AddHTMLTable: rowCountIndex = $rowCountIndex, columnIndex = $columnIndex, val '$item'"
+			}
+			wv "!!!!! AddHTMLTable: done"
+		}
+#>
+
+		## reset
+		$row = $rowInfo[ $rowCountIndex ]
+
+		$subRow = $row
+		if( $subRow -is [Array] -and $subRow[ 0 ] -is [Array] )
+		{
+			$subRow = $subRow[ 0 ]
+			## wv "***** AddHTMLTable: deref rowCountIndex $rowCountIndex, subRow.Length $( $subRow.Length ), subRow.GetType $( $subRow.GetType().FullName )"
+		}
+
+		$subRowLength = $subRow.Length
+		for( $columnIndex = 0; $columnIndex -lt $colCount; $columnIndex += 2 )
+		{
+			$item = if( $columnIndex -lt $subRowLength ) { $subRow[ $columnIndex ] } else { 0 }
+			## if( !( $item -is [String] ) -and $item -is [Array] )
+##			if( $item -is [Array] -and $item[ 0 ] -is [Array] )
+##			{
+##				$item = $item[ 0 ]
+##			}
+
+			$text   = if( $item ) { $item.ToString() } else { '' }
+			$format = if( ( $columnIndex + 1 ) -lt $subRowLength ) { $subRow[ $columnIndex + 1 ] } else { 0 }
+			## item, text, and format ALWAYS have values, even if empty values
+			$color  = $global:htmlColor[ $format -band 0xffffc ]
+			[Bool] $bold = $format -band $htmlBold
+			[Bool] $ital = $format -band $htmlitalics
+<#			
+			if( $ExtraSpecialVerbose )
+			{
+				wv "***** columnIndex $columnIndex, subRow.Length $( $subRow.Length ), item GetType $( $item.GetType().FullName ), item '$item'"
+				wv "***** format $format, color $color, text '$text'"
+				wv "***** format gettype $( $format.GetType().Fullname ), text gettype $( $text.GetType().Fullname )"
+			}
+#>
+
+			if( $null -eq $fixedInfo -or $fixedInfo.Length -eq 0 )
+			{
+				$null = $sb.Append( "<td style=""background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>" )
+				##$htmlbody += "<td style=""background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>"
+			}
+			else
+			{
+				$null = $sb.Append( "<td style=""width:$( $fixedInfo[ $columnIndex / 2 ] ); background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>" )
+				##$htmlbody += "<td style=""width:$( $fixedInfo[ $columnIndex / 2 ] ); background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>"
+			}
+
+			##if( $bold ) { $htmlbody += '<b>' }
+			##if( $ital ) { $htmlbody += '<i>' }
+			if( $bold ) { $null = $sb.Append( '<b>' ) }
+			if( $ital ) { $null = $sb.Append( '<i>' ) }
+
+			if( $text -eq ' ' -or $text.length -eq 0)
+			{
+				##$htmlbody += '&nbsp;&nbsp;&nbsp;'
+				$null = $sb.Append( '&nbsp;&nbsp;&nbsp;' )
+			}
+			else
+			{
+				for ($inx = 0; $inx -lt $text.length; $inx++ )
+				{
+					if( $text[ $inx ] -eq ' ' )
+					{
+						##$htmlbody += '&nbsp;'
+						$null = $sb.Append( '&nbsp;' )
+					}
+					else
+					{
+						break
+					}
+				}
+				##$htmlbody += $text
+				$null = $sb.Append( $text )
+			}
+
+##			if( $bold ) { $htmlbody += '</b>' }
+##			if( $ital ) { $htmlbody += '</i>' }
+			if( $bold ) { $null = $sb.Append( '</b>' ) }
+			if( $ital ) { $null = $sb.Append( '</i>' ) }
+
+			$null = $sb.AppendLine( '</font></td>' )
+##			$htmlbody += '</font></td>'
+##			$htmlbody += $crlf
+		}
+
+		$null = $sb.AppendLine( '</tr>' )
+##		$htmlbody += '</tr>'
+##		$htmlbody += $crlf
+	}
+
+##	if( $ExtraSpecialVerbose )
+##	{
+##		$global:rowInfo = $rowInfo
+##		wv "!!!!! AddHTMLTable: HTML = '$htmlbody'"
+##	}
+
+##	Out-File -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null 
+	Out-File -FilePath $Script:FileName1 -Append -InputObject $sb.ToString() 4>$Null 
 }
 
 #***********************************************************************************************************
 # FormatHTMLTable 
 # Created by Ken Avram
 # modified by Jake Rutski
+# reworked by Michael B. Smith for v2.23
 #***********************************************************************************************************
 
 <#
 .Synopsis
-	Format table for HTML output document
+	Format table for a HTML output document.
 .DESCRIPTION
-	This function formats a table for HTML from an array of strings
+	This function formats a table for HTML from multiple arrays of strings.
 .PARAMETER noBorder
-	If set to $true, a table will be generated without a border (border='0')
+	If set to $true, a table will be generated without a border (border = '0'). Otherwise the table will be generated
+	with a border (border = '1').
 .PARAMETER noHeadCols
-	This parameter should be used when generating tables without column headers
-	Set this parameter equal to the number of columns in the table
+	This parameter should be used when generating tables which do not have a separate array containing column headers
+	(columnArray is not specified). Set this parameter equal to the number of columns in the table.
 .PARAMETER rowArray
-	This parameter contains the row data array for the table
+	This parameter contains the row data array for the table.
 .PARAMETER columnArray
-	This parameter contains column header data for the table
+	This parameter contains column header data for the table.
 .PARAMETER fixedWidth
 	This parameter contains widths for columns in pixel format ("100px") to override auto column widths
 	The variable should contain a width for each column you wish to override the auto-size setting
-	For example: $columnWidths = @("100px","110px","120px","130px","140px")
+	For example: $fixedWidth = @("100px","110px","120px","130px","140px")
+.PARAMETER tableHeader
+	A string containing the header for the table (printed at the top of the table, left justified). The
+	default is a blank string.
+.PARAMETER tableWidth
+	The width of the table in pixels, or 'auto'. The default is 'auto'.
+.PARAMETER fontName
+	The name of the font to use in the table. The default is 'Calibri'.
+.PARAMETER fontSize
+	The size of the font to use in the table. The default is 2. Note that this is the HTML size, not the pixel size.
 
 .USAGE
-	FormatHTMLTable <Table Header> <Table Format> <Font Name> <Font Size>
+	FormatHTMLTable <Table Header> <Table Width> <Font Name> <Font Size>
 
 .EXAMPLE
 	FormatHTMLTable "Table Heading" "auto" "Calibri" 3
@@ -4205,7 +4532,7 @@ Function AddHTMLTable
 	Then Load the array.  If you are using column headers then load those into the column headers array, otherwise the first line of the table goes into the column headers array
 	and the second and subsequent lines go into the $rowdata table as shown below:
 
-	$columnHeaders = @('Display Name',($htmlsilver -bor $htmlbold),'Status',($htmlsilver -bor $htmlbold),'Startup Type',($htmlsilver -bor $htmlbold))
+	$columnHeaders = @('Display Name',$htmlsb,'Status',$htmlsb,'Startup Type',$htmlsb)
 
 	The first column is the actual name to display, the second are the attributes of the column i.e. color anded with bold or italics.  For the anding, parens are required or it will
 	not format correctly.
@@ -4213,18 +4540,18 @@ Function AddHTMLTable
 	This is following by adding rowdata as shown below.  As more columns are added the columns will auto adjust to fit the size of the page.
 
 	$rowdata = @()
-	$columnHeaders = @("User Name",($htmlsilver -bor $htmlbold),$UserName,$htmlwhite)
-	$rowdata += @(,('Save as PDF',($htmlsilver -bor $htmlbold),$PDF.ToString(),$htmlwhite))
-	$rowdata += @(,('Save as TEXT',($htmlsilver -bor $htmlbold),$TEXT.ToString(),$htmlwhite))
-	$rowdata += @(,('Save as WORD',($htmlsilver -bor $htmlbold),$MSWORD.ToString(),$htmlwhite))
-	$rowdata += @(,('Save as HTML',($htmlsilver -bor $htmlbold),$HTML.ToString(),$htmlwhite))
-	$rowdata += @(,('Add DateTime',($htmlsilver -bor $htmlbold),$AddDateTime.ToString(),$htmlwhite))
-	$rowdata += @(,('Hardware Inventory',($htmlsilver -bor $htmlbold),$Hardware.ToString(),$htmlwhite))
-	$rowdata += @(,('Computer Name',($htmlsilver -bor $htmlbold),$ComputerName,$htmlwhite))
-	$rowdata += @(,('Filename1',($htmlsilver -bor $htmlbold),$Script:FileName1,$htmlwhite))
-	$rowdata += @(,('OS Detected',($htmlsilver -bor $htmlbold),$Script:RunningOS,$htmlwhite))
-	$rowdata += @(,('PSUICulture',($htmlsilver -bor $htmlbold),$PSCulture,$htmlwhite))
-	$rowdata += @(,('PoSH version',($htmlsilver -bor $htmlbold),$Host.Version.ToString(),$htmlwhite))
+	$columnHeaders = @("User Name",$htmlsb,$UserName,$htmlwhite)
+	$rowdata += @(,('Save as PDF',$htmlsb,$PDF.ToString(),$htmlwhite))
+	$rowdata += @(,('Save as TEXT',$htmlsb,$TEXT.ToString(),$htmlwhite))
+	$rowdata += @(,('Save as WORD',$htmlsb,$MSWORD.ToString(),$htmlwhite))
+	$rowdata += @(,('Save as HTML',$htmlsb,$HTML.ToString(),$htmlwhite))
+	$rowdata += @(,('Add DateTime',$htmlsb,$AddDateTime.ToString(),$htmlwhite))
+	$rowdata += @(,('Hardware Inventory',$htmlsb,$Hardware.ToString(),$htmlwhite))
+	$rowdata += @(,('Computer Name',$htmlsb,$ComputerName,$htmlwhite))
+	$rowdata += @(,('Filename1',$htmlsb,$Script:FileName1,$htmlwhite))
+	$rowdata += @(,('OS Detected',$htmlsb,$Script:RunningOS,$htmlwhite))
+	$rowdata += @(,('PSUICulture',$htmlsb,$PSCulture,$htmlwhite))
+	$rowdata += @(,('PoSH version',$htmlsb,$Host.Version.ToString(),$htmlwhite))
 	FormatHTMLTable "Example of Horizontal AutoFitContents HTML Table" -rowArray $rowdata
 
 	The 'rowArray' paramater is mandatory to build the table, but it is not set as such in the function - if nothing is passed, the table will be empty.
@@ -4255,19 +4582,56 @@ Function AddHTMLTable
 
 Function FormatHTMLTable
 {
-	Param([string]$tableheader,
-	[string]$tablewidth="auto",
-	[string]$fontName="Calibri",
-	[int]$fontSize=2,
-	[switch]$noBorder=$false,
-	[int]$noHeadCols=1,
-	[object[]]$rowArray=@(),
-	[object[]]$fixedWidth=@(),
-	[object[]]$columnArray=@())
+	Param
+	(
+		[String]   $tableheader = '',
+		[String]   $tablewidth  = 'auto',
+		[String]   $fontName    = 'Calibri',
+		[Int]      $fontSize    = 2,
+		[Switch]   $noBorder    = $false,
+		[Int]      $noHeadCols  = 1,
+		[Object[]] $rowArray    = $null,
+		[Object[]] $fixedWidth  = $null,
+		[Object[]] $columnArray = $null
+	)
 
-	$HTMLBody = "<b><font face='" + $fontname + "' size='" + ($fontsize + 1) + "'>" + $tableheader + "</font></b>"
+	## FIXME - the help text for this function is wacky wrong - MBS
+	## FIXME - Use StringBuilder - MBS - this only builds the table header - benefit relatively small
+<#
+	if( $SuperVerbose )
+	{
+		wv "FormatHTMLTable: fontname '$fontname', size $fontSize, tableheader '$tableheader'"
+		wv "FormatHTMLTable: noborder $noborder, noheadcols $noheadcols"
+		if( $rowarray -and $rowarray.count -gt 0 )
+		{
+			wv "FormatHTMLTable: rowarray has $( $rowarray.count ) elements"
+		}
+		else
+		{
+			wv "FormatHTMLTable: rowarray is empty"
+		}
+		if( $columnarray -and $columnarray.count -gt 0 )
+		{
+			wv "FormatHTMLTable: columnarray has $( $columnarray.count ) elements"
+		}
+		else
+		{
+			wv "FormatHTMLTable: columnarray is empty"
+		}
+		if( $fixedwidth -and $fixedwidth.count -gt 0 )
+		{
+			wv "FormatHTMLTable: fixedwidth has $( $fixedwidth.count ) elements"
+		}
+		else
+		{
+			wv "FormatHTMLTable: fixedwidth is empty"
+		}
+	}
+#>
 
-	If($columnArray.Length -eq 0)
+	$HTMLBody = "<b><font face='" + $fontname + "' size='" + ($fontsize + 1) + "'>" + $tableheader + "</font></b>" + $crlf
+
+	If( $null -eq $columnArray -or $columnArray.Length -eq 0)
 	{
 		$NumCols = $noHeadCols + 1
 	}  # means we have no column headers, just a table
@@ -4276,7 +4640,7 @@ Function FormatHTMLTable
 		$NumCols = $columnArray.Length
 	}  # need to add one for the color attrib
 
-	If($Null -ne $rowArray)
+	If( $null -ne $rowArray )
 	{
 		$NumRows = $rowArray.length + 1
 	}
@@ -4285,93 +4649,119 @@ Function FormatHTMLTable
 		$NumRows = 1
 	}
 
-	If($noBorder)
+	If( $noBorder )
 	{
-		$htmlbody += "<table border='0' width='" + $tablewidth + "'>"
+		$HTMLBody += "<table border='0' width='" + $tablewidth + "'>"
 	}
 	Else
 	{
-		$htmlbody += "<table border='1' width='" + $tablewidth + "'>"
+		$HTMLBody += "<table border='1' width='" + $tablewidth + "'>"
 	}
+	$HTMLBody += $crlf
 
-	If(!($columnArray.Length -eq 0))
+	if( $columnArray -and $columnArray.Length -gt 0 )
 	{
-		$htmlbody += "<tr>"
+		$HTMLBody += '<tr>' + $crlf
 
-		For($columnIndex = 0; $columnIndex -lt $NumCols; $columnindex+=2)
+		for( $columnIndex = 0; $columnIndex -lt $NumCols; $columnindex += 2 )
 		{
-			$tmp = CheckHTMLColor $columnArray[$columnIndex+1]
-			If($fixedWidth.Length -eq 0)
+			$val = $columnArray[ $columnIndex + 1 ]
+			$tmp = $global:htmlColor[ $val -band 0xffffc ]
+			[Bool] $bold = $val -band $htmlBold
+			[Bool] $ital = $val -band $htmlitalics
+
+			if( $null -eq $fixedWidth -or $fixedWidth.Length -eq 0 )
 			{
-				$htmlbody += "<td style=""background-color:$($tmp)""><font face='$($fontName)' size='$($fontSize)'>"
+				$HTMLBody += "<td style=""background-color:$($tmp)""><font face='$($fontName)' size='$($fontSize)'>"
 			}
-			Else
+			else
 			{
-				$htmlbody += "<td style=""width:$($fixedWidth[$columnIndex/2]); background-color:$($tmp)""><font face='$($fontName)' size='$($fontSize)'>"
+				$HTMLBody += "<td style=""width:$($fixedWidth[$columnIndex/2]); background-color:$($tmp)""><font face='$($fontName)' size='$($fontSize)'>"
 			}
 
-			If($columnArray[$columnIndex+1] -band $htmlbold)
+			if( $bold ) { $HTMLBody += '<b>' }
+			if( $ital ) { $HTMLBody += '<i>' }
+
+			$array = $columnArray[ $columnIndex ]
+			if( $array )
 			{
-				$htmlbody += "<b>"
-			}
-			If($columnArray[$columnIndex+1] -band $htmlitalics)
-			{
-				$htmlbody += "<i>"
-			}
-			If($Null -ne $columnArray[$columnIndex])
-			{
-				If($columnArray[$columnIndex] -eq " " -or $columnArray[$columnIndex].length -eq 0)
+				if( $array -eq ' ' -or $array.Length -eq 0 )
 				{
-					$htmlbody += "&nbsp;&nbsp;&nbsp;"
+					$HTMLBody += '&nbsp;&nbsp;&nbsp;'
 				}
-				Else
+				else
 				{
-					For($i=0;$i -lt $columnArray[$columnIndex].length;$i+=2)
+					for( $i = 0; $i -lt $array.Length; $i += 2 )
 					{
-						If($columnArray[$columnIndex][$i] -eq " ")
+						if( $array[ $i ] -eq ' ' )
 						{
-							$htmlbody += "&nbsp;"
+							$HTMLBody += '&nbsp;'
 						}
-						If($columnArray[$columnIndex][$i] -ne " ")
+						else
 						{
-							Break
+							break
 						}
 					}
-					$htmlbody += $columnArray[$columnIndex]
+					$HTMLBody += $array
 				}
 			}
-			Else
+			else
 			{
-				$htmlbody += "&nbsp;&nbsp;&nbsp;"
+				$HTMLBody += '&nbsp;&nbsp;&nbsp;'
 			}
-			If($columnArray[$columnIndex+1] -band $htmlbold)
-			{
-				$htmlbody += "</b>"
-			}
-			If($columnArray[$columnIndex+1] -band $htmlitalics)
-			{
-				$htmlbody += "</i>"
-			}
-			$htmlbody += "</font></td>"
+			
+			if( $bold ) { $HTMLBody += '</b>' }
+			if( $ital ) { $HTMLBody += '</i>' }
 		}
-		$htmlbody += "</tr>"
+
+		$HTMLBody += '</font></td>'
+		$HTMLBody += $crlf
 	}
-	$rowindex = 2
-	If($Null -ne $rowArray)
+
+	$HTMLBody += '</tr>' + $crlf
+
+	Out-File -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null 
+	$HTMLBody = ''
+
+	##$rowindex = 2
+	If( $rowArray )
 	{
-		AddHTMLTable $fontName $fontSize -colCount $numCols -rowCount $NumRows -rowInfo $rowArray -fixedInfo $fixedWidth
-		$rowArray = @()
-		$htmlbody = "</table>"
+<#
+		if( $ExtraSpecialVerbose )
+		{
+			wv "***** FormatHTMLTable: rowarray length $( $rowArray.Length )"
+			for( $ii = 0; $ii -lt $rowArray.Length; $ii++ )
+			{
+				$row = $rowArray[ $ii ]
+				wv "***** FormatHTMLTable: index $ii, type $( $row.GetType().FullName ), length $( $row.Length )"
+				for( $yyy = 0; $yyy -lt $row.Length; $yyy++ )
+				{
+					wv "***** FormatHTMLTable: index $ii, yyy = $yyy, val = '$( $row[ $yyy ] )'"
+				}
+				wv "***** done"
+			}
+			wv "***** FormatHTMLTable: rowCount $NumRows"
+		}
+#>
+
+		AddHTMLTable -fontName $fontName -fontSize $fontSize `
+			-colCount $numCols -rowCount $NumRows `
+			-rowInfo $rowArray -fixedInfo $fixedWidth
+		##$rowArray = @()
+		$rowArray = $null
+		$HTMLBody = '</table>'
 	}
 	Else
 	{
-		$HTMLBody += "</table>"
-	}	
+		$HTMLBody += '</table>'
+	}
+
 	Out-File -FilePath $Script:FileName1 -Append -InputObject $HTMLBody 4>$Null 
 }
 #endregion
 
 #region other HTML functions
+<#
 #***********************************************************************************************************
 # CheckHTMLColor - Called from AddHTMLTable WriteHTMLLine and FormatHTMLTable
 #***********************************************************************************************************
@@ -4379,6 +4769,8 @@ Function CheckHTMLColor
 {
 	Param($hash)
 
+	#V2.23 -- this is really slow. several ways to fixit. so fixit. MBS
+	#V2.23 - obsolete. replaced by using $global:htmlColor lookup table
 	If($hash -band $htmlwhite)
 	{
 		Return $htmlwhitemask
@@ -4448,6 +4840,7 @@ Function CheckHTMLColor
 		Return $htmlolivemask
 	}
 }
+#>
 
 Function SetupHTML
 {
@@ -4462,7 +4855,7 @@ Function SetupHTML
 	}
 
 	$htmlhead = "<html><head><meta http-equiv='Content-Language' content='da'><title>" + $Script:Title + "</title></head><body>"
-	Out-File -FilePath $Script:Filename1 -Force -InputObject $HTMLHead 4>$Null
+	out-file -FilePath $Script:Filename1 -Force -InputObject $HTMLHead 4>$Null
 }#endregion
 
 #region Iain's Word table functions
@@ -4922,13 +5315,14 @@ Function SendEmail
 {
 	Param([string]$Attachments)
 	Write-Verbose "$(Get-Date): Prepare to email"
-	
+
 	$emailAttachment = $Attachments
 	$emailSubject = $Script:Title
 	$emailBody = @"
 Hello, <br />
 <br />
 $Script:Title is attached.
+
 "@ 
 
 	If($Dev)
@@ -4937,66 +5331,105 @@ $Script:Title is attached.
 	}
 
 	$error.Clear()
-
-	If($UseSSL)
+	
+	If($From -Like "anonymous@*")
 	{
-		Write-Verbose "$(Get-Date): Trying to send email using current user's credentials with SSL"
-		Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
-		-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To `
-		-UseSSL *>$Null
-	}
-	Else
-	{
-		Write-Verbose  "$(Get-Date): Trying to send email using current user's credentials without SSL"
-		Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
-		-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To *>$Null
-	}
-
-	$e = $error[0]
-
-	If($e.Exception.ToString().Contains("5.7.57"))
-	{
-		#The server response was: 5.7.57 SMTP; Client was not authenticated to send anonymous mail during MAIL FROM
-		Write-Verbose "$(Get-Date): Current user's credentials failed. Ask for usable credentials."
-
-		If($Dev)
-		{
-			Out-File -FilePath $Script:DevErrorFile -InputObject $error -Append 4>$Null
-		}
-
-		$error.Clear()
-
-		$emailCredentials = Get-Credential -Message "Enter the email account and password to send email"
+		#https://serverfault.com/questions/543052/sending-unauthenticated-mail-through-ms-exchange-with-powershell-windows-server
+		$anonUsername = "anonymous"
+		$anonPassword = ConvertTo-SecureString -String "anonymous" -AsPlainText -Force
+		$anonCredentials = New-Object System.Management.Automation.PSCredential($anonUsername,$anonPassword)
 
 		If($UseSSL)
 		{
 			Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
 			-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To `
-			-UseSSL -credential $emailCredentials *>$Null 
+			-UseSSL -credential $anonCredentials *>$Null 
 		}
 		Else
 		{
 			Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
 			-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To `
-			-credential $emailCredentials *>$Null 
+			-credential $anonCredentials *>$Null 
 		}
-
-		$e = $error[0]
-
-		If($? -and $Null -eq $e)
+		
+		If($?)
 		{
-			Write-Verbose "$(Get-Date): Email successfully sent using new credentials"
+			Write-Verbose "$(Get-Date): Email successfully sent using anonymous credentials"
 		}
-		Else
+		ElseIf(!$?)
 		{
+			$e = $error[0]
+
 			Write-Verbose "$(Get-Date): Email was not sent:"
 			Write-Warning "$(Get-Date): Exception: $e.Exception" 
 		}
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): Email was not sent:"
-		Write-Warning "$(Get-Date): Exception: $e.Exception" 
+		If($UseSSL)
+		{
+			Write-Verbose "$(Get-Date): Trying to send email using current user's credentials with SSL"
+			Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
+			-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To `
+			-UseSSL *>$Null
+		}
+		Else
+		{
+			Write-Verbose  "$(Get-Date): Trying to send email using current user's credentials without SSL"
+			Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
+			-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To *>$Null
+		}
+
+		If(!$?)
+		{
+			$e = $error[0]
+			
+			#error 5.7.57 is O365 and error 5.7.0 is gmail
+			If($null -ne $e.Exception -and $e.Exception.ToString().Contains("5.7"))
+			{
+				#The server response was: 5.7.xx SMTP; Client was not authenticated to send anonymous mail during MAIL FROM
+				Write-Verbose "$(Get-Date): Current user's credentials failed. Ask for usable credentials."
+
+				If($Dev)
+				{
+					Out-File -FilePath $Script:DevErrorFile -InputObject $error -Append 4>$Null
+				}
+
+				$error.Clear()
+
+				$emailCredentials = Get-Credential -UserName $From -Message "Enter the password to send email"
+
+				If($UseSSL)
+				{
+					Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
+					-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To `
+					-UseSSL -credential $emailCredentials *>$Null 
+				}
+				Else
+				{
+					Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
+					-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To `
+					-credential $emailCredentials *>$Null 
+				}
+
+				If($?)
+				{
+					Write-Verbose "$(Get-Date): Email successfully sent using new credentials"
+				}
+				ElseIf(!$?)
+				{
+					$e = $error[0]
+
+					Write-Verbose "$(Get-Date): Email was not sent:"
+					Write-Warning "$(Get-Date): Exception: $e.Exception" 
+				}
+			}
+			Else
+			{
+				Write-Verbose "$(Get-Date): Email was not sent:"
+				Write-Warning "$(Get-Date): Exception: $e.Exception" 
+			}
+		}
 	}
 }
 #endregion
@@ -5728,7 +6161,7 @@ Function ProcessIPv4Properties
 			[int]$xRow = 0
 			ForEach($Failover in $Failovers)
 			{
-				Write-Verbose "$(Get-Date):`t`tProcessing failover $($Failover.Name)"
+				Write-Verbose "$(Get-Date): `t`tProcessing failover $($Failover.Name)"
 				$xRow++
 				$Table.Cell($xRow,1).Range.Text = "Relationship name"
 				$Table.Cell($xRow,2).Range.Text = $Failover.Name
@@ -5851,7 +6284,7 @@ Function ProcessIPv4Properties
 		{
 			ForEach($Failover in $Failovers)
 			{
-				Write-Verbose "$(Get-Date):`t`tProcessing failover $($Failover.Name)"
+				Write-Verbose "$(Get-Date): `t`tProcessing failover $($Failover.Name)"
 				Line 2 "Relationship name: " $Failover.Name
 						
 				Line 2 "State of the server`t: " -NoNewLine
@@ -5944,7 +6377,7 @@ Function ProcessIPv4Properties
 		{
 			ForEach($Failover in $Failovers)
 			{
-				Write-Verbose "$(Get-Date):`t`tProcessing failover $($Failover.Name)"
+				Write-Verbose "$(Get-Date): `t`tProcessing failover $($Failover.Name)"
 				$rowdata = @()
 				$columnHeaders = @("Relationship name",($htmlsilver -bor $htmlbold),$Failover.Name,$htmlwhite)
 						
@@ -6491,7 +6924,7 @@ Function GetIPv4ScopeData
 {
 	Param([object]$IPv4Scope, [int]$xStartLevel)
 	
-	Write-Verbose "$(Get-Date):Build array of Allow/Deny filters"
+	Write-Verbose "$(Get-Date): `tBuild array of Allow/Deny filters"
 	$Filters = Get-DHCPServerV4Filter -ComputerName $Script:DHCPServerName -EA 0
 
 	If($MSWord -or $PDF)
@@ -6888,7 +7321,13 @@ Function GetIPv4ScopeData_WordPDF
 			[int]$xRow = 0
 			ForEach($ScopeOption in $ScopeOptions)
 			{
-				If($ScopeOption.OptionId -ne 51)
+				If($ScopeOption.OptionId -eq 51 -or $ScopeOption.OptionId -eq 81)
+				{
+					#ignore these two option IDs
+					https://carlwebster.com/the-mysterious-microsoft-dhcp-option-id-81/
+					https://jimswirelessworld.wordpress.com/2019/01/03/you-should-care-about-dhcp-option-51/
+				}
+				Else
 				{
 					Write-Verbose "$(Get-Date):	`t`t`tProcessing option name $($ScopeOption.Name)"
 					$xRow++
@@ -7561,7 +8000,13 @@ Function GetIPv4ScopeData_HTML
 		
 		ForEach($ScopeOption in $ScopeOptions)
 		{
-			If($ScopeOption.OptionId -ne 51)
+			If($ScopeOption.OptionId -eq 51 -or $ScopeOption.OptionId -eq 81)
+			{
+				#ignore these two option IDs
+				https://carlwebster.com/the-mysterious-microsoft-dhcp-option-id-81/
+				https://jimswirelessworld.wordpress.com/2019/01/03/you-should-care-about-dhcp-option-51/
+			}
+			Else
 			{
 				Write-Verbose "$(Get-Date):	`t`t`tProcessing option name $($ScopeOption.Name)"
 				$rowdata = @()
@@ -7837,7 +8282,7 @@ Function GetIPv4ScopeData_Text
 {
 	Param([int] $xStartLevel, [object]$filters)
 
-	Write-Verbose "$(Get-Date):`tGetting IPv4 scope data for scope $($IPv4Scope.Name)"
+	Write-Verbose "$(Get-Date): `tGetting IPv4 scope data for scope $($IPv4Scope.Name)"
 	Line 0 "Scope [$($IPv4Scope.ScopeId)] $($IPv4Scope.Name)"
 	Line 1 "Address Pool:"
 	Line 2 "Start IP Address`t: " $IPv4Scope.StartRange
@@ -7864,7 +8309,7 @@ Function GetIPv4ScopeData_Text
 
 	If($IncludeLeases)
 	{
-		Write-Verbose "$(Get-Date):`t`tGetting leases"
+		Write-Verbose "$(Get-Date): `t`tGetting leases"
 		
 		Line 1 "Address Leases:"
 		$Leases = Get-DHCPServerV4Lease -ComputerName $Script:DHCPServerName -ScopeId  $IPv4Scope.ScopeId -EA 0 | Sort-Object IPAddress
@@ -7872,7 +8317,7 @@ Function GetIPv4ScopeData_Text
 		{
 			ForEach($Lease in $Leases)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 				If($Null -ne $Lease.LeaseExpiryTime)
 				{
 					$LeaseStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -7977,7 +8422,7 @@ Function GetIPv4ScopeData_Text
 		$Leases = $Null
 	}
 
-	Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+	Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 	Line 1 "Exclusions:"
 	$Exclusions = Get-DHCPServerV4ExclusionRange -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0 | Sort-Object StartRange
 	If($? -and $Null -ne $Exclusions)
@@ -7999,14 +8444,14 @@ Function GetIPv4ScopeData_Text
 	}
 	$Exclusions = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting reservations"
+	Write-Verbose "$(Get-Date): `t`tGetting reservations"
 	Line 1 "Reservations:"
 	$Reservations = Get-DHCPServerV4Reservation -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0 | Sort-Object IPAddress
 	If($? -and $Null -ne $Reservations)
 	{
 		ForEach($Reservation in $Reservations)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing reservation $($Reservation.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing reservation $($Reservation.Name)"
 			Line 2 "Reservation name`t: " $Reservation.Name
 			Line 2 "IP address`t`t: " $Reservation.IPAddress
 			Line 2 "MAC address`t`t: " $Reservation.ClientId
@@ -8016,7 +8461,7 @@ Function GetIPv4ScopeData_Text
 				Line 2 "Description`t`t: " $Reservation.Description
 			}
 
-			Write-Verbose "$(Get-Date):`t`t`t`tGetting DNS settings"
+			Write-Verbose "$(Get-Date): `t`t`t`tGetting DNS settings"
 			$DNSSettings = Get-DHCPServerV4DnsSetting -ComputerName $Script:DHCPServerName -IPAddress $Reservation.IPAddress -EA 0
 			If($? -and $Null -ne $DNSSettings)
 			{
@@ -8040,7 +8485,7 @@ Function GetIPv4ScopeData_Text
 	}
 	$Reservations = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting scope options"
+	Write-Verbose "$(Get-Date): `t`tGetting scope options"
 	Line 1 "Scope Options:"
 	$ScopeOptions = Get-DHCPServerV4OptionValue -All -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0 | Sort-Object OptionId
 
@@ -8065,9 +8510,15 @@ Function GetIPv4ScopeData_Text
 
 		ForEach($ScopeOption in $ScopeOptions)
 		{
-			If($ScopeOption.OptionId -ne 51)
+			If($ScopeOption.OptionId -eq 51 -or $ScopeOption.OptionId -eq 81)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ScopeOption.Name)"
+				#ignore these two option IDs
+				https://carlwebster.com/the-mysterious-microsoft-dhcp-option-id-81/
+				https://jimswirelessworld.wordpress.com/2019/01/03/you-should-care-about-dhcp-option-51/
+			}
+			Else
+			{
+				Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ScopeOption.Name)"
 				Line 2 "Option Name`t: $($ScopeOption.OptionId.ToString("00000")) $($ScopeOption.Name)" 
 				Line 2 "Vendor`t`t: " -NoNewLine
 				If([string]::IsNullOrEmpty($ScopeOption.VendorClass))
@@ -8105,7 +8556,7 @@ Function GetIPv4ScopeData_Text
 	}
 	$ScopeOptions = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting policies"
+	Write-Verbose "$(Get-Date): `t`tGetting policies"
 	Line 1 "Policies:"
 	$ScopePolicies = Get-DHCPServerV4Policy -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0 | Sort-Object ProcessingOrder
 
@@ -8113,7 +8564,7 @@ Function GetIPv4ScopeData_Text
 	{
 		ForEach($Policy in $ScopePolicies)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing policy name $($Policy.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing policy name $($Policy.Name)"
 			Line 2 "Policy Name`t`t: " $Policy.Name
 			If(![string]::IsNullOrEmpty($Policy.Description))
 			{
@@ -8154,7 +8605,7 @@ Function GetIPv4ScopeData_Text
 	}
 	$ScopePolicies = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting DNS"
+	Write-Verbose "$(Get-Date): `t`tGetting DNS"
 	Line 1 "DNS:"
 	$DNSSettings = Get-DHCPServerV4DnsSetting -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0
 	If($? -and $Null -ne $DNSSettings)
@@ -8170,7 +8621,7 @@ Function GetIPv4ScopeData_Text
 	#next tab is Network Access Protection but I can't find anything that gives me that info
 	
 	#failover
-	Write-Verbose "$(Get-Date):`t`tGetting Failover"
+	Write-Verbose "$(Get-Date): `t`tGetting Failover"
 	Line 1 "Failover:"
 	
 	$Failovers = Get-DHCPServerV4Failover -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0
@@ -8179,7 +8630,7 @@ Function GetIPv4ScopeData_Text
 	{
 		ForEach($Failover in $Failovers)
 		{
-			Write-Verbose "$(Get-Date):`t`tProcessing failover $($Failover.Name)"
+			Write-Verbose "$(Get-Date): `t`tProcessing failover $($Failover.Name)"
 			Line 2 "Relationship name: " $Failover.Name
 			Line 2 "Partner Server`t`t`t: " $Failover.PartnerServer
 			Line 2 "Mode`t`t`t`t: " $Failover.Mode
@@ -8305,7 +8756,7 @@ Function GetIPv4ScopeData_Text
 	}
 	$Failovers = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting Scope statistics"
+	Write-Verbose "$(Get-Date): `t`tGetting Scope statistics"
 	Line 1 "Statistics:"
 
 	$Statistics = Get-DHCPServerV4ScopeStatistics -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0
@@ -8327,7 +8778,7 @@ Function GetIPv4ScopeData_Text
 
 Function GetIPv6ScopeData_WordPDF
 {
-	Write-Verbose "$(Get-Date):`tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
+	Write-Verbose "$(Get-Date): `tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
 	WriteWordLine 3 0 "Scope [$($IPv6Scope.Prefix)] $($IPv6Scope.Name)"
 	WriteWordLine 4 0 "General"
 	$TableRange = $doc.Application.Selection.Range
@@ -8371,7 +8822,7 @@ Function GetIPv6ScopeData_WordPDF
 	$TableRange = $Null
 	$Table = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting scope DNS settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope DNS settings"
 	WriteWordLine 4 0 "DNS"
 	$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
 	If($? -and $Null -ne $DNSSettings)
@@ -8384,7 +8835,7 @@ Function GetIPv6ScopeData_WordPDF
 	}
 	$DNSSettings = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting scope lease settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope lease settings"
 	WriteWordLine 4 0 "Lease"
 	
 	$PrefStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -8421,7 +8872,7 @@ Function GetIPv6ScopeData_WordPDF
 	
 	If($IncludeLeases)
 	{
-		Write-Verbose "$(Get-Date):`t`tGetting leases"
+		Write-Verbose "$(Get-Date): `t`tGetting leases"
 		WriteWordLine 4 0 "Address Leases"
 		$Leases = Get-DHCPServerV6Lease -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 		If($? -and $Null -ne $Leases)
@@ -8444,7 +8895,7 @@ Function GetIPv6ScopeData_WordPDF
 			[int]$xRow = 0
 			ForEach($Lease in $Leases)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 				$xRow++
 				If($Null -ne $Lease.LeaseExpiryTime)
 				{
@@ -8510,7 +8961,7 @@ Function GetIPv6ScopeData_WordPDF
 		$Leases = $Null
 	}
 
-	Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+	Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 	WriteWordLine 4 0 "Exclusions"
 	$Exclusions = Get-DHCPServerV6ExclusionRange -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object StartRange
 	If($? -and $Null -ne $Exclusions)
@@ -8564,14 +9015,14 @@ Function GetIPv6ScopeData_WordPDF
 	}
 	$Exclusions = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting reservations"
+	Write-Verbose "$(Get-Date): `t`tGetting reservations"
 	WriteWordLine 4 0 "Reservations"
 	$Reservations = Get-DHCPServerV6Reservation -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 	If($? -and $Null -ne $Reservations)
 	{
 		ForEach($Reservation in $Reservations)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing reservation $($Reservation.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing reservation $($Reservation.Name)"
 			$TableRange = $doc.Application.Selection.Range
 			[int]$Columns = 2
 			If([string]::IsNullOrEmpty($Reservation.Description))
@@ -8611,7 +9062,7 @@ Function GetIPv6ScopeData_WordPDF
 			$TableRange = $Null
 			$Table = $Null
 
-			Write-Verbose "$(Get-Date):`t`t`t`tGetting DNS settings"
+			Write-Verbose "$(Get-Date): `t`t`t`tGetting DNS settings"
 			$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -IPAddress $Reservation.IPAddress -EA 0
 			If($? -and $Null -ne $DNSSettings)
 			{
@@ -8634,7 +9085,7 @@ Function GetIPv6ScopeData_WordPDF
 	}
 	$Reservations = $Null
 
-	Write-Verbose "$(Get-Date):Getting IPv6 scope options"
+	Write-Verbose "$(Get-Date): Getting IPv6 scope options"
 	WriteWordLine 4 0 "Scope Options"
 	$ScopeOptions = Get-DHCPServerV6OptionValue -All -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object OptionId
 
@@ -8658,7 +9109,7 @@ Function GetIPv6ScopeData_WordPDF
 		[int]$xRow = 0
 		ForEach($ScopeOption in $ScopeOptions)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ScopeOption.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ScopeOption.Name)"
 			$xRow++
 			$Table.Cell($xRow,1).Range.Text = "Option Name"
 			$Table.Cell($xRow,2).Range.Text = "$($ScopeOption.OptionId.ToString("00000")) $($ScopeOption.Name)" 
@@ -8702,7 +9153,7 @@ Function GetIPv6ScopeData_WordPDF
 	}
 	$ScopeOptions = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting Scope statistics"
+	Write-Verbose "$(Get-Date): `t`tGetting Scope statistics"
 	WriteWordLine 4 0 "Statistics"
 
 	$Statistics = Get-DHCPServerV6ScopeStatistics -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
@@ -8724,7 +9175,7 @@ Function GetIPv6ScopeData_WordPDF
 
 Function GetIPv6ScopeData_HTML
 {
-	Write-Verbose "$(Get-Date):`tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
+	Write-Verbose "$(Get-Date): `tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
 	WriteHTMLLine 3 0 "Scope [$($IPv6Scope.Prefix)] $($IPv6Scope.Name)"
 	WriteHTMLLine 4 0 "General"
 	$rowdata = @()
@@ -8743,7 +9194,7 @@ Function GetIPv6ScopeData_HTML
 	FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "300"
 	InsertBlankLine
 
-	Write-Verbose "$(Get-Date):`t`tGetting scope DNS settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope DNS settings"
 	WriteHTMLLine 4 0 "DNS"
 	$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
 	If($? -and $Null -ne $DNSSettings)
@@ -8756,7 +9207,7 @@ Function GetIPv6ScopeData_HTML
 	}
 	$DNSSettings = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting scope lease settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope lease settings"
 	WriteHTMLLine 4 0 "Lease"
 	
 	$PrefStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -8779,14 +9230,14 @@ Function GetIPv6ScopeData_HTML
 	
 	If($IncludeLeases)
 	{
-		Write-Verbose "$(Get-Date):`t`tGetting leases"
+		Write-Verbose "$(Get-Date): `t`tGetting leases"
 		WriteHTMLLine 4 0 "Address Leases"
 		$Leases = Get-DHCPServerV6Lease -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 		If($? -and $Null -ne $Leases)
 		{
 			ForEach($Lease in $Leases)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 				If($Null -ne $Lease.LeaseExpiryTime)
 				{
 					$LeaseStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -8825,7 +9276,7 @@ Function GetIPv6ScopeData_HTML
 		$Leases = $Null
 	}
 
-	Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+	Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 	WriteHTMLLine 4 0 "Exclusions"
 	$Exclusions = Get-DHCPServerV6ExclusionRange -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object StartRange
 	If($? -and $Null -ne $Exclusions)
@@ -8852,14 +9303,14 @@ Function GetIPv6ScopeData_HTML
 	}
 	$Exclusions = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting reservations"
+	Write-Verbose "$(Get-Date): `t`tGetting reservations"
 	WriteHTMLLine 4 0 "Reservations"
 	$Reservations = Get-DHCPServerV6Reservation -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 	If($? -and $Null -ne $Reservations)
 	{
 		ForEach($Reservation in $Reservations)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing reservation $($Reservation.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing reservation $($Reservation.Name)"
 			$rowdata = @()
 			$columnHeaders = @("Reservation name",($htmlsilver -bor $htmlbold),$Reservation.Name,$htmlwhite)
 			$rowdata += @(,('IPv6 address',($htmlsilver -bor $htmlbold),$Reservation.IPAddress.ToString(),$htmlwhite))
@@ -8874,7 +9325,7 @@ Function GetIPv6ScopeData_HTML
 			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "300"
 			InsertBlankLine
 
-			Write-Verbose "$(Get-Date):`t`t`t`tGetting DNS settings"
+			Write-Verbose "$(Get-Date): `t`t`t`tGetting DNS settings"
 			$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -IPAddress $Reservation.IPAddress -EA 0
 			If($? -and $Null -ne $DNSSettings)
 			{
@@ -8897,7 +9348,7 @@ Function GetIPv6ScopeData_HTML
 	}
 	$Reservations = $Null
 
-	Write-Verbose "$(Get-Date):Getting IPv6 scope options"
+	Write-Verbose "$(Get-Date): Getting IPv6 scope options"
 	WriteHTMLLine 4 0 "Scope Options"
 	$ScopeOptions = Get-DHCPServerV6OptionValue -All -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object OptionId
 
@@ -8905,7 +9356,7 @@ Function GetIPv6ScopeData_HTML
 	{
 		ForEach($ScopeOption in $ScopeOptions)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ScopeOption.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ScopeOption.Name)"
 			$rowdata = @()
 			$columnHeaders = @("Option Name",($htmlsilver -bor $htmlbold),"$($ScopeOption.OptionId.ToString("00000")) $($ScopeOption.Name)",$htmlwhite)
 			
@@ -8937,7 +9388,7 @@ Function GetIPv6ScopeData_HTML
 	}
 	$ScopeOptions = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting Scope statistics"
+	Write-Verbose "$(Get-Date): `t`tGetting Scope statistics"
 	WriteHTMLLine 4 0 "Statistics"
 
 	$Statistics = Get-DHCPServerV6ScopeStatistics -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
@@ -8959,7 +9410,7 @@ Function GetIPv6ScopeData_HTML
 
 Function GetIPv6ScopeData_Text
 {
-	Write-Verbose "$(Get-Date):`tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
+	Write-Verbose "$(Get-Date): `tGetting IPv6 scope data for scope $($IPv6Scope.Name)"
 	Line 0 "Scope [$($IPv6Scope.Prefix)] $($IPv6Scope.Name)"
 	Line 1 "General"
 	Line 2 "Prefix`t`t: " $IPv6Scope.Prefix
@@ -8972,7 +9423,7 @@ Function GetIPv6ScopeData_Text
 		Line 2 "Description`t: " $IPv6Scope.Description
 	}
 
-	Write-Verbose "$(Get-Date):`t`tGetting scope DNS settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope DNS settings"
 	Line 1 "DNS"
 	$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
 	If($? -and $Null -ne $DNSSettings)
@@ -8985,7 +9436,7 @@ Function GetIPv6ScopeData_Text
 	}
 	$DNSSettings = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting scope lease settings"
+	Write-Verbose "$(Get-Date): `t`tGetting scope lease settings"
 	Line 1 "Lease"
 	
 	$PrefStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -9002,14 +9453,14 @@ Function GetIPv6ScopeData_Text
 
 	If($IncludeLeases)
 	{
-		Write-Verbose "$(Get-Date):`t`tGetting leases"
+		Write-Verbose "$(Get-Date): `t`tGetting leases"
 		Line 1 "Address Leases:"
 		$Leases = Get-DHCPServerV6Lease -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 		If($? -and $Null -ne $Leases)
 		{
 			ForEach($Lease in $Leases)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 				If($Null -ne $Lease.LeaseExpiryTime)
 				{
 					$LeaseStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -9048,7 +9499,7 @@ Function GetIPv6ScopeData_Text
 		$Leases = $Null
 	}
 
-	Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+	Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 	Line 1 "Exclusions:"
 	$Exclusions = Get-DHCPServerV6ExclusionRange -ComputerName $Script:DHCPServerName -Prefix  $IPv6Scope.Prefix -EA 0 | Sort-Object StartRange
 	If($? -and $Null -ne $Exclusions)
@@ -9070,14 +9521,14 @@ Function GetIPv6ScopeData_Text
 	}
 	$Exclusions = $Null
 
-	Write-Verbose "$(Get-Date):`t`tGetting reservations"
+	Write-Verbose "$(Get-Date): `t`tGetting reservations"
 	Line 1 "Reservations:"
 	$Reservations = Get-DHCPServerV6Reservation -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
 	If($? -and $Null -ne $Reservations)
 	{
 		ForEach($Reservation in $Reservations)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing reservation $($Reservation.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing reservation $($Reservation.Name)"
 			Line 2 "Reservation name: " $Reservation.Name
 			Line 2 "IPv6 address: " $Reservation.IPAddress
 			Line 2 "DUID`t`t: " $Reservation.ClientDuid
@@ -9087,7 +9538,7 @@ Function GetIPv6ScopeData_Text
 				Line 2 "Description`t: " $Reservation.Description
 			}
 
-			Write-Verbose "$(Get-Date):`t`t`t`tGetting DNS settings"
+			Write-Verbose "$(Get-Date): `t`t`t`tGetting DNS settings"
 			$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -IPAddress $Reservation.IPAddress -EA 0
 			If($? -and $Null -ne $DNSSettings)
 			{
@@ -9110,7 +9561,7 @@ Function GetIPv6ScopeData_Text
 	}
 	$Reservations = $Null
 
-	Write-Verbose "$(Get-Date):Getting IPv6 scope options"
+	Write-Verbose "$(Get-Date): Getting IPv6 scope options"
 	Line 1 "Scope Options:"
 	$ScopeOptions = Get-DHCPServerV6OptionValue -All -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object OptionId
 
@@ -9118,7 +9569,7 @@ Function GetIPv6ScopeData_Text
 	{
 		ForEach($ScopeOption in $ScopeOptions)
 		{
-			Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ScopeOption.Name)"
+			Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ScopeOption.Name)"
 			Line 2 "Option Name`t: $($ScopeOption.OptionId.ToString("00000")) $($ScopeOption.Name)" 
 			Line 2 "Vendor`t`t: " -NoNewLine
 			If([string]::IsNullOrEmpty($ScopeOption.VendorClass))
@@ -9145,7 +9596,7 @@ Function GetIPv6ScopeData_Text
 	}
 	$ScopeOptions = $Null
 	
-	Write-Verbose "$(Get-Date):`t`tGetting Scope statistics"
+	Write-Verbose "$(Get-Date): `t`tGetting Scope statistics"
 	Line 1 "Statistics:"
 
 	$Statistics = Get-DHCPServerV6ScopeStatistics -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
@@ -9546,7 +9997,7 @@ Function ProcessIPv4MulticastScopes
 						WriteWordLine 0 0 "Multicast scope expires on $($IPv4MulticastScope.ExpiryTime)"
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+					Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 					WriteWordLine 4 0 "Exclusions"
 					$Exclusions = Get-DHCPServerV4MulticastExclusionRange -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
 					If($? -and $Null -ne $Exclusions)
@@ -9602,7 +10053,7 @@ Function ProcessIPv4MulticastScopes
 					#leases
 					If($IncludeLeases)
 					{
-						Write-Verbose "$(Get-Date):`t`tGetting leases"
+						Write-Verbose "$(Get-Date): `t`tGetting leases"
 						
 						WriteWordLine 4 0 "Address Leases"
 						$Leases = Get-DHCPServerV4MulticastLease -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0 | Sort-Object IPAddress
@@ -9627,7 +10078,7 @@ Function ProcessIPv4MulticastScopes
 							[int]$xRow = 0
 							ForEach($Lease in $Leases)
 							{
-								Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+								Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 								If($Null -ne $Lease.LeaseExpiryTime)
 								{
 									$LeaseEndStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -9715,7 +10166,7 @@ Function ProcessIPv4MulticastScopes
 						$Leases = $Null
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting Multicast Scope statistics"
+					Write-Verbose "$(Get-Date): `t`tGetting Multicast Scope statistics"
 					WriteWordLine 4 0 "Statistics"
 
 					$Statistics = Get-DHCPServerV4MulticastScopeStatistics -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
@@ -9760,7 +10211,7 @@ Function ProcessIPv4MulticastScopes
 						Line 0 "Multicast scope expires on $($IPv4MulticastScope.ExpiryTime)"
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+					Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 					Line 1 "Exclusions:"
 					$Exclusions = Get-DHCPServerV4MulticastExclusionRange -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
 					If($? -and $Null -ne $Exclusions)
@@ -9784,7 +10235,7 @@ Function ProcessIPv4MulticastScopes
 					#leases
 					If($IncludeLeases)
 					{
-						Write-Verbose "$(Get-Date):`t`tGetting leases"
+						Write-Verbose "$(Get-Date): `t`tGetting leases"
 						
 						Line 1 "Address Leases:"
 						$Leases = Get-DHCPServerV4MulticastLease -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0 | Sort-Object IPAddress
@@ -9792,7 +10243,7 @@ Function ProcessIPv4MulticastScopes
 						{
 							ForEach($Lease in $Leases)
 							{
-								Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+								Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 								If($Null -ne $Lease.LeaseExpiryTime)
 								{
 									$LeaseEndStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -9857,7 +10308,7 @@ Function ProcessIPv4MulticastScopes
 						$Leases = $Null
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting Multicast Scope statistics"
+					Write-Verbose "$(Get-Date): `t`tGetting Multicast Scope statistics"
 					Line 1 "Statistics:"
 
 					$Statistics = Get-DHCPServerV4MulticastScopeStatistics -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
@@ -9905,7 +10356,7 @@ Function ProcessIPv4MulticastScopes
 						WriteHTMLLine 0 1 "Multicast scope lifetime: Multicast scope expires on $($IPv4MulticastScope.ExpiryTime)"
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting exclusions"
+					Write-Verbose "$(Get-Date): `t`tGetting exclusions"
 					WriteHTMLLine 4 0 "Exclusions"
 					$Exclusions = Get-DHCPServerV4MulticastExclusionRange -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
 					If($? -and $Null -ne $Exclusions)
@@ -9934,7 +10385,7 @@ Function ProcessIPv4MulticastScopes
 					#leases
 					If($IncludeLeases)
 					{
-						Write-Verbose "$(Get-Date):`t`tGetting leases"
+						Write-Verbose "$(Get-Date): `t`tGetting leases"
 						
 						WriteHTMLLine 4 0 "Address Leases"
 						$Leases = Get-DHCPServerV4MulticastLease -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0 | Sort-Object IPAddress
@@ -9942,7 +10393,7 @@ Function ProcessIPv4MulticastScopes
 						{
 							ForEach($Lease in $Leases)
 							{
-								Write-Verbose "$(Get-Date):`t`t`tProcessing lease $($Lease.IPAddress)"
+								Write-Verbose "$(Get-Date): `t`t`tProcessing lease $($Lease.IPAddress)"
 								If($Null -ne $Lease.LeaseExpiryTime)
 								{
 									$LeaseEndStr = [string]::format("{0} days, {1} hours, {2} minutes", `
@@ -10013,7 +10464,7 @@ Function ProcessIPv4MulticastScopes
 						$Leases = $Null
 					}
 					
-					Write-Verbose "$(Get-Date):`t`tGetting Multicast Scope statistics"
+					Write-Verbose "$(Get-Date): `t`tGetting Multicast Scope statistics"
 					WriteHTMLLine 4 0 "Statistics"
 
 					$Statistics = Get-DHCPServerV4MulticastScopeStatistics -ComputerName $Script:DHCPServerName -Name $IPv4MulticastScope.Name -EA 0
@@ -10161,7 +10612,7 @@ Function ProcessIPv4BOOTPTable
 Function ProcessServerOptions
 {
 	#Server Options
-	Write-Verbose "$(Get-Date):Getting IPv4 server options"
+	Write-Verbose "$(Get-Date): Getting IPv4 server options"
 
 	If($MSWord -or $PDF)
 	{
@@ -10201,7 +10652,7 @@ Function ProcessServerOptions
 			[int]$xRow = 0
 			ForEach($ServerOption in $ServerOptions)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ServerOption.Name)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ServerOption.Name)"
 				$xRow++
 				$Table.Cell($xRow,1).Range.Text = "Option Name"
 				$Table.Cell($xRow,2).Range.Text = "$($ServerOption.OptionId.ToString("000")) $($ServerOption.Name)"
@@ -10249,7 +10700,7 @@ Function ProcessServerOptions
 		{
 			ForEach($ServerOption in $ServerOptions)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ServerOption.Name)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ServerOption.Name)"
 				Line 2 "Option Name`t: $($ServerOption.OptionId.ToString("000")) $($ServerOption.Name)"
 				Line 2 "Vendor`t`t: " -NoNewLine
 				If([string]::IsNullOrEmpty($ServerOption.VendorClass))
@@ -10279,7 +10730,7 @@ Function ProcessServerOptions
 		{
 			ForEach($ServerOption in $ServerOptions)
 			{
-				Write-Verbose "$(Get-Date):`t`t`tProcessing option name $($ServerOption.Name)"
+				Write-Verbose "$(Get-Date): `t`t`tProcessing option name $($ServerOption.Name)"
 				$rowdata = @()
 				$columnHeaders = @("Option Name",($htmlsilver -bor $htmlbold),"$($ServerOption.OptionId.ToString("000")) $($ServerOption.Name)",$htmlwhite)
 				
@@ -10350,7 +10801,7 @@ Function ProcessServerOptions
 Function ProcessPolicies
 {
 	#Policies
-	Write-Verbose "$(Get-Date):Getting IPv4 policies"
+	Write-Verbose "$(Get-Date): Getting IPv4 policies"
 	If($MSWord -or $PDF)
 	{
 		WriteWordLine 3 0 "Policies"
@@ -10517,7 +10968,7 @@ Function ProcessPolicies
 Function ProcessIPv4Filters
 {
 	#Filters
-	Write-Verbose "$(Get-Date):Getting IPv4 filters"
+	Write-Verbose "$(Get-Date): Getting IPv4 filters"
 	If($MSWord -or $PDF)
 	{
 		WriteWordLine 3 0 "Filters"
@@ -10531,7 +10982,7 @@ Function ProcessIPv4Filters
 		WriteHTMLLine 3 0 "Filters"
 	}
 
-	Write-Verbose "$(Get-Date):`tAllow filters"
+	Write-Verbose "$(Get-Date): `tAllow filters"
 	$AllowFilters = Get-DHCPServerV4Filter -List Allow -ComputerName $Script:DHCPServerName -EA 0 | Sort-Object MacAddress
 
 	If($? -and $Null -ne $AllowFilters)
@@ -10636,7 +11087,7 @@ Function ProcessIPv4Filters
 	$AllowFilters = $Null
 	[gc]::collect() 
 
-	Write-Verbose "$(Get-Date):`tDeny filters"
+	Write-Verbose "$(Get-Date): `tDeny filters"
 	$DenyFilters = Get-DHCPServerV4Filter -List Deny -ComputerName $Script:DHCPServerName -EA 0 | Sort-Object MacAddress
 	If($? -and $Null -ne $DenyFilters)
 	{
@@ -10903,7 +11354,7 @@ Function ProcessIPv6Properties
 		}
 		$Statistics = $Null
 
-		Write-Verbose "$(Get-Date):Getting IPv6 scopes"
+		Write-Verbose "$(Get-Date): Getting IPv6 scopes"
 		$IPv6Scopes = Get-DHCPServerV6Scope -ComputerName $Script:DHCPServerName -EA 0
 
 		If($? -and $Null -ne $IPv6Scopes)
@@ -10924,7 +11375,7 @@ Function ProcessIPv6Properties
 		}
 		$IPv6Scopes = $Null
 
-		Write-Verbose "$(Get-Date):Getting IPv6 server options"
+		Write-Verbose "$(Get-Date): Getting IPv6 server options"
 		$selection.InsertNewPage()
 		WriteWordLine 3 0 "Server Options"
 
@@ -11127,7 +11578,7 @@ Function ProcessIPv6Properties
 		
 		$Statistics = $Null
 
-		Write-Verbose "$(Get-Date):Getting IPv6 scopes"
+		Write-Verbose "$(Get-Date): Getting IPv6 scopes"
 		$IPv6Scopes = Get-DHCPServerV6Scope -ComputerName $Script:DHCPServerName -EA 0
 
 		If($? -and $Null -ne $IPv6Scopes)
@@ -11303,7 +11754,7 @@ Function ProcessIPv6Properties
 		}
 		$Statistics = $Null
 
-		Write-Verbose "$(Get-Date):Getting IPv6 scopes"
+		Write-Verbose "$(Get-Date): Getting IPv6 scopes"
 		$IPv6Scopes = Get-DHCPServerV6Scope -ComputerName $Script:DHCPServerName -EA 0
 
 		If($? -and $Null -ne $IPv6Scopes)
@@ -11324,7 +11775,7 @@ Function ProcessIPv6Properties
 		}
 		$IPv6Scopes = $Null
 
-		Write-Verbose "$(Get-Date):Getting IPv6 server options"
+		Write-Verbose "$(Get-Date): Getting IPv6 server options"
 		WriteHTMLLine 3 0 "Server Options"
 
 		$ServerOptions = Get-DHCPServerV6OptionValue -All -ComputerName $Script:DHCPServerName -EA 0 | Sort-Object OptionId
@@ -11363,6 +11814,153 @@ Function ProcessIPv6Properties
 			WriteHTMLLine 0 1 "There were no IPv6 server options"
 		}
 		$ServerOptions = $Null
+	}
+}
+
+Function ProcessDHCPOptions
+{
+	Write-Verbose "$(Get-Date): Getting DHCP Options"
+	
+	$DHCPOptions = Get-DhcpServerV4OptionDefinition -ComputerName $Script:DHCPServerName -EA 0
+	
+	If($? -or $Null -ne $DHCPOptions)
+	{
+		Write-Verbose "$(Get-Date): `tProcessing DHCP Options"
+		$DHCPOptions = $DHCPOptions | Sort-Object OptionId
+	
+		If($MSWord -or $PDF)
+		{
+			[System.Collections.Hashtable[]] $ItemsWordTable = @();
+			$Selection.InsertNewPage()
+			WriteWordLine 2 0 "DHCP Options"
+		}
+		ElseIf($Text)
+		{
+			Line 0 "DHCP Options"
+			Line 0 ""
+			Line 1 "OptionId  Name                                                Description                                                   Type          Vendor Class  Default Value         Multivalued"
+			Line 1 "========================================================================================================================================================================================="
+			       #12345678SS12345678901234567890123456789012345678901234567890SS123456789012345678901234567890123456789012345678901234567890SS123456789012SS123456789012SS12345678901234567890SS12345
+		}
+		ElseIf($HTML)
+		{
+			$rowdata = @()
+			WriteHTMLLine 2 0 "DHCP Options"
+		}
+
+		ForEach($Item in $DHCPOptions)
+		{
+			If($MSWord -or $PDF)
+			{
+				$ItemsWordTable += @{ 
+					OptionId     = $Item.OptionId;
+					Name         = $Item.Name;
+					Description  = $Item.Description;
+					Type         = $Item.Type;
+					VendorClass  = $Item.VendorClass;
+					DefaultValue = $Item.DefaultValue;
+					MultiValued  = $Item.MultiValued;
+				}
+			}
+			ElseIf($Text)
+			{
+				Line 1 ( "{0,-8}  {1,-50}  {2,-60}  {3,-12}  {4,-12}  {5,-20}  {6,-8}" -f `
+					$Item.OptionId, 
+					$Item.Name, 
+					$Item.Description, 
+					$Item.Type, 
+					$Item.VendorClass, 
+					$( If( $null -ne $Item.DefaultValue ) { $Item.DefaultValue -join ';' } Else { ' ' } ), 
+					$Item.MultiValued.ToString() 
+				)
+			}
+			ElseIf($HTML)
+			{
+				#$tmpDV = $Item.DefaultValue.SyncRoot
+				$rowdata += @(,(
+					$Item.OptionId,$htmlwhite,
+					$Item.Name,$htmlwhite,
+					$Item.Description,$htmlwhite,
+					$Item.Type,$htmlwhite,
+					$Item.VendorClass,$htmlwhite,
+					$Item.DefaultValue.SyncRoot,$htmlwhite,
+					$Item.MultiValued.ToString(),$htmlwhite
+				))
+			}
+		}
+
+		If($MSWord -or $PDF)
+		{
+			$Table = AddWordTable -Hashtable $ItemsWordTable `
+			-Columns OptionId, Name, Description, Type, VendorClass, DefaultValue, MultiValued `
+			-Headers  "OptionId", "Name", "Description", "Type", "Vendor Class", "Default Value", "Multivalued" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table -Size 9
+
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+			$Table.Columns.Item(1).Width = 55;
+			$Table.Columns.Item(2).Width = 90;
+			$Table.Columns.Item(3).Width = 115;
+			$Table.Columns.Item(4).Width = 60;
+			$Table.Columns.Item(5).Width = 60;
+			$Table.Columns.Item(6).Width = 60;
+			$Table.Columns.Item(7).Width = 60;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+		}
+		ElseIf($HTML)
+		{
+			$columnHeaders = @(
+			'OptionId',($htmlsilver -bor $htmlBold),
+			'Name',($htmlsilver -bor $htmlBold),
+			'Description',($htmlsilver -bor $htmlBold),
+			'Type',($htmlsilver -bor $htmlBold),
+			'Vendor Class',($htmlsilver -bor $htmlBold),
+			'Default Value',($htmlsilver -bor $htmlBold),
+			'Multivalued',($htmlsilver -bor $htmlBold)
+			)
+
+			$msg = ""
+			$columnWidths = @("60","130","180","80","85","85","80")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+			WriteHTMLLine 0 0 " "
+		}
+	}
+	ElseIf(!$?)
+	{
+		If($MSWord -or $PDF)
+		{
+			WriteWordLine 0 0 "Error retrieving DHCP Options"
+		}
+		ElseIf($Text)
+		{
+			Line 0 "Error retrieving DHCP Options"
+		}
+		ElseIf($HTML)
+		{
+			WriteHTMLLine 0 0 "Error retrieving DHCP Options"
+		}
+	}
+	Else
+	{
+		If($MSWord -or $PDF)
+		{
+			WriteWordLine 0 1 "There were no DHCP Options"
+		}
+		ElseIf($Text)
+		{
+			Line 0 "There were no DHCP Options"
+		}
+		ElseIf($HTML)
+		{
+			WriteHTMLLine 0 1 "There were no DHCP Options"
+		}
 	}
 }
 
@@ -11501,6 +12099,7 @@ Function ProcessScriptEnd
 		Out-File -FilePath $SIFile -Append -InputObject "From               : $($From)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "HW Inventory       : $($Hardware)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Include Leases     : $($IncludeLeases)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Include Options    : $($IncludeOptions)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Log                : $($Log)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Save As HTML       : $($HTML)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Save As PDF        : $($PDF)" 4>$Null
@@ -11607,6 +12206,11 @@ ForEach($DHCPServer in $Script:DHCPServerNames)
 	ProcessIPv4Filters
 
 	ProcessIPv6Properties
+	
+	If($IncludeOptions)
+	{
+		ProcessDHCPOptions
+	}
 
 	ProcessHardware
 }
