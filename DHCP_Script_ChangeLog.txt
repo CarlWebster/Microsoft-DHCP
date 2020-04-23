@@ -8,6 +8,12 @@
 #@essentialexch on Twitter
 #https://www.essential.exchange/blog/
 
+#Version 1.44
+#	Remove the SMTP parameterset and manually verify the parameters
+#	Update Function SendEmail to handle anonymous unauthenticated email
+#	Update Functions GetComputerWMIInfo and OutputNicInfo to fix a bug in Power Management settings
+#	Update Help Text
+
 #Version 1.43 17-Apr-2020
 #	Add parameter IncludeOptions to add DHCP Options to report.
 #		New Function ProcessDHCPOptions

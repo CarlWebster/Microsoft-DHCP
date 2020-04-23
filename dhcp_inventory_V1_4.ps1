@@ -9,7 +9,7 @@
 	Creates a complete inventory of a Microsoft 2012+ DHCP server.
 .DESCRIPTION
 	Creates a complete inventory of a Microsoft 2012+ DHCP server using Microsoft 
-	PowerShell, Word, plain text or HTML.
+	PowerShell, Word, plain text, or HTML.
 	
 	Creates a Word or PDF document, text or HTML file named after the DHCP server.
 
@@ -447,6 +447,19 @@
 	Output file will be saved in the path \\FileServer\ShareName
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
+	-SmtpServer mail.domain.tld
+	-From XDAdmin@domain.tld 
+	-To ITGroup@domain.tld	
+
+	The script will use the email server mail.domain.tld, sending from XDAdmin@domain.tld, 
+	sending to ITGroup@domain.tld.
+
+	The script will use the default SMTP port 25 and will not use SSL.
+
+	If the current user's credentials are not valid to send email, 
+	the user will be prompted to enter valid credentials.
+.EXAMPLE
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
 	-SmtpServer mailrelay.domain.tld
 	-From Anonymous@domain.tld 
 	-To ITGroup@domain.tld	
@@ -471,71 +484,56 @@
 
 	The script will generate an anonymous secure password for the anonymous@domain.tld 
 	account.
-
-	Will use all Default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
-	Webster" or
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
-	$env:username = Administrator
-
-	Carl Webster for the Company Name.
-	Sideline for the Cover Page format.
-	Administrator for the User Name.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
-	-ComputerName DHCPServer01 
-	-SmtpServer mail.domain.tld 
-	-From XDAdmin@domain.tld 
-	-To ITGroup@domain.tld 
-	-ComputerName DHCPServer01
-	
-	Will use all Default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
-	Webster" or
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
-	$env:username = Administrator
+	-SmtpServer labaddomain-com.mail.protection.outlook.com
+	-UseSSL
+	-From SomeEmailAddress@labaddomain.com 
+	-To ITGroupDL@labaddomain.com	
 
-	Carl Webster for the Company Name.
-	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	***OFFICE 365 Example***
+
+	https://docs.microsoft.com/en-us/exchange/mail-flow-best-practices/how-to-set-up-a-multifunction-device-or-application-to-send-email-using-office-3
 	
-	Script will be run remotely against DHCP server DHCPServer01.
+	This uses Option 2 from the above link.
 	
-	Script will use the email server mail.domain.tld, sending from XDAdmin@domain.tld, 
-	sending to ITGroup@domain.tld.
-	If the current user's credentials are not valid to send email, the user will be prompted 
-	to enter valid credentials.
+	***OFFICE 365 Example***
+
+	The script will use the email server labaddomain-com.mail.protection.outlook.com, 
+	sending from SomeEmailAddress@labaddomain.com, sending to ITGroupDL@labaddomain.com.
+
+	The script will use the default SMTP port 25 and will use SSL.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
-	-ComputerName DHCPServer01 
 	-SmtpServer smtp.office365.com 
-	-SmtpPort 587 
+	-SmtpPort 587
 	-UseSSL 
 	-From Webster@CarlWebster.com 
-	-To ITGroup@CarlWebster.com
-	
-	Will use all Default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
-	Webster" or
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
-	$env:username = Administrator
+	-To ITGroup@CarlWebster.com	
 
-	Carl Webster for the Company Name.
-	Sideline for the Cover Page format.
-	Administrator for the User Name.
-	
-	Script will be run remotely against DHCP server DHCPServer01.
-	
+	The script will use the email server smtp.office365.com on port 587 using SSL, 
+	sending from webster@carlwebster.com, sending to ITGroup@carlwebster.com.
+
+	If the current user's credentials are not valid to send email, 
+	the user will be prompted to enter valid credentials.
+.EXAMPLE
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
+	-SmtpServer smtp.gmail.com 
+	-SmtpPort 587
+	-UseSSL 
+	-From Webster@CarlWebster.com 
+	-To ITGroup@CarlWebster.com	
+
 	*** NOTE ***
 	To send email using a Gmail or g-suite account, you may have to turn ON
 	the "Less secure app access" option on your account.
 	*** NOTE ***
 	
-	Script will use the email server smtp.office365.com on port 587 using SSL, sending from 
-	webster@carlwebster.com, sending to ITGroup@carlwebster.com.
+	The script will use the email server smtp.gmail.com on port 587 using SSL, 
+	sending from webster@gmail.com, sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, the user will be prompted 
-	to enter valid credentials.
+	If the current user's credentials are not valid to send email, 
+	the user will be prompted to enter valid credentials.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -Dev -ScriptInfo -Log
 	
@@ -609,9 +607,9 @@
 	formatted text document.
 .NOTES
 	NAME: DHCP_Inventory_V1_4.ps1
-	VERSION: 1.43
+	VERSION: 1.44
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: April 16, 2020
+	LASTEDIT: April 23, 2020
 #>
 
 #endregion
@@ -623,19 +621,15 @@
 
 Param(
 	[parameter(ParameterSetName="HTML",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Switch]$HTML=$False,
 
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Switch]$MSWord=$False,
 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Switch]$PDF=$False,
 
 	[parameter(ParameterSetName="Text",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Switch]$Text=$False,
 
 	[parameter(Mandatory=$False)] 
@@ -647,42 +641,36 @@ Param(
 	
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CA")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyAddress="",
     
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CE")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyEmail="",
     
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CF")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyFax="",
     
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CN")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyName="",
     
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CPh")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyPhone="",
     
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CP")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CoverPage="Sideline", 
@@ -715,24 +703,23 @@ Param(
 	
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("UN")]
 	[ValidateNotNullOrEmpty()]
 	[string]$UserName=$env:username,
 
-	[parameter(ParameterSetName="SMTP",Mandatory=$True)] 
+	[parameter(Mandatory=$False)] 
 	[string]$SmtpServer="",
 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[parameter(Mandatory=$False)] 
 	[int]$SmtpPort=25,
 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[parameter(Mandatory=$False)] 
 	[switch]$UseSSL=$False,
 
-	[parameter(ParameterSetName="SMTP",Mandatory=$True)] 
+	[parameter(Mandatory=$False)] 
 	[string]$From="",
 
-	[parameter(ParameterSetName="SMTP",Mandatory=$True)] 
+	[parameter(Mandatory=$False)] 
 	[string]$To=""
 
 	)
@@ -751,6 +738,12 @@ Param(
 #Created on April 10, 2014
 
 #Version 1.0 released to the community on May 31, 2014
+
+#Version 1.44
+#	Remove the SMTP parameterset and manually verify the parameters
+#	Update Function SendEmail to handle anonymous unauthenticated email
+#	Update Functions GetComputerWMIInfo and OutputNicInfo to fix a bug in Power Management settings
+#	Update Help Text
 
 #Version 1.43 17-Apr-2020
 #	Add parameter IncludeOptions to add DHCP Options to report.
@@ -1053,6 +1046,68 @@ If($Folder -ne "")
 		Exit
 	}
 }
+
+If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($To))
+{
+	Write-Error "
+	`n`n
+	`tYou specified an SmtpServer but did not include a From or To email address.
+	`n`n
+	`tScript cannot continue.
+	`n`n"
+	Exit
+}
+If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To))
+{
+	Write-Error "
+	`n`n
+	`tYou specified an SmtpServer and a To email address but did not include a From email address.
+	`n`n
+	`tScript cannot continue.
+	`n`n"
+	Exit
+}
+If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($To) -and ![String]::IsNullOrEmpty($From))
+{
+	Write-Error "
+	`n`n
+	`tYou specified an SmtpServer and a From email address but did not include a To email address.
+	`n`n
+	`tScript cannot continue.
+	`n`n"
+	Exit
+}
+If(![String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
+{
+	Write-Error "
+	`n`n
+	`tYou specified From and To email addresses but did not include the SmtpServer.
+	`n`n
+	`tScript cannot continue.
+	`n`n"
+	Exit
+}
+If(![String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($SmtpServer))
+{
+	Write-Error "
+	`n`n
+	`tYou specified a From email address but did not include the SmtpServer.
+	`n`n
+	`tScript cannot continue.
+	`n`n"
+	Exit
+}
+If(![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
+{
+	Write-Error "
+	`n`n
+	`tYou specified a To email address but did not include the SmtpServer.
+	`n`n
+	`tScript cannot continue.
+	`n`n"
+	Exit
+}
+
 #endregion
 
 #region initialize variables for Word, HTML, and text
@@ -1531,7 +1586,7 @@ Function GetComputerWMIInfo
 				
 				If($? -and $Null -ne $ThisNic)
 				{
-					OutputNicItem $Nic $ThisNic
+					OutputNicItem $Nic $ThisNic $RemoteComputerName
 				}
 				ElseIf(!$?)
 				{
@@ -1960,9 +2015,9 @@ Function OutputProcessorItem
 
 Function OutputNicItem
 {
-	Param([object]$Nic, [object]$ThisNic)
+	Param([object]$Nic, [object]$ThisNic, [string]$RemoteComputerName)
 	
-	$powerMgmt = Get-WmiObject MSPower_DeviceEnable -Namespace root\wmi | Where-Object {$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
+	$powerMgmt = Get-WmiObject -ComputerName $RemoteComputerName MSPower_DeviceEnable -Namespace root\wmi | Where-Object {$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
 
 	If($? -and $Null -ne $powerMgmt)
 	{
@@ -1981,7 +2036,7 @@ Function OutputNicItem
 	}
 	
 	$xAvailability = ""
-	Switch ($processor.availability)
+	Switch ($ThisNic.availability)
 	{
 		1	{$xAvailability = "Other"; Break}
 		2	{$xAvailability = "Unknown"; Break}
@@ -5313,7 +5368,7 @@ Function SetWordTableAlternateRowColor
 #region email function
 Function SendEmail
 {
-	Param([string]$Attachments)
+	Param([array]$Attachments)
 	Write-Verbose "$(Get-Date): Prepare to email"
 
 	$emailAttachment = $Attachments
