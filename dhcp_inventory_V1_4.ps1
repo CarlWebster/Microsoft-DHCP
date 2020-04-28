@@ -9,7 +9,7 @@
 	Creates a complete inventory of a Microsoft 2012+ DHCP server.
 .DESCRIPTION
 	Creates a complete inventory of a Microsoft 2012+ DHCP server using Microsoft 
-	PowerShell, Word, plain text or HTML.
+	PowerShell, Word, plain text, or HTML.
 	
 	Creates a Word or PDF document, text or HTML file named after the DHCP server.
 
@@ -447,6 +447,19 @@
 	Output file will be saved in the path \\FileServer\ShareName
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
+	-SmtpServer mail.domain.tld
+	-From XDAdmin@domain.tld 
+	-To ITGroup@domain.tld	
+
+	The script will use the email server mail.domain.tld, sending from XDAdmin@domain.tld, 
+	sending to ITGroup@domain.tld.
+
+	The script will use the default SMTP port 25 and will not use SSL.
+
+	If the current user's credentials are not valid to send email, 
+	the user will be prompted to enter valid credentials.
+.EXAMPLE
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
 	-SmtpServer mailrelay.domain.tld
 	-From Anonymous@domain.tld 
 	-To ITGroup@domain.tld	
@@ -471,71 +484,56 @@
 
 	The script will generate an anonymous secure password for the anonymous@domain.tld 
 	account.
-
-	Will use all Default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
-	Webster" or
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
-	$env:username = Administrator
-
-	Carl Webster for the Company Name.
-	Sideline for the Cover Page format.
-	Administrator for the User Name.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
-	-ComputerName DHCPServer01 
-	-SmtpServer mail.domain.tld 
-	-From XDAdmin@domain.tld 
-	-To ITGroup@domain.tld 
-	-ComputerName DHCPServer01
-	
-	Will use all Default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
-	Webster" or
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
-	$env:username = Administrator
+	-SmtpServer labaddomain-com.mail.protection.outlook.com
+	-UseSSL
+	-From SomeEmailAddress@labaddomain.com 
+	-To ITGroupDL@labaddomain.com	
 
-	Carl Webster for the Company Name.
-	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	***OFFICE 365 Example***
+
+	https://docs.microsoft.com/en-us/exchange/mail-flow-best-practices/how-to-set-up-a-multifunction-device-or-application-to-send-email-using-office-3
 	
-	Script will be run remotely against DHCP server DHCPServer01.
+	This uses Option 2 from the above link.
 	
-	Script will use the email server mail.domain.tld, sending from XDAdmin@domain.tld, 
-	sending to ITGroup@domain.tld.
-	If the current user's credentials are not valid to send email, the user will be prompted 
-	to enter valid credentials.
+	***OFFICE 365 Example***
+
+	The script will use the email server labaddomain-com.mail.protection.outlook.com, 
+	sending from SomeEmailAddress@labaddomain.com, sending to ITGroupDL@labaddomain.com.
+
+	The script will use the default SMTP port 25 and will use SSL.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
-	-ComputerName DHCPServer01 
 	-SmtpServer smtp.office365.com 
-	-SmtpPort 587 
+	-SmtpPort 587
 	-UseSSL 
 	-From Webster@CarlWebster.com 
-	-To ITGroup@CarlWebster.com
-	
-	Will use all Default values.
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
-	Webster" or
-	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
-	$env:username = Administrator
+	-To ITGroup@CarlWebster.com	
 
-	Carl Webster for the Company Name.
-	Sideline for the Cover Page format.
-	Administrator for the User Name.
-	
-	Script will be run remotely against DHCP server DHCPServer01.
-	
+	The script will use the email server smtp.office365.com on port 587 using SSL, 
+	sending from webster@carlwebster.com, sending to ITGroup@carlwebster.com.
+
+	If the current user's credentials are not valid to send email, 
+	the user will be prompted to enter valid credentials.
+.EXAMPLE
+	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 
+	-SmtpServer smtp.gmail.com 
+	-SmtpPort 587
+	-UseSSL 
+	-From Webster@CarlWebster.com 
+	-To ITGroup@CarlWebster.com	
+
 	*** NOTE ***
 	To send email using a Gmail or g-suite account, you may have to turn ON
 	the "Less secure app access" option on your account.
 	*** NOTE ***
 	
-	Script will use the email server smtp.office365.com on port 587 using SSL, sending from 
-	webster@carlwebster.com, sending to ITGroup@carlwebster.com.
+	The script will use the email server smtp.gmail.com on port 587 using SSL, 
+	sending from webster@gmail.com, sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, the user will be prompted 
-	to enter valid credentials.
+	If the current user's credentials are not valid to send email, 
+	the user will be prompted to enter valid credentials.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V1_4.ps1 -Dev -ScriptInfo -Log
 	
@@ -609,9 +607,9 @@
 	formatted text document.
 .NOTES
 	NAME: DHCP_Inventory_V1_4.ps1
-	VERSION: 1.43
+	VERSION: 1.44
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: April 16, 2020
+	LASTEDIT: April 28, 2020
 #>
 
 #endregion
@@ -623,19 +621,15 @@
 
 Param(
 	[parameter(ParameterSetName="HTML",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Switch]$HTML=$False,
 
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Switch]$MSWord=$False,
 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Switch]$PDF=$False,
 
 	[parameter(ParameterSetName="Text",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Switch]$Text=$False,
 
 	[parameter(Mandatory=$False)] 
@@ -647,42 +641,36 @@ Param(
 	
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CA")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyAddress="",
     
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CE")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyEmail="",
     
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CF")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyFax="",
     
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CN")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyName="",
     
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CPh")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyPhone="",
     
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("CP")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CoverPage="Sideline", 
@@ -715,24 +703,23 @@ Param(
 	
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
 	[Alias("UN")]
 	[ValidateNotNullOrEmpty()]
 	[string]$UserName=$env:username,
 
-	[parameter(ParameterSetName="SMTP",Mandatory=$True)] 
+	[parameter(Mandatory=$False)] 
 	[string]$SmtpServer="",
 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[parameter(Mandatory=$False)] 
 	[int]$SmtpPort=25,
 
-	[parameter(ParameterSetName="SMTP",Mandatory=$False)] 
+	[parameter(Mandatory=$False)] 
 	[switch]$UseSSL=$False,
 
-	[parameter(ParameterSetName="SMTP",Mandatory=$True)] 
+	[parameter(Mandatory=$False)] 
 	[string]$From="",
 
-	[parameter(ParameterSetName="SMTP",Mandatory=$True)] 
+	[parameter(Mandatory=$False)] 
 	[string]$To=""
 
 	)
@@ -751,6 +738,17 @@ Param(
 #Created on April 10, 2014
 
 #Version 1.0 released to the community on May 31, 2014
+
+#Version 1.44 28-Apr-2020
+#	Add checking for a Word version of 0, which indicates the Office installation needs repairing
+#	Add Receive Side Scaling setting to Function OutputNICItem
+#	Change location of the -Dev, -Log, and -ScriptInfo output files from the script folder to the -Folder location (Thanks to Guy Leech for the "suggestion")
+#	Reformatted the terminating Write-Error messages to make them more visible and readable in the console
+#	Remove manually checking for multiple output formats
+#	Remove the SMTP parameterset and manually verify the parameters
+#	Update Function SendEmail to handle anonymous unauthenticated email
+#	Update Functions GetComputerWMIInfo and OutputNicInfo to fix two bugs in NIC Power Management settings
+#	Update Help Text
 
 #Version 1.43 17-Apr-2020
 #	Add parameter IncludeOptions to add DHCP Options to report.
@@ -904,32 +902,6 @@ $PSDefaultParameterValues = @{"*:Verbose"=$True}
 $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
 
-#V1.35 added
-If($Log) 
-{
-	#start transcript logging
-	$Script:ThisScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
-	$Script:LogPath = "$Script:ThisScriptPath\DHCPDocScriptTranscript_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
-	
-	try 
-	{
-		Start-Transcript -Path $Script:LogPath -Force -Verbose:$false | Out-Null
-		Write-Verbose "$(Get-Date): Transcript/log started at $Script:LogPath"
-		$Script:StartLog = $true
-	} 
-	catch 
-	{
-		Write-Verbose "$(Get-Date): Transcript/log failed at $Script:LogPath"
-		$Script:StartLog = $false
-	}
-}
-
-If($Dev)
-{
-	$Error.Clear()
-	$Script:DevErrorFile = "$($pwd.Path)\DHCPInventoryScriptErrors_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
-}
-
 If($Null -eq $MSWord)
 {
 	If($Text -or $HTML -or $PDF)
@@ -948,38 +920,6 @@ If($MSWord -eq $False -and $PDF -eq $False -and $Text -eq $False -and $HTML -eq 
 }
 
 Write-Verbose "$(Get-Date): Testing output parameters"
-
-#added in V2.21
-$OutputCnt = 0
-
-If($MSWord)
-{
-	$OutputCnt++
-}
-If($PDF)
-{
-	$OutputCnt++
-}
-If($Text)
-{
-	$OutputCnt++
-}
-If($HTML)
-{
-	$OutputCnt++
-}
-
-If($OutputCnt -eq 0)
-{
-	Write-Error "No output parameter detected.  Script cannot continue"
-	Exit
-}
-ElseIf($OutputCnt -gt 1)
-{
-	Write-Error "Multiple output parameters detected.  Script cannot continue"
-	Exit
-}
-
 If($MSWord)
 {
 	Write-Verbose "$(Get-Date): MSWord is set"
@@ -1023,7 +963,15 @@ Else
 		Write-Verbose "$(Get-Date): Text is $($Text)"
 		Write-Verbose "$(Get-Date): HTML is $($HTML)"
 	}
-	Write-Error "Unable to determine output parameter.  Script cannot continue"
+	Write-Error "
+	`n`n
+	`t`t
+	Unable to determine output parameter.
+	`n`n
+	`t`t
+	Script cannot continue.
+	`n`n
+	"
 	Exit
 }
 
@@ -1042,17 +990,148 @@ If($Folder -ne "")
 		Else
 		{
 			#it exists but it is a file not a folder
-			Write-Error "Folder $Folder is a file, not a folder.  Script cannot continue"
+			Write-Error "
+			`n`n
+			`t`t
+			Folder $Folder is a file, not a folder.
+			`n`n
+			`t`t
+			Script cannot continue.
+			`n`n
+			"
 			Exit
 		}
 	}
 	Else
 	{
 		#does not exist
-		Write-Error "Folder $Folder does not exist.  Script cannot continue"
+		Write-Error "
+		`n`n
+		`t`t
+		Folder $Folder does not exist.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		Exit
 	}
 }
+
+If($Folder -eq "")
+{
+	$Script:pwdpath = $pwd.Path
+}
+Else
+{
+	$Script:pwdpath = $Folder
+}
+
+If($Script:pwdpath.EndsWith("\"))
+{
+	#remove the trailing \
+	$Script:pwdpath = $Script:pwdpath.SubString(0, ($Script:pwdpath.Length - 1))
+}
+
+
+#V1.35 added
+If($Log) 
+{
+	#start transcript logging
+	$Script:LogPath = "$($Script:pwdpath)\DHCPDocScriptTranscript_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	
+	try 
+	{
+		Start-Transcript -Path $Script:LogPath -Force -Verbose:$false | Out-Null
+		Write-Verbose "$(Get-Date): Transcript/log started at $Script:LogPath"
+		$Script:StartLog = $true
+	} 
+	catch 
+	{
+		Write-Verbose "$(Get-Date): Transcript/log failed at $Script:LogPath"
+		$Script:StartLog = $false
+	}
+}
+
+If($Dev)
+{
+	$Error.Clear()
+	$Script:DevErrorFile = "$($Script:pwdpath)\DHCPInventoryScriptErrors_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+}
+
+If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($To))
+{
+	Write-Error "
+	`n`n
+	`t`t
+	You specified an SmtpServer but did not include a From or To email address.
+	`n`n
+	`t`t
+	Script cannot continue.
+	`n`n"
+	Exit
+}
+If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To))
+{
+	Write-Error "
+	`n`n
+	`t`t
+	You specified an SmtpServer and a To email address but did not include a From email address.
+	`n`n
+	`t`t
+	Script cannot continue.
+	`n`n"
+	Exit
+}
+If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($To) -and ![String]::IsNullOrEmpty($From))
+{
+	Write-Error "
+	`n`n
+	`t`t
+	You specified an SmtpServer and a From email address but did not include a To email address.
+	`n`n
+	`t`t
+	Script cannot continue.
+	`n`n"
+	Exit
+}
+If(![String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
+{
+	Write-Error "
+	`n`n
+	`t`t
+	You specified From and To email addresses but did not include the SmtpServer.
+	`n`n
+	`t`t
+	Script cannot continue.
+	`n`n"
+	Exit
+}
+If(![String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($SmtpServer))
+{
+	Write-Error "
+	`n`n
+	`t`t
+	You specified a From email address but did not include the SmtpServer.
+	`n`n
+	`t`t
+	Script cannot continue.
+	`n`n"
+	Exit
+}
+If(![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
+{
+	Write-Error "
+	`n`n
+	`t`t
+	You specified a To email address but did not include the SmtpServer.
+	`n`n
+	`t`t
+	Script cannot continue.
+	`n`n"
+	Exit
+}
+
 #endregion
 
 #region initialize variables for Word, HTML, and text
@@ -1531,7 +1610,7 @@ Function GetComputerWMIInfo
 				
 				If($? -and $Null -ne $ThisNic)
 				{
-					OutputNicItem $Nic $ThisNic
+					OutputNicItem $Nic $ThisNic $RemoteComputerName
 				}
 				ElseIf(!$?)
 				{
@@ -1960,9 +2039,9 @@ Function OutputProcessorItem
 
 Function OutputNicItem
 {
-	Param([object]$Nic, [object]$ThisNic)
+	Param([object]$Nic, [object]$ThisNic, [string]$RemoteComputerName)
 	
-	$powerMgmt = Get-WmiObject MSPower_DeviceEnable -Namespace root\wmi | Where-Object {$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
+	$powerMgmt = Get-WmiObject -computername $RemoteComputerName MSPower_DeviceEnable -Namespace root\wmi | Where-Object{$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
 
 	If($? -and $Null -ne $powerMgmt)
 	{
@@ -1981,26 +2060,48 @@ Function OutputNicItem
 	}
 	
 	$xAvailability = ""
-	Switch ($processor.availability)
+	Switch ($ThisNic.availability)
 	{
-		1	{$xAvailability = "Other"; Break}
-		2	{$xAvailability = "Unknown"; Break}
-		3	{$xAvailability = "Running or Full Power"; Break}
-		4	{$xAvailability = "Warning"; Break}
-		5	{$xAvailability = "In Test"; Break}
-		6	{$xAvailability = "Not Applicable"; Break}
-		7	{$xAvailability = "Power Off"; Break}
-		8	{$xAvailability = "Off Line"; Break}
-		9	{$xAvailability = "Off Duty"; Break}
-		10	{$xAvailability = "Degraded"; Break}
-		11	{$xAvailability = "Not Installed"; Break}
-		12	{$xAvailability = "Install Error"; Break}
-		13	{$xAvailability = "Power Save - Unknown"; Break}
-		14	{$xAvailability = "Power Save - Low Power Mode"; Break}
-		15	{$xAvailability = "Power Save - Standby"; Break}
-		16	{$xAvailability = "Power Cycle"; Break}
-		17	{$xAvailability = "Power Save - Warning"; Break}
+		1		{$xAvailability = "Other"; Break}
+		2		{$xAvailability = "Unknown"; Break}
+		3		{$xAvailability = "Running or Full Power"; Break}
+		4		{$xAvailability = "Warning"; Break}
+		5		{$xAvailability = "In Test"; Break}
+		6		{$xAvailability = "Not Applicable"; Break}
+		7		{$xAvailability = "Power Off"; Break}
+		8		{$xAvailability = "Off Line"; Break}
+		9		{$xAvailability = "Off Duty"; Break}
+		10		{$xAvailability = "Degraded"; Break}
+		11		{$xAvailability = "Not Installed"; Break}
+		12		{$xAvailability = "Install Error"; Break}
+		13		{$xAvailability = "Power Save - Unknown"; Break}
+		14		{$xAvailability = "Power Save - Low Power Mode"; Break}
+		15		{$xAvailability = "Power Save - Standby"; Break}
+		16		{$xAvailability = "Power Cycle"; Break}
+		17		{$xAvailability = "Power Save - Warning"; Break}
 		Default	{$xAvailability = "Unknown"; Break}
+	}
+
+	#attempt to get Receive Side Scaling setting
+	$RSSEnabled = "N/A"
+	Try
+	{
+		#https://ios.developreference.com/article/10085450/How+do+I+enable+VRSS+(Virtual+Receive+Side+Scaling)+for+a+Windows+VM+without+relying+on+Enable-NetAdapterRSS%3F
+		$RSSEnabled = (Get-WmiObject -ComputerName $RemoteComputerName MSFT_NetAdapterRssSettingData -Namespace "root\StandardCimV2" -ea 0).Enabled
+
+		If($RSSEnabled)
+		{
+			$RSSEnabled = "Enabled"
+		}
+		ELse
+		{
+			$RSSEnabled = "Disabled"
+		}
+	}
+	
+	Catch
+	{
+		$RSSEnabled = "Not available on $Script:RunningOS"
 	}
 
 	$xIPAddress = @()
@@ -2079,6 +2180,7 @@ Function OutputNicItem
 		}
 		$NicInformation += @{Data = "Availability"; Value = $xAvailability; }
 		$NicInformation += @{Data = "Allow the computer to turn off this device to save power"; Value = $PowerSaving; }
+		$NicInformation += @{Data = "Receive Side Scaling"; Value = $RSSEnabled; }
 		$NicInformation += @{Data = "Physical Address"; Value = $Nic.macaddress; }
 		If($xIPAddress.Count -gt 1)
 		{
@@ -2190,6 +2292,7 @@ Function OutputNicItem
 		Line 2 "Allow computer to turn "
 		Line 2 "off device to save power: " $PowerSaving
 		Line 2 "Physical Address`t: " $nic.macaddress
+		Line 2 "Receive Side Scaling`t: " $RSSEnabled
 		Line 2 "IP Address`t`t: " $xIPAddress[0]
 		$cnt = -1
 		ForEach($tmp in $xIPAddress)
@@ -2289,6 +2392,7 @@ Function OutputNicItem
 		$rowdata += @(,('Availability',($htmlsilver -bor $htmlbold),$xAvailability,$htmlwhite))
 		$rowdata += @(,('Allow the computer to turn off this device to save power',($htmlsilver -bor $htmlbold),$PowerSaving,$htmlwhite))
 		$rowdata += @(,('Physical Address',($htmlsilver -bor $htmlbold),$Nic.macaddress,$htmlwhite))
+		$rowdata += @(,('Receive Side Scaling',($htmlsilver -bor $htmlbold),$RSSEnabled,$htmlwhite))
 		$rowdata += @(,('IP Address',($htmlsilver -bor $htmlbold),$xIPAddress[0],$htmlwhite))
 		$cnt = -1
 		ForEach($tmp in $xIPAddress)
@@ -2862,7 +2966,18 @@ Function SetupWord
 	{
 		Write-Warning "The Word object could not be created.  You may need to repair your Word installation."
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tThe Word object could not be created.  You may need to repair your Word installation.`n`n`t`tScript cannot continue.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		The Word object could not be created.
+		`n`n
+		`t`t
+		You may need to repair your Word installation.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		Exit
 	}
 
@@ -2879,7 +2994,15 @@ Function SetupWord
 	If(!($Script:WordLanguageValue -gt -1))
 	{
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tUnable to determine the Word language value.`n`n`t`tScript cannot continue.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		Unable to determine the Word language value.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		AbortScript
 	}
 	Write-Verbose "$(Get-Date): Word language value is $($Script:WordLanguageValue)"
@@ -2904,13 +3027,45 @@ Function SetupWord
 	ElseIf($Script:WordVersion -eq $wdWord2007)
 	{
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tMicrosoft Word 2007 is no longer supported.`n`n`t`tScript will end.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		Microsoft Word 2007 is no longer supported.
+		`n`n
+		`t`t
+		Script will end.
+		`n`n
+		"
 		AbortScript
+	}
+	ElseIf($Script:WordVersion -eq 0)
+	{
+		Write-Error "
+		`n`n
+		`t`t
+		The Word Version is 0. You should run a full online repair of your Office installation.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
+		Exit
 	}
 	Else
 	{
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tYou are running an untested or unsupported version of Microsoft Word.`n`n`t`tScript will end.`n`n`t`tPlease send info on your version of Word to webster@carlwebster.com`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		You are running an untested or unsupported version of Microsoft Word.
+		`n`n
+		`t`t
+		Script will end.
+		`n`n
+		`t`t
+		Please send info on your version of Word to webster@carlwebster.com
+		`n`n
+		"
 		AbortScript
 	}
 
@@ -3052,7 +3207,15 @@ Function SetupWord
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Verbose "$(Get-Date): Word language value $($Script:WordLanguageValue)"
 		Write-Verbose "$(Get-Date): Culture code $($Script:WordCultureCode)"
-		Write-Error "`n`n`t`tFor $($Script:WordProduct), $($CoverPage) is not a valid Cover Page option.`n`n`t`tScript cannot continue.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		For $($Script:WordProduct), $($CoverPage) is not a valid Cover Page option.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		AbortScript
 	}
 
@@ -3115,7 +3278,15 @@ Function SetupWord
 	{
 		Write-Verbose "$(Get-Date): "
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tAn empty Word document could not be created.`n`n`t`tScript cannot continue.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		An empty Word document could not be created.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		AbortScript
 	}
 
@@ -3124,7 +3295,15 @@ Function SetupWord
 	{
 		Write-Verbose "$(Get-Date): "
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "`n`n`t`tAn unknown error happened selecting the entire Word document for default formatting options.`n`n`t`tScript cannot continue.`n`n"
+		Write-Error "
+		`n`n
+		`t`t
+		An unknown error happened selecting the entire Word document for default formatting options.
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		AbortScript
 	}
 
@@ -3280,8 +3459,13 @@ Function ValidateWordTableValues
 		Write-Host "`n`n`t`tThe Word variable Rows is an unexpected value of $Rows" -ForegroundColor Red
 		Write-Host "`n`n`t`tThe DHCP server being processed is $DHCPServer" -ForegroundColor Red
 		Write-Host "`n`n`t`tOther info: $DoingWhat" -ForegroundColor Red
-		Write-Host "`n`n`t`tPlease email webster@carlwebster.com with this information (screenshot would be helpful)`n`n" -ForegroundColor Red
-		Write-Error "`n`n`t`tScript cannot continue.`n`n"
+		Write-Host "`n`n`t`tPlease email webster@carlwebster.com with this information (a screenshot would be helpful)`n`n" -ForegroundColor Red
+		Write-Error "
+		`n`n
+		`t`t
+		Script cannot continue.
+		`n`n
+		"
 		ProcessScriptEnd
 		AbortScript
 	}
@@ -3438,28 +3622,13 @@ Function SetFileName1andFileName2
 {
 	Param([string]$OutputFileName)
 	
-	If($Folder -eq "")
-	{
-		$pwdpath = $pwd.Path
-	}
-	Else
-	{
-		$pwdpath = $Folder
-	}
-
-	If($pwdpath.EndsWith("\"))
-	{
-		#remove the trailing \
-		$pwdpath = $pwdpath.SubString(0, ($pwdpath.Length - 1))
-	}
-
 	#set $Script:Filename1 and $Script:Filename2 with no file extension
 	If($AddDateTime)
 	{
-		[string]$Script:FileName1 = "$($pwdpath)\$($OutputFileName)"
+		[string]$Script:FileName1 = "$($Script:pwdpath)\$($OutputFileName)"
 		If($PDF)
 		{
-			[string]$Script:FileName2 = "$($pwdpath)\$($OutputFileName)"
+			[string]$Script:FileName2 = "$($Script:pwdpath)\$($OutputFileName)"
 		}
 	}
 
@@ -3469,10 +3638,10 @@ Function SetFileName1andFileName2
 		
 		If(!$AddDateTime)
 		{
-			[string]$Script:FileName1 = "$($pwdpath)\$($OutputFileName).docx"
+			[string]$Script:FileName1 = "$($Script:pwdpath)\$($OutputFileName).docx"
 			If($PDF)
 			{
-				[string]$Script:FileName2 = "$($pwdpath)\$($OutputFileName).pdf"
+				[string]$Script:FileName2 = "$($Script:pwdpath)\$($OutputFileName).pdf"
 			}
 		}
 
@@ -3482,7 +3651,7 @@ Function SetFileName1andFileName2
 	{
 		If(!$AddDateTime)
 		{
-			[string]$Script:FileName1 = "$($pwdpath)\$($OutputFileName).txt"
+			[string]$Script:FileName1 = "$($Script:pwdpath)\$($OutputFileName).txt"
 		}
 		ShowScriptOptions
 	}
@@ -3490,7 +3659,7 @@ Function SetFileName1andFileName2
 	{
 		If(!$AddDateTime)
 		{
-			[string]$Script:FileName1 = "$($pwdpath)\$($OutputFileName).html"
+			[string]$Script:FileName1 = "$($Script:pwdpath)\$($OutputFileName).html"
 		}
 		SetupHTML
 		ShowScriptOptions
@@ -3716,7 +3885,15 @@ Function TestComputerName
 		{
 			Write-Verbose "$(Get-Date): Computer $($CName) is offline"
 			$ErrorActionPreference = $SaveEAPreference
-			Write-Error "`n`n`t`tComputer $($CName) is offline.`n`t`tScript cannot continue.`n`n"
+			Write-Error "
+			`n`n
+			`t`t
+			Computer $($CName) is offline.
+			`n`n
+			`t`t
+			Script cannot continue.
+			`n`n
+			"
 			Exit
 		}
 	}
@@ -3739,7 +3916,18 @@ Function TestComputerName
 			#the computer is not a dhcp server
 			Write-Verbose "$(Get-Date): Computer $($CName) is not a DHCP Server"
 			$ErrorActionPreference = $SaveEAPreference
-			Write-Error "`n`n`t`tComputer $($CName) is not a DHCP Server.`n`n`t`tRerun the script using -ComputerName with a valid DHCP server name.`n`n`t`tScript cannot continue.`n`n"
+			Write-Error "
+			`n`n
+			`t`t
+			Computer $($CName) is not a DHCP Server.
+			`n`n
+			`t`t
+			Rerun the script using -ComputerName with a valid DHCP server name.
+			`n`n
+			`t`t
+			Script cannot continue.
+			`n`n
+			"
 			Exit
 		}
 	}
@@ -3769,7 +3957,18 @@ Function TestComputerName
 				#the computer is not a dhcp server
 				Write-Verbose "$(Get-Date): Computer $($CName) is not a DHCP Server"
 				$ErrorActionPreference = $SaveEAPreference
-				Write-Error "`n`n`t`tComputer $($CName) is not a DHCP Server.`n`n`t`tRerun the script using -ComputerName with a valid DHCP server name.`n`n`t`tScript cannot continue.`n`n"
+				Write-Error "
+				`n`n
+				`t`t
+				Computer $($CName) is not a DHCP Server.
+				`n`n
+				`t`t
+				Rerun the script using -ComputerName with a valid DHCP server name.
+				`n`n
+				`t`t
+				Script cannot continue.
+				`n`n
+				"
 				Exit
 			}
 		}
@@ -3793,7 +3992,18 @@ Function TestComputerName
 			#the computer is not a dhcp server
 			Write-Verbose "$(Get-Date): Computer $($CName) is not a DHCP Server"
 			$ErrorActionPreference = $SaveEAPreference
-			Write-Error "`n`n`t`tComputer $($CName) is not a DHCP Server.`n`n`t`tRerun the script using -ComputerName with a valid DHCP server name.`n`n`t`tScript cannot continue.`n`n"
+			Write-Error "
+			`n`n
+			`t`t
+			Computer $($CName) is not a DHCP Server.
+			`n`n
+			`t`t
+			Rerun the script using -ComputerName with a valid DHCP server name.
+			`n`n
+			`t`t
+			Script cannot continue.
+			`n`n
+			"
 			Exit
 		}
 	}
@@ -4847,11 +5057,11 @@ Function SetupHTML
 	Write-Verbose "$(Get-Date): Setting up HTML"
 	If(!$AddDateTime)
 	{
-		[string]$Script:FileName1 = "$($pwdpath)\$($OutputFileName).html"
+		[string]$Script:FileName1 = "$($Script:pwdpath)\$($OutputFileName).html"
 	}
 	ElseIf($AddDateTime)
 	{
-		[string]$Script:FileName1 = "$($pwdpath)\$($OutputFileName)_$(Get-Date -f yyyy-MM-dd_HHmm).html"
+		[string]$Script:FileName1 = "$($Script:pwdpath)\$($OutputFileName)_$(Get-Date -f yyyy-MM-dd_HHmm).html"
 	}
 
 	$htmlhead = "<html><head><meta http-equiv='Content-Language' content='da'><title>" + $Script:Title + "</title></head><body>"
@@ -5313,7 +5523,7 @@ Function SetWordTableAlternateRowColor
 #region email function
 Function SendEmail
 {
-	Param([string]$Attachments)
+	Param([array]$Attachments)
 	Write-Verbose "$(Get-Date): Prepare to email"
 
 	$emailAttachment = $Attachments
@@ -12023,7 +12233,7 @@ Function ProcessScriptSetup
 				Write-Verbose "$(Get-Date): $($cnt) DHCP server was found"
 			}
 			
-			$Script:BadDHCPErrorFile = "$($pwd.Path)\BadDHCPServers_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+			$Script:BadDHCPErrorFile = "$($Script:pwdpath)\BadDHCPServers_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 
 			ForEach($Server in $AllServers)
 			{
@@ -12072,7 +12282,7 @@ Function ProcessScriptEnd
 
 	If($ScriptInfo)
 	{
-		$SIFile = "$($pwd.Path)\DHCPInventoryScriptInfo_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+		$SIFile = "$($Script:pwdpath)\DHCPInventoryScriptInfo_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 		Out-File -FilePath $SIFile -InputObject "" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Add DateTime       : $($AddDateTime)" 4>$Null
 		If($MSWORD -or $PDF)
