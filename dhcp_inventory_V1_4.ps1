@@ -609,7 +609,7 @@
 	NAME: DHCP_Inventory_V1_4.ps1
 	VERSION: 1.44
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: April 28, 2020
+	LASTEDIT: May 8, 2020
 #>
 
 #endregion
@@ -739,14 +739,16 @@ Param(
 
 #Version 1.0 released to the community on May 31, 2014
 
-#Version 1.44 28-Apr-2020
+#Version 1.44 8-May-2020
 #	Add checking for a Word version of 0, which indicates the Office installation needs repairing
 #	Add Receive Side Scaling setting to Function OutputNICItem
+#	Change color variables $wdColorGray15 and $wdColorGray05 from [long] to [int]
 #	Change location of the -Dev, -Log, and -ScriptInfo output files from the script folder to the -Folder location (Thanks to Guy Leech for the "suggestion")
 #	Reformatted the terminating Write-Error messages to make them more visible and readable in the console
 #	Remove manually checking for multiple output formats
 #	Remove the SMTP parameterset and manually verify the parameters
 #	Update Function SendEmail to handle anonymous unauthenticated email
+#	Update Function SetWordCellFormat to change parameter $BackgroundColor to [int]
 #	Update Functions GetComputerWMIInfo and OutputNicInfo to fix two bugs in NIC Power Management settings
 #	Update Help Text
 
