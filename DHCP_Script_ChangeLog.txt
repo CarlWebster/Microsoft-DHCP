@@ -54,6 +54,7 @@
 #	Updated Function SetWordCellFormat to the latest
 #	Updated Hardware inventory functions to the latest
 #	Updated help text
+#	Updated ReadMe file (https://carlwebster.sharefile.com/d-s6b941ce3a4643df8)
 #	You can now select multiple output formats. This required extensive code changes.
 
 #Version 1.44 8-May-2020

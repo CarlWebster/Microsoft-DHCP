@@ -23,6 +23,7 @@
 	and run from a Windows 10 VM.
 
 	Requires the DHCPServer module.
+	
 	Can be run on a DHCP server or on a Windows 8.x or Windows 10 computer with RSAT installed.
 		
 	Remote Server Administration Tools for Windows 8 
@@ -101,7 +102,7 @@
 	Output filename will be ReportName_2020-06-01_1800.docx (or .pdf or .txt).
 	This parameter is disabled by default.
 .PARAMETER AllDHCPServers
-	The script will process all Authorized DHCP servers that are online.
+	The script processes all Authorized DHCP servers that are online.
 	"All DHCP Servers" is used for the report title.
 	This parameter is disabled by default.
 	
@@ -231,7 +232,7 @@
 	using an account with permission to retrieve hardware information (i.e. Domain Admin 
 	or Local Administrator).
 
-	Selecting this parameter will add to both the time it takes to run the script and 
+	Selecting this parameter adds to both the time it takes to run the script and 
 	size of the report.
 
 	This parameter is disabled by default.
@@ -272,7 +273,7 @@
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName DHCPServer01 -MSWord
 	
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -282,29 +283,29 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-	Script will be run remotely against DHCP server DHCPServer01.
+	The script runs remotelyy against DHCP server DHCPServer01.
 
 	Creates a Microsoft Word document.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName localhost
 	
 	Script will resolve localhost to $env:computername, for example DHCPServer01.
-	Script will be run remotely against DHCP server DHCPServer01 and not localhost.
-	Output file name will use the server name DHCPServer01 and not localhost.
+	The script runs remotelyy against DHCP server DHCPServer01 and not localhost.
+	The output filename uses the server name DHCPServer01 and not localhost.
 	
 	Creates an HTML file.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName 192.168.1.222
 	
 	Script will resolve 192.168.1.222 to the DNS hostname, for example DHCPServer01.
-	Script will be run remotely against DHCP server DHCPServer01 and not 192.18.1.222.
-	Output file name will use the server name DHCPServer01 and not 192.168.1.222.
+	The script runs remotelyy against DHCP server DHCPServer01 and not 192.18.1.222.
+	The output filename uses the server name DHCPServer01 and not 192.168.1.222.
 
 	Creates an HTML file.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -PDF -ComputerName DHCPServer02
 	
-	Will use all Default values and save the document as a PDF file.
+	Uses all Default values and save the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -314,15 +315,15 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-	Script will be run remotely against DHCP server DHCPServer02.
+	The script runs remotelyy against DHCP server DHCPServer02.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -Text -ComputerName DHCPServer02
 	
-	Script will be run remotely against DHCP server DHCPServer02.
+	The script runs remotelyy against DHCP server DHCPServer02.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -MSWord -ComputerName DHCPServer02
 	
-	Will use all Default values and save the document as a Word DOCX file.
+	Uses all Default values and save the document as a Word DOCX file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -332,11 +333,11 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-	Script will be run remotely against DHCP server DHCPServer02.
+	The script runs remotelyy against DHCP server DHCPServer02.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -Hardware -ComputerName DHCPServer02
 	
-	Script will be run remotely against DHCP server DHCPServer02.
+	The script runs remotelyy against DHCP server DHCPServer02.
 	Creates an HTML file.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName DHCPServer03 -IncludeLeases 
@@ -351,41 +352,41 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-	Script will be run remotely against DHCP server DHCPServer03.
+	The script runs remotelyy against DHCP server DHCPServer03.
 	Output will contain DHCP lease information.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -AllDHCPServers -HTML -IncludeOptions
 		
-	The script will find all Authorized DHCP servers and will process all servers that are 
+	The script finds all Authorized DHCP servers and processes all servers that are 
 	online.
 	Output will contain DHCP Options information.
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -CompanyName "Carl Webster Consulting" 
 	-CoverPage "Mod" -UserName "Carl Webster" -ComputerName DHCPServer01 -MSWord
 
-	Will use:
+	Uses:
 		Carl Webster Consulting for the Company Name.
 		Mod for the Cover Page format.
 		Carl Webster for the User Name.
 	
-	Script will be run remotely against DHCP server DHCPServer01.
+	The script runs remotelyy against DHCP server DHCPServer01.
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -ComputerName DHCPServer02 -IncludeLeases -MSWord
 
-	Will use:
+	Uses:
 		Carl Webster Consulting for the Company Name (alias CN).
 		Mod for the Cover Page format (alias CP).
 		Carl Webster for the User Name (alias UN).
 	
-	Script will be run remotely against DHCP server DHCPServer02.
+	The script runs remotelyy against DHCP server DHCPServer02.
 	Output will contain DHCP lease information.
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -MSWord -CompanyName "Sherlock Holmes 
 	Consulting" -CoverPage Exposure -UserName "Dr. Watson" -CompanyAddress "221B Baker 
 	Street, London, England" -CompanyFax "+44 1753 276600" -CompanyPhone "+44 1753 276200"
 	
-	Will use:
+	Uses:
 		Sherlock Holmes Consulting for the Company Name.
 		Exposure for the Cover Page format.
 		Dr. Watson for the User Name.
@@ -395,9 +396,9 @@
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -MSWord -CompanyName "Sherlock Holmes 
 	Consulting" -CoverPage Facet -UserName "Dr. Watson" -CompanyEmail 
-	SuperSleuth@SherlockHolmes.com 
+	SuperSleuth@SherlockHolmes.com
 	
-	Will use:
+	Uses:
 		Sherlock Holmes Consulting for the Company Name.
 		Facet for the Cover Page format.
 		Dr. Watson for the User Name.
@@ -407,35 +408,61 @@
 	
 	Output HTML file will be saved in the path \\FileServer\ShareName
 .EXAMPLE
+	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -HTML -MSWord -PDF -Text -Dev -ScriptInfo -Log 
+	-ComputerName DHCPServer
+	
+	Creates four reports: HTML, Microsoft Word, PDF, and plain text.
+	
+	Creates a text file named DHCPInventoryScriptErrors_yyyy-MM-dd_HHmm.txt that 
+	contains up to the last 250 errors reported by the script.
+	
+	Creates a text file named DHCPInventoryScriptInfo_yyyy-MM-dd_HHmm.txt that 
+	contains all the script parameters and other basic information.
+	
+	Creates a text file for transcript logging named 
+	DHCPDocScriptTranscript_yyyy-MM-dd_HHmm.txt.
+
+	For Microsoft Word and PDF, uses all Default values.
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or 
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
+	$env:username = Administrator
+
+	Carl Webster for the Company Name.
+	Sideline for the Cover Page format.
+	Administrator for the User Name.
+	
+	The script runs remotelyy against DHCP server DHCPServer.
+.EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -SmtpServer mail.domain.tld -From 
 	XDAdmin@domain.tld -To ITGroup@domain.tld	
 
-	The script will use the email server mail.domain.tld, sending from XDAdmin@domain.tld, 
+	The script uses the email server mail.domain.tld, sending from XDAdmin@domain.tld, 
 	sending to ITGroup@domain.tld.
 
-	The script will use the default SMTP port 25 and will not use SSL.
+	The script uses the default SMTP port 25 and will not use SSL.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send an email, 
+	the script prompts the user to enter valid credentials.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -SmtpServer mailrelay.domain.tld -From 
 	Anonymous@domain.tld -To ITGroup@domain.tld	
 
 	***SENDING UNAUTHENTICATED EMAIL***
 
-	The script will use the email server mailrelay.domain.tld, sending from 
+	The script uses the email server mailrelay.domain.tld, sending from 
 	anonymous@domain.tld, sending to ITGroup@domain.tld.
 
 	To send unauthenticated email using an email relay server requires the From email account 
 	to use the name Anonymous.
 
-	The script will use the default SMTP port 25 and will not use SSL.
+	The script uses the default SMTP port 25 and will not use SSL.
 	
 	***GMAIL/G SUITE SMTP RELAY***
 	https://support.google.com/a/answer/2956491?hl=en
 	https://support.google.com/a/answer/176600?hl=en
 
-	To send email using a Gmail or g-suite account, you may have to turn ON
+	To send an email using a Gmail or g-suite account, you may have to turn ON
 	the "Less secure app access" option on your account.
 	***GMAIL/G SUITE SMTP RELAY***
 
@@ -454,33 +481,33 @@
 	
 	***OFFICE 365 Example***
 
-	The script will use the email server labaddomain-com.mail.protection.outlook.com, 
+	The script uses the email server labaddomain-com.mail.protection.outlook.com, 
 	sending from SomeEmailAddress@labaddomain.com, sending to ITGroupDL@labaddomain.com.
 
-	The script will use the default SMTP port 25 and will use SSL.
+	The script uses the default SMTP port 25 and uses SSL.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
-	The script will use the email server smtp.office365.com on port 587 using SSL, 
+	The script uses the email server smtp.office365.com on port 587 using SSL, 
 	sending from webster@carlwebster.com, sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send an email, 
+	the script prompts the user to enter valid credentials.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -SmtpServer smtp.gmail.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	*** NOTE ***
-	To send email using a Gmail or g-suite account, you may have to turn ON
+	To send an email using a Gmail or g-suite account, you may have to turn ON
 	the "Less secure app access" option on your account.
 	*** NOTE ***
 	
-	The script will use the email server smtp.gmail.com on port 587 using SSL, 
+	The script uses the email server smtp.gmail.com on port 587 using SSL, 
 	sending from webster@gmail.com, sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send an email, 
+	the script prompts the user to enter valid credentials.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -Dev -ScriptInfo -Log
 	
@@ -495,19 +522,19 @@
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName DHCPServer01 -Hardware
 	
-	Will add additional information for each server about its hardware.
+	Adds additional information for each server about its hardware.
 	
-	The script will be run remotely against DHCP server DHCPServer01.
+	The The script runs remotelyy against DHCP server DHCPServer01.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -AllDHCPServers
 	
-	The script will find all Authorized DHCP servers and will process all servers that are 
+	The script finds all Authorized DHCP servers and processes all servers that are 
 	online.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName DHCPServer01 -AllDHCPServers
 	
-	Even though DHCPServer01 is specified, the script will find all Authorized DHCP servers 
-	and will process all servers that are online.
+	Even though DHCPServer01 is specified, the script finds all Authorized DHCP servers 
+	and processes all online servers.
 .INPUTS
 	None.  You cannot pipe objects to this script.
 .OUTPUTS
@@ -517,7 +544,7 @@
 	NAME: DHCP_Inventory_V2.ps1
 	VERSION: 2.00
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: October 19, 2020
+	LASTEDIT: October 20, 2020
 #>
 
 #endregion
@@ -686,6 +713,7 @@ Param(
 #	Updated Function SetWordCellFormat to the latest
 #	Updated Hardware inventory functions to the latest
 #	Updated help text
+#	Updated ReadMe file (https://carlwebster.sharefile.com/d-s6b941ce3a4643df8)
 #	You can now select multiple output formats. This required extensive code changes.
 #
 #Version 1.44 8-May-2020
@@ -4019,7 +4047,7 @@ Function line
 		[Switch] $nonewline
 	)
 
-	while( $tabs -gt 0 )
+	While( $tabs -gt 0 )
 	{
 		$null = $global:Output.Append( "`t" )
 		$tabs--
@@ -4291,7 +4319,7 @@ Function WriteHTMLLine
 		##	$HTMLBody += "<font face='" + $fontName + "' " + "color='" + $color + "' size='"  + $fontSize + "'>"
 		## }
 		
-##		while( $tabs -gt 0 )
+##		While( $tabs -gt 0 )
 ##		{ 
 ##			$output += '&nbsp;&nbsp;&nbsp;&nbsp;'
 ##			$tabs--
@@ -4363,11 +4391,11 @@ Function AddHTMLTable
 			If( $ExtraSpecialVerbose )
 			{
 				wv "AddHTMLTable: rowInfo length $( $rowInfo.Length )"
-				for( $ii = 0; $ii -lt $rowInfo.Length; $ii++ )
+				For( $ii = 0; $ii -lt $rowInfo.Length; $ii++ )
 				{
 					$row = $rowInfo[ $ii ]
 					wv "AddHTMLTable: index $ii, type $( $row.GetType().FullName ), length $( $row.Length )"
-					for( $yyy = 0; $yyy -lt $row.Length; $yyy++ )
+					For( $yyy = 0; $yyy -lt $row.Length; $yyy++ )
 					{
 						wv "AddHTMLTable: index $ii, yyy = $yyy, val = '$( $row[ $yyy ] )'"
 					}
@@ -4390,7 +4418,7 @@ Function AddHTMLTable
 	}
 #>
 
-	$fwLength = if( $null -ne $fixedInfo ) { $fixedInfo.Count } else { 0 }
+	$fwLength = If( $null -ne $fixedInfo ) { $fixedInfo.Count } else { 0 }
 
 	##$htmlbody = ''
 	[System.Text.StringBuilder] $sb = New-Object System.Text.StringBuilder( 8192 )
@@ -4405,7 +4433,7 @@ Function AddHTMLTable
 ##		}
 	}
 
-	for( $rowCountIndex = 0; $rowCountIndex -lt $rowCount; $rowCountIndex++ )
+	For( $rowCountIndex = 0; $rowCountIndex -lt $rowCount; $rowCountIndex++ )
 	{
 		$null = $sb.AppendLine( '<tr>' )
 		## $htmlbody += '<tr>'
@@ -4428,7 +4456,7 @@ Function AddHTMLTable
 				wv "!!!!! AddHTMLTable: deref subRow.Length $( $subRow.Length ), subRow.GetType $( $subRow.GetType().FullName )"
 			}
 
-			for( $columnIndex = 0; $columnIndex -lt $subRow.Length; $columnIndex += 2 )
+			For( $columnIndex = 0; $columnIndex -lt $subRow.Length; $columnIndex += 2 )
 			{
 				$item = $subRow[ $columnIndex ]
 				wv "!!!!! AddHTMLTable: item.GetType $( $item.GetType().FullName )"
@@ -4455,7 +4483,7 @@ Function AddHTMLTable
 		}
 
 		$subRowLength = $subRow.Count
-		for( $columnIndex = 0; $columnIndex -lt $colCount; $columnIndex += 2 )
+		For( $columnIndex = 0; $columnIndex -lt $colCount; $columnIndex += 2 )
 		{
 			$item = If( $columnIndex -lt $subRowLength ) { $subRow[ $columnIndex ] } Else { 0 }
 			## If( !( $item -is [String] ) -and $item -is [Array] )
@@ -4502,7 +4530,7 @@ Function AddHTMLTable
 			}
 			Else
 			{
-				for ($inx = 0; $inx -lt $text.length; $inx++ )
+				For($inx = 0; $inx -lt $text.length; $inx++ )
 				{
 					If( $text[ $inx ] -eq ' ' )
 					{
@@ -4511,7 +4539,7 @@ Function AddHTMLTable
 					}
 					Else
 					{
-						break
+						Break
 					}
 				}
 				##$htmlbody += $text
@@ -4657,7 +4685,6 @@ Function AddHTMLTable
 		htmlmaroon      
 		htmlgreen       
 		htmlblack     
-
 #>
 
 Function FormatHTMLTable
@@ -4710,12 +4737,12 @@ Function FormatHTMLTable
 #>
 
 	$HTMLBody = ''
-	if( $tableheader.Length -gt 0 )
+	If( $tableheader.Length -gt 0 )
 	{
 		$HTMLBody += "<b><font face='" + $fontname + "' size='" + ($fontsize + 1) + "'>" + $tableheader + "</font></b>" + $crlf
 	}
 
-	$fwSize = if( $null -eq $fixedWidth ) { 0 } else { $fixedWidth.Count }
+	$fwSize = If( $null -eq $fixedWidth ) { 0 } else { $fixedWidth.Count }
 
 	If( $null -eq $columnArray -or $columnArray.Length -eq 0)
 	{
@@ -4749,7 +4776,7 @@ Function FormatHTMLTable
 	{
 		$HTMLBody += '<tr>' + $crlf
 
-		for( $columnIndex = 0; $columnIndex -lt $NumCols; $columnindex += 2 )
+		For( $columnIndex = 0; $columnIndex -lt $NumCols; $columnindex += 2 )
 		{
 			#V3.00
 			$val = $columnArray[ $columnIndex + 1 ]
@@ -4778,7 +4805,7 @@ Function FormatHTMLTable
 				}
 				Else
 				{
-					for( $i = 0; $i -lt $array.Length; $i += 2 )
+					For( $i = 0; $i -lt $array.Length; $i += 2 )
 					{
 						If( $array[ $i ] -eq ' ' )
 						{
@@ -4786,7 +4813,7 @@ Function FormatHTMLTable
 						}
 						Else
 						{
-							break
+							Break
 						}
 					}
 					$HTMLBody += $array
@@ -4818,11 +4845,11 @@ Function FormatHTMLTable
 		If( $ExtraSpecialVerbose )
 		{
 			wv "***** FormatHTMLTable: rowarray length $( $rowArray.Length )"
-			for( $ii = 0; $ii -lt $rowArray.Length; $ii++ )
+			For( $ii = 0; $ii -lt $rowArray.Length; $ii++ )
 			{
 				$row = $rowArray[ $ii ]
 				wv "***** FormatHTMLTable: index $ii, type $( $row.GetType().FullName ), length $( $row.Length )"
-				for( $yyy = 0; $yyy -lt $row.Length; $yyy++ )
+				For( $yyy = 0; $yyy -lt $row.Length; $yyy++ )
 				{
 					wv "***** FormatHTMLTable: index $ii, yyy = $yyy, val = '$( $row[ $yyy ] )'"
 				}
@@ -4943,7 +4970,7 @@ Function SetupHTML
 	}
 
 	$htmlhead = "<html><head><meta http-equiv='Content-Language' content='da'><title>" + $Script:Title + "</title></head><body>"
-	out-file -FilePath $Script:HTMLFileName -Force -InputObject $HTMLHead 4>$Null
+	Out-File -FilePath $Script:HTMLFileName -Force -InputObject $HTMLHead 4>$Null
 }
 #endregion
 
@@ -5190,7 +5217,7 @@ Function AddWordTable
 
 		If(!$List)
 		{
-			#the next line causes the heading row to flow across page breaks
+			#the next line causes the heading row to flow across page Breaks
 			$WordTable.Rows.First.Headingformat = $wdHeadingFormatTrue;
 		}
 
@@ -5457,14 +5484,14 @@ $Script:Title is attached.
 	{
 		If($UseSSL)
 		{
-			Write-Verbose "$(Get-Date): Trying to send email using current user's credentials with SSL"
+			Write-Verbose "$(Get-Date): Trying to send an email using current user's credentials with SSL"
 			Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
 			-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To `
 			-UseSSL *>$Null
 		}
 		Else
 		{
-			Write-Verbose  "$(Get-Date): Trying to send email using current user's credentials without SSL"
+			Write-Verbose  "$(Get-Date): Trying to send an email using current user's credentials without SSL"
 			Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
 			-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To *>$Null
 		}
@@ -5486,7 +5513,7 @@ $Script:Title is attached.
 
 				$error.Clear()
 
-				$emailCredentials = Get-Credential -UserName $From -Message "Enter the password to send email"
+				$emailCredentials = Get-Credential -UserName $From -Message "Enter the password to send an email"
 
 				If($UseSSL)
 				{
@@ -5702,7 +5729,6 @@ Function ProcessServerProperties
 			$rowdata += @(,('Backup path',($htmlsilver -bor $htmlbold),"Error retrieving DHCP Server Database information",$htmlwhite))
 		}
 	}
-
 
 	$DHCPDB = $Null
 
@@ -6218,6 +6244,42 @@ Function ProcessIPv4Properties
 	$DNSSettings = Get-DHCPServerV4DnsSetting -ComputerName $Script:DHCPServerName -EA 0
 	If($? -and $Null -ne $DNSSettings)
 	{
+		If($DNSSettings.DeleteDnsRROnLeaseExpiry)
+		{
+			$DeleteDnsRROnLeaseExpiry = "Enabled"
+		}
+		Else
+		{
+			$DeleteDnsRROnLeaseExpiry = "Disabled"
+		}
+
+		If($DNSSettings.UpdateDnsRRForOlderClients)
+		{
+			$UpdateDnsRRForOlderClients = "Enabled"
+		}
+		Else
+		{
+			$UpdateDnsRRForOlderClients = "Disabled"
+		}
+
+		If($DNSSettings.DisableDnsPtrRRUpdate)
+		{
+			$DisableDnsPtrRRUpdate = "Enabled"
+		}
+		Else
+		{
+			$DisableDnsPtrRRUpdate = "Disabled"
+		}
+
+		If($DNSSettings.NameProtection)
+		{
+			$NameProtection = "Enabled"
+		}
+		Else
+		{
+			$NameProtection = "Disabled"
+		}
+
 		If($MSWord -or $PDF)
 		{
 			[System.Collections.Hashtable[]] $ScriptInformation = @()
@@ -6235,40 +6297,10 @@ Function ProcessIPv4Properties
 				$ScriptInformation += @{ Data = "Enable DNS dynamic updates"; Value = "Enabled"; }
 				$ScriptInformation += @{ Data = "Always dynamically update DNS A and PTR records"; Value = "Enabled"; }
 			}
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				$ScriptInformation += @{ Data = "Discard A and PTR records when lease is deleted"; Value = "Enabled"; }
-			}
-			Else
-			{
-				$ScriptInformation += @{ Data = "Discard A and PTR records when lease is deleted"; Value = "Disabled"; }
-			}
-			If($DNSSettings.UpdateDnsRRForOlderClients)
-			{
-				$Tmp = "Enabled"
-			}
-			Else
-			{
-				$Tmp = "Disabled"
-			}
-			$ScriptInformation += @{ Data = "Dynamically update DNS records for DHCP clients that do not request updates"; Value = $Tmp; }
-			If($DNSSettings.DisableDnsPtrRRUpdate)
-			{
-				$ScriptInformation += @{ Data = "Disable dynamic updates for DNS PTR record"; Value = "Enabled"; }
-			}
-			Else
-			{
-				$ScriptInformation += @{ Data = "Disable dynamic updates for DNS PTR record"; Value = "Disabled"; }
-			}
-			If($DNSSettings.NameProtection)
-			{
-				$Tmp = "Enabled"
-			}
-			Else
-			{
-				$Tmp = "Disabled"
-			}
-			$ScriptInformation += @{ Data = "Name Protection"; Value = $Tmp; }
+			$ScriptInformation += @{ Data = "Discard A and PTR records when lease is deleted"; Value = $DeleteDnsRROnLeaseExpiry; }
+			$ScriptInformation += @{ Data = "Dynamically update DNS records for DHCP clients that do not request updates"; Value = $UpdateDnsRRForOlderClients; }
+			$ScriptInformation += @{ Data = "Disable dynamic updates for DNS PTR record"; Value = $DisableDnsPtrRRUpdate; }
+			$ScriptInformation += @{ Data = "Name Protection"; Value = $NameProtection; }
 
 			$Table = AddWordTable -Hashtable $ScriptInformation `
 			-Columns Data,Value `
@@ -6306,43 +6338,11 @@ Function ProcessIPv4Properties
 				Line 0 "Enabled"
 				Line 2 "Always dynamically update DNS A and PTR records: Enabled"
 			}
-			Line 2 "Discard A and PTR records when lease deleted`t: " -NoNewLine
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
+			Line 2 "Discard A and PTR records when lease deleted`t: " $DeleteDnsRROnLeaseExpiry
 			Line 2 "Dynamically update DNS records for DHCP "
-			Line 2 "clients that do not request updates`t`t: " -NoNewLine
-			If($DNSSettings.UpdateDnsRRForOlderClients)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
-			Line 2 "Disable dynamic updates for DNS PTR records`t: " -NoNewLine
-			If($DNSSettings.DisableDnsPtrRRUpdate)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
-			Line 2 "Name Protection`t`t`t`t`t: " -NoNewLine
-			If($DNSSettings.NameProtection)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
+			Line 2 "clients that do not request updates`t`t: " $UpdateDnsRRForOlderClients
+			Line 2 "Disable dynamic updates for DNS PTR records`t: " $DisableDnsPtrRRUpdate$DisableDnsPtrRRUpdate
+			Line 2 "Name Protection`t`t`t`t`t: " $NameProtection
 			Line 0 ""
 		}
 		If($HTML)
@@ -6362,38 +6362,10 @@ Function ProcessIPv4Properties
 				$columnHeaders = @("Enable DNS dynamic updates",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite)
 				$rowdata += @(,("Always dynamically update DNS A and PTR records",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
 			}
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				$rowdata += @(,("Discard A and PTR records when lease deleted",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,("Discard A and PTR records when lease deleted",($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
-			If($DNSSettings.UpdateDnsRRForOlderClients)
-			{
-				$rowdata += @(,('Dynamically update DNS records for DHCP clients that do not request updates',($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,('Dynamically update DNS records for DHCP clients that do not request updates',($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
-			If($DNSSettings.DisableDnsPtrRRUpdate)
-			{
-				$rowdata += @(,('Disable dynamic updates for DNS PTR records',($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,('Disable dynamic updates for DNS PTR records',($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
-			If($DNSSettings.NameProtection)
-			{
-				$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
+			$rowdata += @(,("Discard A and PTR records when lease deleted",($htmlsilver -bor $htmlbold),$DeleteDnsRROnLeaseExpiry,$htmlwhite))
+			$rowdata += @(,('Dynamically update DNS records for DHCP clients that do not request updates',($htmlsilver -bor $htmlbold),$UpdateDnsRRForOlderClients,$htmlwhite))
+			$rowdata += @(,('Disable dynamic updates for DNS PTR records',($htmlsilver -bor $htmlbold),$DisableDnsPtrRRUpdate,$htmlwhite))
+			$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),$NameProtection,$htmlwhite))
 			$msg = ""
 			$columnWidths = @("450","50")
 			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
@@ -9449,6 +9421,42 @@ Function ProcessIPv4ScopeData
 	$DNSSettings = Get-DHCPServerV4DnsSetting -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0
 	If($? -and $Null -ne $DNSSettings)
 	{
+		If($DNSSettings.DeleteDnsRROnLeaseExpiry)
+		{
+			$DeleteDnsRROnLeaseExpiry = "Enabled"
+		}
+		Else
+		{
+			$DeleteDnsRROnLeaseExpiry = "Disabled"
+		}
+
+		If($DNSSettings.UpdateDnsRRForOlderClients)
+		{
+			$UpdateDnsRRForOlderClients = "Enabled"
+		}
+		Else
+		{
+			$UpdateDnsRRForOlderClients = "Disabled"
+		}
+
+		If($DNSSettings.DisableDnsPtrRRUpdate)
+		{
+			$DisableDnsPtrRRUpdate = "Enabled"
+		}
+		Else
+		{
+			$DisableDnsPtrRRUpdate = "Disabled"
+		}
+
+		If($DNSSettings.NameProtection)
+		{
+			$NameProtection = "Enabled"
+		}
+		Else
+		{
+			$NameProtection = "Disabled"
+		}
+
 		If($MSWord -or $PDF)
 		{
 			[System.Collections.Hashtable[]] $ScriptInformation = @()
@@ -9466,40 +9474,10 @@ Function ProcessIPv4ScopeData
 				$ScriptInformation += @{ Data = "Enable DNS dynamic updates"; Value = "Enabled"; }
 				$ScriptInformation += @{ Data = "Always dynamically update DNS A and PTR records"; Value = "Enabled"; }
 			}
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				$ScriptInformation += @{ Data = "Discard A and PTR records when lease is deleted"; Value = "Enabled"; }
-			}
-			Else
-			{
-				$ScriptInformation += @{ Data = "Discard A and PTR records when lease is deleted"; Value = "Disabled"; }
-			}
-			If($DNSSettings.UpdateDnsRRForOlderClients)
-			{
-				$Tmp = "Enabled"
-			}
-			Else
-			{
-				$Tmp = "Disabled"
-			}
-			$ScriptInformation += @{ Data = "Dynamically update DNS records for DHCP clients that do not request updates"; Value = $Tmp; }
-			If($DNSSettings.DisableDnsPtrRRUpdate)
-			{
-				$ScriptInformation += @{ Data = "Disable dynamic updates for DNS PTR record"; Value = "Enabled"; }
-			}
-			Else
-			{
-				$ScriptInformation += @{ Data = "Disable dynamic updates for DNS PTR record"; Value = "Disabled"; }
-			}
-			If($DNSSettings.NameProtection)
-			{
-				$Tmp = "Enabled"
-			}
-			Else
-			{
-				$Tmp = "Disabled"
-			}
-			$ScriptInformation += @{ Data = "Name Protection"; Value = $Tmp; }
+			$ScriptInformation += @{ Data = "Discard A and PTR records when lease is deleted"; Value = $DeleteDnsRROnLeaseExpiry; }
+			$ScriptInformation += @{ Data = "Dynamically update DNS records for DHCP clients that do not request updates"; Value = $UpdateDnsRRForOlderClients; }
+			$ScriptInformation += @{ Data = "Disable dynamic updates for DNS PTR record"; Value = $DisableDnsPtrRRUpdate; }
+			$ScriptInformation += @{ Data = "Name Protection"; Value = $NameProtection; }
 
 			$Table = AddWordTable -Hashtable $ScriptInformation `
 			-Columns Data,Value `
@@ -9536,43 +9514,11 @@ Function ProcessIPv4ScopeData
 				Line 0 "Enabled"
 				Line 2 "Always dynamically update DNS A and PTR records: Enabled"
 			}
-			Line 2 "Discard A and PTR records when lease deleted`t: " -NoNewLine
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
+			Line 2 "Discard A and PTR records when lease deleted`t: " 
 			Line 2 "Dynamically update DNS records for DHCP "
-			Line 2 "clients that do not request updates`t`t: " -NoNewLine
-			If($DNSSettings.UpdateDnsRRForOlderClients)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
-			Line 2 "Disable dynamic updates for DNS PTR records`t: " -NoNewLine
-			If($DNSSettings.DisableDnsPtrRRUpdate)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
-			Line 2 "Name Protection`t`t`t`t`t: " -NoNewLine
-			If($DNSSettings.NameProtection)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
+			Line 2 "clients that do not request updates`t`t: " $UpdateDnsRRForOlderClients
+			Line 2 "Disable dynamic updates for DNS PTR records`t: " $DisableDnsPtrRRUpdate
+			Line 2 "Name Protection`t`t`t`t`t: " $NameProtection
 			Line 0 ""
 		}
 		If($HTML)
@@ -9592,38 +9538,10 @@ Function ProcessIPv4ScopeData
 				$columnHeaders = @("Enable DNS dynamic updates",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite)
 				$rowdata += @(,("Always dynamically update DNS A and PTR records",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
 			}
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				$rowdata += @(,("Discard A and PTR records when lease deleted",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,("Discard A and PTR records when lease deleted",($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
-			If($DNSSettings.UpdateDnsRRForOlderClients)
-			{
-				$rowdata += @(,('Dynamically update DNS records for DHCP clients that do not request updates',($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,('Dynamically update DNS records for DHCP clients that do not request updates',($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
-			If($DNSSettings.DisableDnsPtrRRUpdate)
-			{
-				$rowdata += @(,('Disable dynamic updates for DNS PTR records',($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,('Disable dynamic updates for DNS PTR records',($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
-			If($DNSSettings.NameProtection)
-			{
-				$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
+			$rowdata += @(,("Discard A and PTR records when lease deleted",($htmlsilver -bor $htmlbold),$DeleteDnsRROnLeaseExpiry,$htmlwhite))
+			$rowdata += @(,('Dynamically update DNS records for DHCP clients that do not request updates',($htmlsilver -bor $htmlbold),$UpdateDnsRRForOlderClients,$htmlwhite))
+			$rowdata += @(,('Disable dynamic updates for DNS PTR records',($htmlsilver -bor $htmlbold),$DisableDnsPtrRRUpdate,$htmlwhite))
+			$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),$NameProtection,$htmlwhite))
 			$msg = ""
 			$columnWidths = @("450","50")
 			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
@@ -9717,6 +9635,8 @@ Function ProcessIPv4ScopeData
 				Default						{$ServerState = "Unable to determine failover server state: $($Failover.State)"; $PartnerState = "Unable to determine partner server failover state: $($Failover.State)"; Break}
 			}
 			
+			$FailoverLoadBalancePercent = (100 - $($Failover.LoadBalancePercent))
+
 			If($MSWord -or $PDF)
 			{
 				$ScriptInformation += @{ Data = "Relationship name"; Value = $Failover.Name; }
@@ -9730,10 +9650,7 @@ Function ProcessIPv4ScopeData
 				If($Failover.Mode -eq "LoadBalance")
 				{
 					$ScriptInformation += @{ Data = "Local server"; Value = "$($Failover.LoadBalancePercent)%"; }
-						
-					$tmp = (100 - $($Failover.LoadBalancePercent))
-					$ScriptInformation += @{ Data = "Partner Server"; Value = "$($tmp)%"; }
-					$tmp = $Null
+					$ScriptInformation += @{ Data = "Partner Server"; Value = "$($FailoverLoadBalancePercent)%"; }
 				}
 				Else
 				{
@@ -9753,10 +9670,7 @@ Function ProcessIPv4ScopeData
 				If($Failover.Mode -eq "LoadBalance")
 				{
 					Line 2 "Local server`t`t`t: $($Failover.LoadBalancePercent)%"
-					Line 2 "Partner Server`t`t`t: " -NoNewLine
-					$tmp = (100 - $($Failover.LoadBalancePercent))
-					Line 0 "$($tmp)%"
-					$tmp = $Null
+					Line 2 "Partner Server`t`t`t: $($FailoverLoadBalancePercent)%"
 				}
 				Else
 				{
@@ -9780,8 +9694,7 @@ Function ProcessIPv4ScopeData
 				If($Failover.Mode -eq "LoadBalance")
 				{
 					$rowdata += @(,('Local server',($htmlsilver -bor $htmlbold),"$($Failover.LoadBalancePercent)%",$htmlwhite))
-					$tmp = (100 - $($Failover.LoadBalancePercent))
-					$rowdata += @(,('Partner Server',($htmlsilver -bor $htmlbold),"$($tmp)%",$htmlwhite))
+					$rowdata += @(,('Partner Server',($htmlsilver -bor $htmlbold),"$($FailoverLoadBalancePercent)%",$htmlwhite))
 				}
 				Else
 				{
@@ -10397,7 +10310,6 @@ Function ProcessIPv4BOOTPTable
 		{
 			$selection.InsertNewPage()
 			WriteWordLine 3 0 "BOOTP Table"
-			
 			[System.Collections.Hashtable[]] $BootPWordTable = @()
 		}
 		If($Text)
@@ -10550,6 +10462,24 @@ Function ProcessIPv6ScopeData
 	$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0
 	If($? -and $Null -ne $DNSSettings)
 	{
+		If($DNSSettings.NameProtection)
+		{
+			$NameProtection = "Enabled"
+		}
+		Else
+		{
+			$NameProtection = "Disabled"
+		}
+
+		If($DNSSettings.DeleteDnsRROnLeaseExpiry)
+		{
+			$DeleteDnsRROnLeaseExpiry = "Enabled"
+		}
+		Else
+		{
+			$DeleteDnsRROnLeaseExpiry = "Disabled"
+		}
+
 		If($MSWord -or $PDF)
 		{
 			[System.Collections.Hashtable[]] $ScriptInformation = @()
@@ -10567,23 +10497,8 @@ Function ProcessIPv6ScopeData
 				$ScriptInformation += @{ Data = "Enable DNS dynamic updates"; Value = "Enabled"; }
 				$ScriptInformation += @{ Data = "Always dynamically update DNS AAAA and PTR records"; Value = "Enabled"; }
 			}
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				$ScriptInformation += @{ Data = "Discard AAAA and PTR records when lease is deleted"; Value = "Enabled"; }
-			}
-			Else
-			{
-				$ScriptInformation += @{ Data = "Discard AAAA and PTR records when lease is deleted"; Value = "Disabled"; }
-			}
-			If($DNSSettings.NameProtection)
-			{
-				$Tmp = "Enabled"
-			}
-			Else
-			{
-				$Tmp = "Disabled"
-			}
-			$ScriptInformation += @{ Data = "Name Protection"; Value = $Tmp; }
+			$ScriptInformation += @{ Data = "Discard AAAA and PTR records when lease is deleted"; Value = $DeleteDnsRROnLeaseExpiry; }
+			$ScriptInformation += @{ Data = "Name Protection"; Value = $NameProtection; }
 
 			$Table = AddWordTable -Hashtable $ScriptInformation `
 			-Columns Data,Value `
@@ -10620,24 +10535,8 @@ Function ProcessIPv6ScopeData
 				Line 0 "Enabled"
 				Line 2 "Always dynamically update DNS AAAA and PTR records: Enabled"
 			}
-			Line 2 "Discard AAAA and PTR records when lease deleted`t: " -NoNewLine
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
-			Line 2 "Name Protection`t`t`t`t`t: " -NoNewLine
-			If($DNSSettings.NameProtection)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
+			Line 2 "Discard AAAA and PTR records when lease deleted`t: " $DeleteDnsRROnLeaseExpiry
+			Line 2 "Name Protection`t`t`t`t`t: " $NameProtection
 			Line 0 ""
 		}
 		If($HTML)
@@ -10657,22 +10556,8 @@ Function ProcessIPv6ScopeData
 				$columnHeaders = @("Enable DNS dynamic updates",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite)
 				$rowdata += @(,("Always dynamically update DNS AAAA and PTR records",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
 			}
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				$rowdata += @(,("Discard AAAA and PTR records when lease deleted",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,("Discard AAAA and PTR records when lease deleted",($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
-			If($DNSSettings.NameProtection)
-			{
-				$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
+			$rowdata += @(,("Discard AAAA and PTR records when lease deleted",($htmlsilver -bor $htmlbold),$DeleteDnsRROnLeaseExpiry,$htmlwhite))
+			$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),$NameProtection,$htmlwhite))
 			$msg = ""
 			$columnWidths = @("450","50")
 			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
@@ -11086,6 +10971,24 @@ Function ProcessIPv6ScopeData
 			$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -IPAddress $Reservation.IPAddress -EA 0
 			If($? -and $Null -ne $DNSSettings)
 			{
+				If($DNSSettings.DeleteDnsRROnLeaseExpiry)
+				{
+					$DeleteDnsRROnLeaseExpiry = "Enabled"
+				}
+				Else
+				{
+					$DeleteDnsRROnLeaseExpiry = "Disabled"
+				}
+
+				If($DNSSettings.NameProtection)
+				{
+					$NameProtection = "Enabled"
+				}
+				Else
+				{
+					$NameProtection = "Disabled"
+				}
+
 				If($MSWord -or $PDF)
 				{
 					[System.Collections.Hashtable[]] $ScriptInformation = @()
@@ -11103,23 +11006,8 @@ Function ProcessIPv6ScopeData
 						$ScriptInformation += @{ Data = "Enable DNS dynamic updates"; Value = "Enabled"; }
 						$ScriptInformation += @{ Data = "Always dynamically update DNS AAAA and PTR records"; Value = "Enabled"; }
 					}
-					If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-					{
-						$ScriptInformation += @{ Data = "Discard AAAA and PTR records when lease is deleted"; Value = "Enabled"; }
-					}
-					Else
-					{
-						$ScriptInformation += @{ Data = "Discard AAAA and PTR records when lease is deleted"; Value = "Disabled"; }
-					}
-					If($DNSSettings.NameProtection)
-					{
-						$Tmp = "Enabled"
-					}
-					Else
-					{
-						$Tmp = "Disabled"
-					}
-					$ScriptInformation += @{ Data = "Name Protection"; Value = $Tmp; }
+					$ScriptInformation += @{ Data = "Discard AAAA and PTR records when lease is deleted"; Value = $DeleteDnsRROnLeaseExpiry; }
+					$ScriptInformation += @{ Data = "Name Protection"; Value = $NameProtection; }
 
 					$Table = AddWordTable -Hashtable $ScriptInformation `
 					-Columns Data,Value `
@@ -11156,24 +11044,8 @@ Function ProcessIPv6ScopeData
 						Line 0 "Enabled"
 						Line 2 "Always dynamically update DNS AAAA and PTR records: Enabled"
 					}
-					Line 2 "Discard AAAA and PTR records when lease deleted`t: " -NoNewLine
-					If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-					{
-						Line 0 "Enabled"
-					}
-					Else
-					{
-						Line 0 "Disabled"
-					}
-					Line 2 "Name Protection`t`t`t`t`t: " -NoNewLine
-					If($DNSSettings.NameProtection)
-					{
-						Line 0 "Enabled"
-					}
-					Else
-					{
-						Line 0 "Disabled"
-					}
+					Line 2 "Discard AAAA and PTR records when lease deleted`t: " $DeleteDnsRROnLeaseExpiry
+					Line 2 "Name Protection`t`t`t`t`t: " $NameProtection
 					Line 0 ""
 				}
 				If($HTML)
@@ -11193,22 +11065,8 @@ Function ProcessIPv6ScopeData
 						$columnHeaders = @("Enable DNS dynamic updates",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite)
 						$rowdata += @(,("Always dynamically update DNS AAAA and PTR records",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
 					}
-					If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-					{
-						$rowdata += @(,("Discard AAAA and PTR records when lease deleted",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-					}
-					Else
-					{
-						$rowdata += @(,("Discard AAAA and PTR records when lease deleted",($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-					}
-					If($DNSSettings.NameProtection)
-					{
-						$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-					}
-					Else
-					{
-						$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-					}
+					$rowdata += @(,("Discard AAAA and PTR records when lease deleted",($htmlsilver -bor $htmlbold),$DeleteDnsRROnLeaseExpiry,$htmlwhite))
+					$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),$NameProtection,$htmlwhite))
 					$msg = ""
 					$columnWidths = @("450","50")
 					FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
@@ -12484,31 +12342,30 @@ Function ProcessIPv4Filters
 
 	If($? -and $Null -ne $AllowFilters)
 	{
-			ForEach($AllowFilter in $AllowFilters)
+		ForEach($AllowFilter in $AllowFilters)
+		{
+			If($MSWord -or $PDF)
 			{
-				If($MSWord -or $PDF)
-				{
-					$WordTableRowHash = @{ 
-					MacAddress = $AllowFilter.MacAddress; `
-					Description = $AllowFilter.Description
-					}
+				$WordTableRowHash = @{ 
+				MacAddress = $AllowFilter.MacAddress; `
+				Description = $AllowFilter.Description
+				}
 
-					## Add the hash to the array
-					$FiltersWordTable += $WordTableRowHash;
-				}
-				If($Text)
-				{
-					Line 3 "MAC Address`t: " $AllowFilter.MacAddress
-					Line 3 "Description`t: " $AllowFilter.Description
-					Line 0 ""
-				}
-				If($HTML)
-				{
-					$rowdata += @(,($AllowFilter.MacAddress,$htmlwhite,
-									$AllowFilter.Description,$htmlwhite))
-				}
+				## Add the hash to the array
+				$FiltersWordTable += $WordTableRowHash;
 			}
-
+			If($Text)
+			{
+				Line 3 "MAC Address`t: " $AllowFilter.MacAddress
+				Line 3 "Description`t: " $AllowFilter.Description
+				Line 0 ""
+			}
+			If($HTML)
+			{
+				$rowdata += @(,($AllowFilter.MacAddress,$htmlwhite,
+								$AllowFilter.Description,$htmlwhite))
+			}
+		}
 	}
 	ElseIf(!$?)
 	{
@@ -12602,31 +12459,30 @@ Function ProcessIPv4Filters
 	$DenyFilters = Get-DHCPServerV4Filter -List Deny -ComputerName $Script:DHCPServerName -EA 0 | Sort-Object MacAddress
 	If($? -and $Null -ne $DenyFilters)
 	{
-			ForEach($DenyFilter in $DenyFilters)
+		ForEach($DenyFilter in $DenyFilters)
+		{
+			If($MSWord -or $PDF)
 			{
-				If($MSWord -or $PDF)
-				{
-					$WordTableRowHash = @{ 
-					MacAddress = $DenyFilter.MacAddress; `
-					Description = $DenyFilter.Description
-					}
+				$WordTableRowHash = @{ 
+				MacAddress = $DenyFilter.MacAddress; `
+				Description = $DenyFilter.Description
+				}
 
-					## Add the hash to the array
-					$FiltersWordTable += $WordTableRowHash;
-				}
-				If($Text)
-				{
-					Line 3 "MAC Address`t: " $DenyFilter.MacAddress
-					Line 3 "Description`t: " $DenyFilter.Description
-					Line 0 ""
-				}
-				If($HTML)
-				{
-					$rowdata += @(,($DenyFilter.MacAddress,$htmlwhite,
-									$DenyFilter.Description,$htmlwhite))
-				}
+				## Add the hash to the array
+				$FiltersWordTable += $WordTableRowHash;
 			}
-
+			If($Text)
+			{
+				Line 3 "MAC Address`t: " $DenyFilter.MacAddress
+				Line 3 "Description`t: " $DenyFilter.Description
+				Line 0 ""
+			}
+			If($HTML)
+			{
+				$rowdata += @(,($DenyFilter.MacAddress,$htmlwhite,
+								$DenyFilter.Description,$htmlwhite))
+			}
+		}
 	}
 	ElseIf(!$?)
 	{
@@ -12850,6 +12706,24 @@ Function ProcessIPv6Properties
 	$DNSSettings = Get-DHCPServerV6DnsSetting -ComputerName $Script:DHCPServerName -EA 0
 	If($? -and $Null -ne $DNSSettings)
 	{
+		If($DNSSettings.DeleteDnsRROnLeaseExpiry)
+		{
+			$DeleteDnsRROnLeaseExpiry = "Enabled"
+		}
+		Else
+		{
+			$DeleteDnsRROnLeaseExpiry = "Disabled"
+		}
+
+		If($DNSSettings.NameProtection)
+		{
+			$NameProtection = "Enabled"
+		}
+		Else
+		{
+			$NameProtection = "Disabled"
+		}
+
 		If($MSWord -or $PDF)
 		{
 			[System.Collections.Hashtable[]] $ScriptInformation = @()
@@ -12867,23 +12741,8 @@ Function ProcessIPv6Properties
 				$ScriptInformation += @{ Data = "Enable DNS dynamic updates"; Value = "Enabled"; }
 				$ScriptInformation += @{ Data = "Always dynamically update DNS AAAA and PTR records"; Value = "Enabled"; }
 			}
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				$ScriptInformation += @{ Data = "Discard AAAA and PTR records when lease is deleted"; Value = "Enabled"; }
-			}
-			Else
-			{
-				$ScriptInformation += @{ Data = "Discard AAAA and PTR records when lease is deleted"; Value = "Disabled"; }
-			}
-			If($DNSSettings.NameProtection)
-			{
-				$Tmp = "Enabled"
-			}
-			Else
-			{
-				$Tmp = "Disabled"
-			}
-			$ScriptInformation += @{ Data = "Name Protection"; Value = $Tmp; }
+			$ScriptInformation += @{ Data = "Discard AAAA and PTR records when lease is deleted"; Value = $DeleteDnsRROnLeaseExpiry; }
+			$ScriptInformation += @{ Data = "Name Protection"; Value = $NameProtection; }
 
 			$Table = AddWordTable -Hashtable $ScriptInformation `
 			-Columns Data,Value `
@@ -12920,24 +12779,8 @@ Function ProcessIPv6Properties
 				Line 0 "Enabled"
 				Line 2 "Always dynamically update DNS AAAA and PTR records: Enabled"
 			}
-			Line 2 "Discard AAAA and PTR records when lease deleted`t: " -NoNewLine
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
-			Line 2 "Name Protection`t`t`t`t`t: " -NoNewLine
-			If($DNSSettings.NameProtection)
-			{
-				Line 0 "Enabled"
-			}
-			Else
-			{
-				Line 0 "Disabled"
-			}
+			Line 2 "Discard AAAA and PTR records when lease deleted`t: " $DeleteDnsRROnLeaseExpiry
+			Line 2 "Name Protection`t`t`t`t`t: " $NameProtection
 			Line 0 ""
 		}
 		If($HTML)
@@ -12957,22 +12800,8 @@ Function ProcessIPv6Properties
 				$columnHeaders = @("Enable DNS dynamic updates",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite)
 				$rowdata += @(,("Always dynamically update DNS AAAA and PTR records",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
 			}
-			If($DNSSettings.DeleteDnsRROnLeaseExpiry)
-			{
-				$rowdata += @(,("Discard AAAA and PTR records when lease deleted",($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,("Discard AAAA and PTR records when lease deleted",($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
-			If($DNSSettings.NameProtection)
-			{
-				$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),"Enabled",$htmlwhite))
-			}
-			Else
-			{
-				$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),"Disabled",$htmlwhite))
-			}
+			$rowdata += @(,("Discard AAAA and PTR records when lease deleted",($htmlsilver -bor $htmlbold),$DeleteDnsRROnLeaseExpiry,$htmlwhite))
+			$rowdata += @(,('Name Protection',($htmlsilver -bor $htmlbold),$NameProtection,$htmlwhite))
 			$msg = ""
 			$columnWidths = @("450","50")
 			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
@@ -13840,10 +13669,21 @@ Function ProcessScriptEnd
 		{
 			Out-File -FilePath $SIFile -Append -InputObject "DevErrorFile       : $($Script:DevErrorFile)" 4>$Null
 		}
-		Out-File -FilePath $SIFile -Append -InputObject "Filename1          : $($Script:FileName1)" 4>$Null
+		If($MSWord)
+		{
+			Out-File -FilePath $SIFile -Append -InputObject "Word FileName      : $($Script:WordFileName)" 4>$Null
+		}
+		If($HTML)
+		{
+			Out-File -FilePath $SIFile -Append -InputObject "HTML FileName      : $($Script:HTMLFileName)" 4>$Null
+		}
 		If($PDF)
 		{
-			Out-File -FilePath $SIFile -Append -InputObject "Filename2          : $($Script:FileName2)" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "PDF Filename       : $($Script:PDFFileName)" 4>$Null
+		}
+		If($Text)
+		{
+			Out-File -FilePath $SIFile -Append -InputObject "Text FileName      : $($Script:TextFileName)" 4>$Null
 		}
 		Out-File -FilePath $SIFile -Append -InputObject "Folder             : $($Folder)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "From               : $($From)" 4>$Null
