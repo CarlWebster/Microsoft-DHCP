@@ -95,6 +95,15 @@
 .PARAMETER Text
 	Creates a formatted text file with a .txt extension.
 	This parameter is disabled by default.
+.PARAMETER ComputerName
+	DHCP server to run the script against.
+	The computername is used for the report title.
+	ComputerName can be entered as the NetBIOS name, FQDN, localhost or IP Address.
+	If entered as localhost, the actual computer name is determined and used.
+	If entered as an IP address, an attempt is made to determine and use the actual 
+	computer name.
+	
+	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
 .PARAMETER AddDateTime
 	Adds a date time stamp to the end of the file name.
 	Time stamp is in the format of yyyy-MM-dd_HHmm.
@@ -205,15 +214,6 @@
 	The default value is Sideline.
 	This parameter has an alias of CP.
 	This parameter is only valid with the MSWORD and PDF output parameters.
-.PARAMETER ComputerName
-	DHCP server to run the script against.
-	The computername is used for the report title.
-	ComputerName can be entered as the NetBIOS name, FQDN, localhost or IP Address.
-	If entered as localhost, the actual computer name is determined and used.
-	If entered as an IP address, an attempt is made to determine and use the actual 
-	computer name.
-	
-	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
 .PARAMETER Dev
 	Clears errors at the beginning of the script.
 	Outputs all errors to a text file at the end of the script.
@@ -544,7 +544,7 @@
 	NAME: DHCP_Inventory_V2.ps1
 	VERSION: 2.00
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: October 20, 2020
+	LASTEDIT: October 23, 2020
 #>
 
 #endregion
@@ -567,6 +567,9 @@ Param(
 	[parameter(Mandatory=$False)] 
 	[Switch]$Text=$False,
 
+	[parameter(Mandatory=$False)] 
+	[string]$ComputerName="LocalHost",
+	
 	[parameter(Mandatory=$False)] 
 	[Switch]$AddDateTime=$False,
 	
@@ -604,9 +607,6 @@ Param(
 	[ValidateNotNullOrEmpty()]
 	[string]$CoverPage="Sideline", 
 
-	[parameter(Mandatory=$False)] 
-	[string]$ComputerName="LocalHost",
-	
 	[parameter(Mandatory=$False)] 
 	[Switch]$Dev=$False,
 	
@@ -667,11 +667,13 @@ Param(
 
 #Version 1.0 released to the community on May 31, 2014
 
-#Version 2.00
+#Version 2.00 26-Oct-2020
 #	Changed all Word/PDF tables to Ian Brighton's table functions
 #	Changed color variables $wdColorGray15 and $wdColorGray05 from [long] to [int]
 #	Changed Network Access Protection Status values to a Switch table to get the full text label
 #	Changed several sections from outputting in WriteWordLine to Word/PDF tables
+#	Changed sorting of DHCP Reservations from IPAddress to Name
+#	Changed formatting of Statistics percentages from (x.x)% to x.x%
 #	Cleanup formatting of Text output
 #	Combine functions ProcessIPv4Bindings and ProcessIPv6Bindings into one function ProcessIPBindings
 #	Fixed several typos in text labels
@@ -2100,7 +2102,10 @@ Function OutputNicItem
 		If($xIPAddress.Count -gt 1)
 		{
 			$NicInformation.Add(@{ Data = "IP Address"; Value = $xIPAddress[0]; }) > $Null
-			$NicInformation.Add(@{ Data = "Default Gateway"; Value = $Nic.Defaultipgateway; }) > $Null
+			If($Nic.Defaultipgateway)
+			{
+				$NicInformation.Add(@{ Data = "Default Gateway"; Value = $Nic.Defaultipgateway; }) > $Null
+			}
 			$NicInformation.Add(@{ Data = "Subnet Mask"; Value = $xIPSubnet[0]; }) > $Null
 			$cnt = -1
 			ForEach($tmp in $xIPAddress)
@@ -2116,7 +2121,10 @@ Function OutputNicItem
 		Else
 		{
 			$NicInformation.Add(@{ Data = "IP Address"; Value = $xIPAddress; }) > $Null
-			$NicInformation.Add(@{ Data = "Default Gateway"; Value = $Nic.Defaultipgateway; }) > $Null
+			If($Nic.Defaultipgateway)
+			{
+				$NicInformation.Add(@{ Data = "Default Gateway"; Value = $Nic.Defaultipgateway; }) > $Null
+			}
 			$NicInformation.Add(@{ Data = "Subnet Mask"; Value = $xIPSubnet; }) > $Null
 		}
 		If($nic.dhcpenabled)
@@ -2211,28 +2219,35 @@ Function OutputNicItem
 		Line 2 "Availability`t`t: " $xAvailability
 		Line 2 "Allow computer to turn "
 		Line 2 "off device to save power: " $PowerSaving
-		Line 2 "Physical Address`t: " $nic.macaddress
 		Line 2 "Receive Side Scaling`t: " $RSSEnabled
-		Line 2 "IP Address`t`t: " $xIPAddress[0]
-		$cnt = -1
-		ForEach($tmp in $xIPAddress)
+		Line 2 "Physical Address`t: " $nic.macaddress
+		If($xIPAddress.Count -gt 1)
 		{
-			$cnt++
-			If($cnt -gt 0)
+			Line 2 "IP Address: " $xIPAddress[0]
+			If($Nic.Defaultipgateway)
 			{
-				Line 5 "  " $tmp
+				Line 2 "Default Gateway: " $Nic.Defaultipgateway
+			}
+			Line 2 "Subnet Mask: " $xIPSubnet[0]
+			$cnt = -1
+			ForEach($tmp in $xIPAddress)
+			{
+				$cnt++
+				If($cnt -gt 0)
+				{
+					Line 2 "IP Address: " $tmp
+					Line 2 "Subnet Mask: " $xIPSubnet[$cnt]
+				}
 			}
 		}
-		Line 2 "Default Gateway`t`t: " $Nic.Defaultipgateway
-		Line 2 "Subnet Mask`t`t: " $xIPSubnet[0]
-		$cnt = -1
-		ForEach($tmp in $xIPSubnet)
+		Else
 		{
-			$cnt++
-			If($cnt -gt 0)
+			Line 2 "IP Address: " $xIPAddress
+			If($Nic.Defaultipgateway)
 			{
-				Line 5 "  " $tmp
+				Line 2 "Default Gateway: " $Nic.Defaultipgateway
 			}
+			Line 2 "Subnet Mask: " $xIPSubnet
 		}
 		If($nic.dhcpenabled)
 		{
@@ -2312,28 +2327,35 @@ Function OutputNicItem
 		}
 		$rowdata += @(,('Availability',($htmlsilver -bor $htmlBold),$xAvailability,$htmlwhite))
 		$rowdata += @(,('Allow the computer to turn off this device to save power',($htmlsilver -bor $htmlBold),$PowerSaving,$htmlwhite))
-		$rowdata += @(,('Physical Address',($htmlsilver -bor $htmlBold),$Nic.macaddress,$htmlwhite))
 		$rowdata += @(,('Receive Side Scaling',($htmlsilver -bor $htmlbold),$RSSEnabled,$htmlwhite))
-		$rowdata += @(,('IP Address',($htmlsilver -bor $htmlBold),$xIPAddress[0],$htmlwhite))
-		$cnt = -1
-		ForEach($tmp in $xIPAddress)
+		$rowdata += @(,('Physical Address',($htmlsilver -bor $htmlBold),$Nic.macaddress,$htmlwhite))
+		If($xIPAddress.Count -gt 1)
 		{
-			$cnt++
-			If($cnt -gt 0)
+			$rowdata += @(,("IP Address",($htmlsilver -bor $htmlBold),$xIPAddress[0],$htmlwhite))
+			If($Nic.Defaultipgateway)
 			{
-				$rowdata += @(,('IP Address',($htmlsilver -bor $htmlBold),$tmp,$htmlwhite))
+				$rowdata += @(,("Default Gateway",($htmlsilver -bor $htmlBold),$Nic.Defaultipgateway,$htmlwhite))
+			}
+			$rowdata += @(,("Subnet Mask",($htmlsilver -bor $htmlBold),$xIPSubnet[0],$htmlwhite))
+			$cnt = -1
+			ForEach($tmp in $xIPAddress)
+			{
+				$cnt++
+				If($cnt -gt 0)
+				{
+					$rowdata += @(,("IP Address",($htmlsilver -bor $htmlBold),$tmp,$htmlwhite))
+					$rowdata += @(,("Subnet Mask",($htmlsilver -bor $htmlBold),$xIPSubnet[$cnt],$htmlwhite))
+				}
 			}
 		}
-		$rowdata += @(,('Default Gateway',($htmlsilver -bor $htmlBold),$Nic.Defaultipgateway[0],$htmlwhite))
-		$rowdata += @(,('Subnet Mask',($htmlsilver -bor $htmlBold),$xIPSubnet[0],$htmlwhite))
-		$cnt = -1
-		ForEach($tmp in $xIPSubnet)
+		Else
 		{
-			$cnt++
-			If($cnt -gt 0)
+			$rowdata += @(,("IP Address",($htmlsilver -bor $htmlBold),$xIPAddress,$htmlwhite))
+			If($Nic.Defaultipgateway)
 			{
-				$rowdata += @(,('Subnet Mask',($htmlsilver -bor $htmlBold),$tmp,$htmlwhite))
+				$rowdata += @(,("Default Gateway",($htmlsilver -bor $htmlBold),$Nic.Defaultipgateway,$htmlwhite))
 			}
+			$rowdata += @(,("Subnet Mask",($htmlsilver -bor $htmlBold),$xIPSubnet,$htmlwhite))
 		}
 		If($nic.dhcpenabled)
 		{
@@ -5579,7 +5601,7 @@ Function GetShortStatistics
 
 		$WordTableRowHash = @{ 
 		Description = "In Use"; `
-		Detail = "$($Statistics.AddressesInUse) ($($InUsePercent))%"
+		Detail = "$($Statistics.AddressesInUse) - $($InUsePercent)%"
 		}
 
 		## Add the hash to the array
@@ -5587,7 +5609,7 @@ Function GetShortStatistics
 
 		$WordTableRowHash = @{ 
 		Description = "Available"; `
-		Detail = "$($Statistics.AddressesFree) ($($AvailablePercent))%"
+		Detail = "$($Statistics.AddressesFree) - $($AvailablePercent)%"
 		}
 
 		## Add the hash to the array
@@ -5617,7 +5639,7 @@ Function GetShortStatistics
 		Line 2 "In Use`t`t" -NoNewLine
 		[int]$InUsePercent = "{0:N0}" -f $Statistics.PercentageInUse
 		$tmp = "{0:N0}" -f $Statistics.AddressesInUse
-		Line 0 "$($tmp) ($($InUsePercent))%"
+		Line 0 "$($tmp) - $($InUsePercent)%"
 		Line 2 "Available`t" -NoNewLine
 		If($TotalAddresses -ne 0)
 		{
@@ -5628,7 +5650,7 @@ Function GetShortStatistics
 			[int]$AvailablePercent = 0
 		}
 		$tmp = "{0:N0}" -f $Statistics.AddressesFree
-		Line 0 "$($tmp) ($($AvailablePercent))%"
+		Line 0 "$($tmp) - $($AvailablePercent)%"
 	}
 	If($HTML)
 	{
@@ -5640,7 +5662,7 @@ Function GetShortStatistics
 
 		[int]$InUsePercent = "{0:N0}" -f $Statistics.PercentageInUse.ToString()
 		$rowdata += @(,("In Use",$htmlwhite,
-						"$($Statistics.AddressesInUse) ($($InUsePercent))%",$htmlwhite))
+						"$($Statistics.AddressesInUse) - $($InUsePercent)%",$htmlwhite))
 
 		If($TotalAddresses -ne 0)
 		{
@@ -5651,7 +5673,7 @@ Function GetShortStatistics
 			[int]$AvailablePercent = 0
 		}
 		$rowdata += @(,("Available",$htmlwhite,
-						"$($Statistics.AddressesFree) ($($AvailablePercent))%",$htmlwhite))
+						"$($Statistics.AddressesFree) - $($AvailablePercent)%",$htmlwhite))
 
 		$columnHeaders = @('Description',($htmlsilver -bor $htmlbold),'Details',($htmlsilver -bor $htmlbold))
 		$msg = ""
@@ -7026,7 +7048,7 @@ Function ProcessIPv4Statistics
 
 			$WordTableRowHash = @{ 
 			Description = "In Use"; `
-			Detail = "$($Statistics.AddressesInUse) ($($InUsePercent))%"
+			Detail = "$($Statistics.AddressesInUse) - $($InUsePercent)%"
 			}
 
 			## Add the hash to the array
@@ -7034,7 +7056,7 @@ Function ProcessIPv4Statistics
 
 			$WordTableRowHash = @{ 
 			Description = "Available"; `
-			Detail = "{0:N0}" -f "$($Statistics.AddressesAvailable) ($($AvailablePercent))%"
+			Detail = "{0:N0}" -f "$($Statistics.AddressesAvailable) - $($AvailablePercent)%"
 			}
 
 			## Add the hash to the array
@@ -7073,10 +7095,10 @@ Function ProcessIPv4Statistics
 			$tmp = "{0:N0}" -f $Statistics.TotalAddresses
 			Line 3 $tmp
 			Line 2 "In Use" -NoNewLine
-			Line 4 "$($Statistics.AddressesInUse) ($($InUsePercent))%"
+			Line 4 "$($Statistics.AddressesInUse) - $($InUsePercent)%"
 			Line 2 "Available" -NoNewLine
 			$tmp = "{0:N0}" -f $Statistics.AddressesAvailable
-			Line 3 "$($tmp) ($($AvailablePercent))%"
+			Line 3 "$($tmp) - $($AvailablePercent)%"
 		}
 		If($HTML)
 		{
@@ -7094,8 +7116,8 @@ Function ProcessIPv4Statistics
 			$rowdata += @(,("Scopes with delay configured",$htmlwhite,$Statistics.ScopesWithDelayConfigured.ToString(),$htmlwhite))
 			$tmp = "{0:N0}" -f $Statistics.TotalAddresses.ToString()
 			$rowdata += @(,("Total Addresses",$htmlwhite,$tmp,$htmlwhite))
-			$rowdata += @(,("In Use",$htmlwhite,"$($Statistics.AddressesInUse) ($($InUsePercent))%",$htmlwhite))
-			$tmp = "{0:N0}" -f "$($Statistics.AddressesAvailable) ($($AvailablePercent))%"
+			$rowdata += @(,("In Use",$htmlwhite,"$($Statistics.AddressesInUse) - $($InUsePercent)%",$htmlwhite))
+			$tmp = "{0:N0}" -f "$($Statistics.AddressesAvailable) - $($AvailablePercent)%"
 			$rowdata += @(,("Available",$htmlwhite,$tmp,$htmlwhite))
 		}
 
@@ -7970,7 +7992,7 @@ Function ProcessIPv4ScopeData
 		WriteHTMLLine ($xStartLevel + 1) 0 "Reservations"
 	}
 	
-	$Reservations = Get-DHCPServerV4Reservation -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0 | Sort-Object IPAddress
+	$Reservations = Get-DHCPServerV4Reservation -ComputerName $Script:DHCPServerName -ScopeId $IPv4Scope.ScopeId -EA 0 | Sort-Object Name
 	If($? -and $Null -ne $Reservations)
 	{
 		ForEach($Reservation in $Reservations)
@@ -8357,7 +8379,7 @@ Function ProcessIPv4ScopeData
 						SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 						
 						$Table.Columns.Item(1).Width = 75;
-						$Table.Columns.Item(2).Width = 200;
+						$Table.Columns.Item(2).Width = 300;
 
 						$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -8383,8 +8405,8 @@ Function ProcessIPv4ScopeData
 						$rowdata += @(,('Policy Name',($htmlsilver -bor $htmlbold),$PolicyName,$htmlwhite))
 					
 						$msg = ""
-						$columnWidths = @("150","200")
-						FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "350"
+						$columnWidths = @("100","400")
+						FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
 						WriteHTMLLine 0 0 ""
 					}
 				}
@@ -9052,7 +9074,7 @@ Function ProcessIPv4ScopeData
 								SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 								
 								$Table.Columns.Item(1).Width = 75;
-								$Table.Columns.Item(2).Width = 200;
+								$Table.Columns.Item(2).Width = 300;
 
 								$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -9078,7 +9100,7 @@ Function ProcessIPv4ScopeData
 								$rowdata += @(,('Value',($htmlsilver -bor $htmlbold),"$($ScopePolicyOption.Value)",$htmlwhite))
 								$rowdata += @(,('Policy Name',($htmlsilver -bor $htmlbold),$PolicyName,$htmlwhite))
 								$msg = ""
-								$columnWidths = @("250","250")
+								$columnWidths = @("100","400")
 								FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
 								WriteHTMLLine 0 0 ""
 							}
@@ -10911,7 +10933,7 @@ Function ProcessIPv6ScopeData
 		WriteHTMLLine 4 0 "Reservations"
 	}
 	
-	$Reservations = Get-DHCPServerV6Reservation -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object IPAddress
+	$Reservations = Get-DHCPServerV6Reservation -ComputerName $Script:DHCPServerName -Prefix $IPv6Scope.Prefix -EA 0 | Sort-Object Name
 	If($? -and $Null -ne $Reservations)
 	{
 		ForEach($Reservation in $Reservations)
@@ -11197,8 +11219,8 @@ Function ProcessIPv6ScopeData
 				$rowdata += @(,('Value',($htmlsilver -bor $htmlbold),"$($ScopeOption.Value)",$htmlwhite))
 				
 				$msg = ""
-				$columnWidths = @("100","350")
-				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "450"
+				$columnWidths = @("100","400")
+				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
 				WriteHTMLLine 0 0 ""
 			}
 		}
@@ -11354,8 +11376,8 @@ Function ProcessServerOptions
 
 				SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-				$Table.Columns.Item(1).Width = 250;
-				$Table.Columns.Item(2).Width = 250;
+				$Table.Columns.Item(1).Width = 75;
+				$Table.Columns.Item(2).Width = 300;
 
 				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -11380,8 +11402,8 @@ Function ProcessServerOptions
 				$rowdata += @(,('Policy Name',($htmlsilver -bor $htmlbold),$PolicyName,$htmlwhite))
 
 				$msg = ""
-				$columnWidths = @("150","200")
-				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "350"
+				$columnWidths = @("100","400")
+				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
 				WriteHTMLLine 0 0 ""
 			}
 		}
@@ -11960,7 +11982,7 @@ Function ProcessPolicies
 									SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 									
 									$Table.Columns.Item(1).Width = 75;
-									$Table.Columns.Item(2).Width = 200;
+									$Table.Columns.Item(2).Width = 250;
 
 									$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -11987,7 +12009,7 @@ Function ProcessPolicies
 									$rowdata += @(,('Policy Name',($htmlsilver -bor $htmlbold),$PolicyName,$htmlwhite))
 
 									$msg = ""
-									$columnWidths = @("250","250")
+									$columnWidths = @("100","400")
 									FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
 									WriteHTMLLine 0 0 ""
 								}
@@ -13098,7 +13120,7 @@ Function ProcessIPv6Properties
 
 			$WordTableRowHash = @{ 
 			Description = "In Use"; `
-			Detail = "$($Statistics.AddressesInUse) ($($InUsePercent)%)"
+			Detail = "$($Statistics.AddressesInUse) - $($InUsePercent)%"
 			}
 
 			## Add the hash to the array
@@ -13106,7 +13128,7 @@ Function ProcessIPv6Properties
 
 			$WordTableRowHash = @{ 
 			Description = "Available"; `
-			Detail = "$($AddressesAvailable) ($($AvailablePercent)%)"
+			Detail = "$($AddressesAvailable) - $($AvailablePercent)%"
 			}
 
 			## Add the hash to the array
@@ -13144,9 +13166,9 @@ Function ProcessIPv6Properties
 			Line 2 "Total Addresses" -NoNewLine
 			Line 2 $TotalAddresses
 			Line 2 "In Use" -NoNewLine
-			Line 3 "$($Statistics.AddressesInUse) ($($InUsePercent)%)"
+			Line 3 "$($Statistics.AddressesInUse) - $($InUsePercent)%"
 			Line 2 "Available" -NoNewLine
-			Line 2 "$($AddressesAvailable) ($($AvailablePercent)%)"
+			Line 2 "$($AddressesAvailable) - $($AvailablePercent)%"
 			Line 0 ""
 		}
 		If($HTML)
@@ -13166,8 +13188,8 @@ Function ProcessIPv6Properties
 			$rowdata += @(,("Releases",$htmlwhite,$Statistics.Releases.ToString(),$htmlwhite))
 			$rowdata += @(,("Total Scopes",$htmlwhite,$Statistics.TotalScopes.ToString(),$htmlwhite))
 			$rowdata += @(,("Total Addresses",$htmlwhite,$TotalAddresses,$htmlwhite))
-			$rowdata += @(,("In Use",$htmlwhite,"$($Statistics.AddressesInUse) ($($InUsePercent))%",$htmlwhite))
-			$rowdata += @(,("Available",$htmlwhite,"$($AddressesAvailable) ($($AvailablePercent)%)",$htmlwhite))
+			$rowdata += @(,("In Use",$htmlwhite,"$($Statistics.AddressesInUse) - $($InUsePercent)%",$htmlwhite))
+			$rowdata += @(,("Available",$htmlwhite,"$($AddressesAvailable) - $($AvailablePercent)%",$htmlwhite))
 		}
 	}
 	ElseIf(!$?)
@@ -13332,7 +13354,7 @@ Function ProcessIPv6Properties
 
 				SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-				$Table.Columns.Item(1).Width = 250;
+				$Table.Columns.Item(1).Width = 75;
 				$Table.Columns.Item(2).Width = 250;
 
 				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
@@ -13358,8 +13380,8 @@ Function ProcessIPv6Properties
 				$rowdata += @(,('Value',($htmlsilver -bor $htmlbold),$ServerOption.Value[0],$htmlwhite))
 
 				$msg = ""
-				$columnWidths = @("150","200")
-				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "350"
+				$columnWidths = @("100","400")
+				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
 				WriteHTMLLine 0 0 ""
 			}
 		}

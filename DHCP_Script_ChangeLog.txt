@@ -8,11 +8,13 @@
 #@essentialexch on Twitter
 #https://www.essential.exchange/blog/
 
-#Version 2.00
+#Version 2.00 26-Oct-2020
 #	Changed all Word/PDF tables to Ian Brighton's table functions
 #	Changed color variables $wdColorGray15 and $wdColorGray05 from [long] to [int]
 #	Changed Network Access Protection Status values to a Switch table to get the full text label
 #	Changed several sections from outputting in WriteWordLine to Word/PDF tables
+#	Changed sorting of DHCP Reservations from IPAddress to Name
+#	Changed formatting of Statistics percentages from (x.x)% to x.x%
 #	Cleanup formatting of Text output
 #	Combine functions ProcessIPv4Bindings and ProcessIPv6Bindings into one function ProcessIPBindings
 #	Fixed several typos in text labels
