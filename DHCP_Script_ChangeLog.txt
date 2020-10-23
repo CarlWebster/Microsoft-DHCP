@@ -8,6 +8,57 @@
 #@essentialexch on Twitter
 #https://www.essential.exchange/blog/
 
+#Version 2.00 26-Oct-2020
+#	Changed all Word/PDF tables to Ian Brighton's table functions
+#	Changed color variables $wdColorGray15 and $wdColorGray05 from [long] to [int]
+#	Changed Network Access Protection Status values to a Switch table to get the full text label
+#	Changed several sections from outputting in WriteWordLine to Word/PDF tables
+#	Changed sorting of DHCP Reservations from IPAddress to Name
+#	Changed formatting of Statistics percentages from (x.x)% to x.x%
+#	Cleanup formatting of Text output
+#	Combine functions ProcessIPv4Bindings and ProcessIPv6Bindings into one function ProcessIPBindings
+#	Fixed several typos in text labels
+#	General code cleanup
+#	HTML is now the default output format.
+#	In IPv4 protocol and IPv4 Scopes DNS Settings, add missing options:
+#		Dynamically update DNS records for DHCP clients to do not request updates
+#		Disable dynamic updates for DNS PTR record
+#	In IPv4 protocol and IPv4 Scopes Policies, add missing Policy data
+#		General
+#			Lease duration for DHCP client
+#		Conditions
+#			Condition
+#			Conditions
+#			Operator
+#			Value
+#		IP Address Range
+#			Added support for multiple IP address ranges
+#		Options
+#			Option Name
+#			Vendor
+#			Value
+#			Policy Name
+#		DNS
+#			Enable DNS dynamic updates
+#				Dynamically update DNS $($As) and PTR records only if requested by the DHCP clients
+#				Always dynamically update DNS $($As) and PTR records
+#			Discard $($As) and PTR records when lease deleted
+#			Dynamically update DNS records for DHCP clients to do not request updates
+#			Disable dynamic updates for DNS PTR record
+#			Register DHCP clients using the following DNS suffix
+#			Name Protection
+#	In the various Statistics text output sections, remove the ":" from the text labels
+#	Optimize the output of Failover data
+#	Removed the calls to [gc]::collect
+#	Removed function ValidateWordTableValues as it is no longer needed
+#	Updated Function CheckWordPrereq to the latest 
+#	Updated Function SetupWord to the latest
+#	Updated Function SetWordCellFormat to the latest
+#	Updated Hardware inventory functions to the latest
+#	Updated help text
+#	Updated ReadMe file (https://carlwebster.sharefile.com/d-s6b941ce3a4643df8)
+#	You can now select multiple output formats. This required extensive code changes.
+
 #Version 1.44 8-May-2020
 #	Add checking for a Word version of 0, which indicates the Office installation needs repairing
 #	Add Receive Side Scaling setting to Function OutputNICItem
