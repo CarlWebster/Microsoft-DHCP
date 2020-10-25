@@ -40,9 +40,9 @@
 #			Policy Name
 #		DNS
 #			Enable DNS dynamic updates
-#				Dynamically update DNS $($As) and PTR records only if requested by the DHCP clients
-#				Always dynamically update DNS $($As) and PTR records
-#			Discard $($As) and PTR records when lease deleted
+#				Dynamically update DNS A (or AAAA) and PTR records only if requested by the DHCP clients
+#				Always dynamically update DNS A (or AAAA) and PTR records
+#			Discard A (or AAAA) and PTR records when lease deleted
 #			Dynamically update DNS records for DHCP clients to do not request updates
 #			Disable dynamic updates for DNS PTR record
 #			Register DHCP clients using the following DNS suffix
