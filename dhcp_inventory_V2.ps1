@@ -11,11 +11,15 @@
 	Creates a complete inventory of a Microsoft 2012+ DHCP server using Microsoft 
 	PowerShell, Word, plain text, or HTML.
 	
-	Creates a Word or PDF document, text or HTML file named after the DHCP server.
+	Creates a Word or PDF document, text or HTML file named either:
+		DHCP Inventory Report for Server <DHCPServerName> for the Domain <domain>.HTML 
+		(or .DOCX or .PDF or .TXT).
+		DHCP Inventory Report for All DHCP Servers for the Domain <domain>.HTML (or .DOCX 
+		or .PDF or .TXT).
 
 	Version 2.0 changes the default output report from Word to HTML.
 	
-	Script requires at least PowerShell version 4 but runs best in version 5.
+	The script requires at least PowerShell version 4 but runs best in version 5.
 	
 	Word is NOT needed to run the script. This script outputs in Text and HTML.
 
@@ -24,7 +28,7 @@
 
 	Requires the DHCPServer module.
 	
-	Can be run on a DHCP server or on a Windows 8.x or Windows 10 computer with RSAT installed.
+	The script can run on a DHCP server or a Windows 8.x or Windows 10 computer with RSAT installed.
 		
 	Remote Server Administration Tools for Windows 8 
 		http://www.microsoft.com/en-us/download/details.aspx?id=28972
@@ -35,9 +39,9 @@
 	Remote Server Administration Tools for Windows 10
 		http://www.microsoft.com/en-us/download/details.aspx?id=45520
 	
-	For Windows Server 2003, 2008 and 2008 R2, use the following to export and import the 
+	For Windows Server 2003, 2008, and 2008 R2, use the following to export and import the 
 	DHCP data:
-		Export from the 2003, 2008 or 2008 R2 server:
+		Export from the 2003, 2008, or 2008 R2 server:
 			netsh dhcp server export C:\DHCPExport.txt all
 			
 			Copy the C:\DHCPExport.txt file to the 2012+ server.
@@ -49,7 +53,7 @@
 		information.
 
 	For Windows Server 2008 and Server 2008 R2, the 2012+ DHCP Server PowerShell cmdlets 
-	can be used for the export and import.
+	can be used for export and import.
 		From the 2012+ DHCP server:
 			Export-DhcpServer -ComputerName 2008R2Server.domain.tld -Leases -File 
 			C:\DHCPExport.xml 
@@ -57,14 +61,14 @@
 			Import-DhcpServer -ComputerName 2012Server.domain.tld -Leases -File 
 			C:\DHCPExport.xml -BackupPath C:\dhcp\backup\ 
 			
-			Note: The c:\dhcp\backup path must exist before the Import-DhcpServer 
-			cmdlet is run.
+			Note: The c:\dhcp\backup path must exist before running the 
+			Import-DhcpServer cmdlet.
 	
 	Using netsh is much faster than using the PowerShell export and import cmdlets.
 	
 	Processing of IPv4 Multicast Scopes is only available with Server 2012 R2 DHCP.
 	
-	Word and PDF Documents include a Cover Page, Table of Contents and Footer.
+	Word and PDF Documents include a Cover Page, Table of Contents, and Footer.
 	
 	Includes support for the following language versions of Microsoft Word:
 		Catalan
@@ -105,10 +109,12 @@
 	
 	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
 .PARAMETER AddDateTime
-	Adds a date time stamp to the end of the file name.
-	Time stamp is in the format of yyyy-MM-dd_HHmm.
+	Adds a date Timestamp to the end of the file name.
+	The timestamp is in the format of yyyy-MM-dd_HHmm.
 	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be ReportName_2020-06-01_1800.docx (or .pdf or .txt).
+	Output filename will either be:
+		DHCP Inventory Report for Server <server> for the Domain <domain>_2020-06-01_1800.html (or .txt or .docx or .pdf)
+		DHCP Inventory for All DHCP Servers for the Domain <domain>_2020-06-01_1800.html (or .txt or .docx or .pdf)
 	This parameter is disabled by default.
 .PARAMETER AllDHCPServers
 	The script processes all Authorized DHCP servers that are online.
@@ -118,7 +124,7 @@
 	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
 	This parameter has an alias of ALL.
 .PARAMETER CompanyAddress
-	Company Address to use for the Cover Page, if the Cover Page has the Address field.
+	Company Address used for the Cover Page, if the Cover Page has the Address field.
 	
 	The following Cover Pages have an Address field:
 		Banded (Word 2013/2016)
@@ -134,7 +140,7 @@
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CA.
 .PARAMETER CompanyEmail
-	Company Email to use for the Cover Page, if the Cover Page has the Email field.  
+	Company Email used for the Cover Page, if the Cover Page has the Email field.  
 	
 	The following Cover Pages have an Email field:
 		Facet (Word 2013/2016)
@@ -142,7 +148,7 @@
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CE.
 .PARAMETER CompanyFax
-	Company Fax to use for the Cover Page, if the Cover Page has the Fax field.  
+	Company Fax used for the Cover Page, if the Cover Page has the Fax field.  
 	
 	The following Cover Pages have a Fax field:
 		Contrast (Word 2010)
@@ -151,14 +157,14 @@
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CF.
 .PARAMETER CompanyName
-	Company Name to use for the Cover Page.  
+	Company Name used for the Cover Page.  
 	The default value is contained in 
 	HKCU:\Software\Microsoft\Office\Common\UserInfo\CompanyName or
 	HKCU:\Software\Microsoft\Office\Common\UserInfo\Company, whichever is populated 
 	on the computer running the script.
 	This parameter has an alias of CN.
 .PARAMETER CompanyPhone
-	Company Phone to use for the Cover Page if the Cover Page has the Phone field.  
+	Company Phone used for the Cover Page if the Cover Page has the Phone field.  
 	
 	The following Cover Pages have a Phone field:
 		Contrast (Word 2010)
@@ -219,7 +225,7 @@
 	Outputs all errors to a text file at the end of the script.
 	
 	This is used when the script developer requests more troubleshooting data.
-	Text file is placed in the same folder from where the script is run.
+	The text file is placed in the same folder from where the script runs.
 	
 	This parameter is disabled by default.
 .PARAMETER Folder
@@ -228,9 +234,9 @@
 	Use WMI to gather hardware information on Computer System, Disks, Processor, and 
 	Network Interface Cards
 
-	This parameter may require the script be run from an elevated PowerShell session 
-	using an account with permission to retrieve hardware information (i.e. Domain Admin 
-	or Local Administrator).
+	This parameter may require the script runs from an elevated PowerShell session 
+	using an account with permission to retrieve hardware information (i.e., Domain 
+	Admin or Local Administrator).
 
 	Selecting this parameter adds to both the time it takes to run the script and 
 	size of the report.
@@ -239,15 +245,15 @@
 	This parameter has an alias of HW.
 .PARAMETER IncludeLeases
 	Include DHCP lease information.
-	Default is to not included lease information.
+	The default is to not included lease information.
 .PARAMETER IncludeOptions
 	Include DHCP Options information.
-	Default is to not included Options information.
+	The default is to not included Options information.
 .PARAMETER Log
 	Generates a log file for troubleshooting.
 .PARAMETER ScriptInfo
 	Outputs information about the script to a text file.
-	Text file is placed in the same folder from where the script is run.
+	The text file is placed in the same folder from where the script runs.
 	
 	This parameter is disabled by default.
 	This parameter has an alias of SI.
@@ -266,7 +272,7 @@
 	Specifies the username for the To email address.
 	If SmtpServer is used, this is a required parameter.
 .PARAMETER UserName
-	Username to use for the Cover Page and Footer.
+	Username used for the Cover Page and Footer.
 	The default value is contained in $env:username
 	This parameter has an alias of UN.
 	This parameter is only valid with the MSWORD and PDF output parameters.
@@ -283,22 +289,22 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-	The script runs remotelyy against DHCP server DHCPServer01.
+	The script runs remotely against the DHCP server DHCPServer01.
 
 	Creates a Microsoft Word document.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName localhost
 	
-	Script will resolve localhost to $env:computername, for example DHCPServer01.
-	The script runs remotelyy against DHCP server DHCPServer01 and not localhost.
+	Script will resolve localhost to $env:computername, for example, DHCPServer01.
+	The script runs remotely against the DHCP server DHCPServer01 and not localhost.
 	The output filename uses the server name DHCPServer01 and not localhost.
 	
 	Creates an HTML file.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName 192.168.1.222
 	
-	Script will resolve 192.168.1.222 to the DNS hostname, for example DHCPServer01.
-	The script runs remotelyy against DHCP server DHCPServer01 and not 192.18.1.222.
+	Script will resolve 192.168.1.222 to the DNS hostname, for example, DHCPServer01.
+	The script runs remotely against the DHCP server DHCPServer01 and not 192.18.1.222.
 	The output filename uses the server name DHCPServer01 and not 192.168.1.222.
 
 	Creates an HTML file.
@@ -315,11 +321,11 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-	The script runs remotelyy against DHCP server DHCPServer02.
+	The script runs remotely against the DHCP server DHCPServer02.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -Text -ComputerName DHCPServer02
 	
-	The script runs remotelyy against DHCP server DHCPServer02.
+	The script runs remotely against the DHCP server DHCPServer02.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -MSWord -ComputerName DHCPServer02
 	
@@ -333,11 +339,11 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-	The script runs remotelyy against DHCP server DHCPServer02.
+	The script runs remotely against the DHCP server DHCPServer02.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -Hardware -ComputerName DHCPServer02
 	
-	The script runs remotelyy against DHCP server DHCPServer02.
+	The script runs remotely against the DHCP server DHCPServer02.
 	Creates an HTML file.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName DHCPServer03 -IncludeLeases 
@@ -352,14 +358,14 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-	The script runs remotelyy against DHCP server DHCPServer03.
-	Output will contain DHCP lease information.
+	The script runs remotely against the DHCP server DHCPServer03.
+	The output contains DHCP lease information.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -AllDHCPServers -HTML -IncludeOptions
 		
 	The script finds all Authorized DHCP servers and processes all servers that are 
 	online.
-	Output will contain DHCP Options information.
+	The output contains DHCP Options information.
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -CompanyName "Carl Webster Consulting" 
 	-CoverPage "Mod" -UserName "Carl Webster" -ComputerName DHCPServer01 -MSWord
@@ -369,7 +375,7 @@
 		Mod for the Cover Page format.
 		Carl Webster for the User Name.
 	
-	The script runs remotelyy against DHCP server DHCPServer01.
+	The script runs remotely against the DHCP server DHCPServer01.
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -ComputerName DHCPServer02 -IncludeLeases -MSWord
@@ -379,8 +385,34 @@
 		Mod for the Cover Page format (alias CP).
 		Carl Webster for the User Name (alias UN).
 	
-	The script runs remotelyy against DHCP server DHCPServer02.
-	Output will contain DHCP lease information.
+	The script runs remotely against the DHCP server DHCPServer02.
+	The output contains DHCP lease information.
+.EXAMPLE
+	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -AddDateTime
+	
+	Adds a date Timestamp to the end of the file name.
+	The timestamp is in the format of yyyy-MM-dd_HHmm.
+	July 25, 2020 at 6PM is 2020-07-25_1800.
+	The output filename will be DHCP Inventory Report for Server <server> for the Domain 
+	<domain>_2020-07-25_1800.html
+.EXAMPLE
+	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -PDF -AddDateTime
+	
+	Will use all default values and save the document as a PDF file.
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
+	Webster" or
+	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
+	$env:username = Administrator
+
+	Carl Webster for the Company Name.
+	Sideline for the Cover Page format.
+	Administrator for the User Name.
+
+	Adds a date Timestamp to the end of the file name.
+	The timestamp is in the format of yyyy-MM-dd_HHmm.
+	July 25, 2020 at 6PM is 2020-07-25_1800.
+	The output filename will be DHCP Inventory Report for Server <server> for the Domain 
+	<domain>_2020-07-25_1800.pdf
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -MSWord -CompanyName "Sherlock Holmes 
 	Consulting" -CoverPage Exposure -UserName "Dr. Watson" -CompanyAddress "221B Baker 
@@ -413,14 +445,14 @@
 	
 	Creates four reports: HTML, Microsoft Word, PDF, and plain text.
 	
-	Creates a text file named DHCPInventoryScriptErrors_yyyy-MM-dd_HHmm.txt that 
-	contains up to the last 250 errors reported by the script.
+	Creates a text file named DHCPInventoryScriptErrors_yyyy-MM-dd_HHmm for the Domain 
+	<domain>.txt that contains up to the last 250 errors reported by the script.
 	
-	Creates a text file named DHCPInventoryScriptInfo_yyyy-MM-dd_HHmm.txt that 
-	contains all the script parameters and other basic information.
+	Creates a text file named DHCPInventoryScriptInfo_yyyy-MM-dd_HHmm for the Domain 
+	<domain>.txt that contains all the script parameters and other basic information.
 	
 	Creates a text file for transcript logging named 
-	DHCPDocScriptTranscript_yyyy-MM-dd_HHmm.txt.
+	DHCPDocScriptTranscript_yyyy-MM-dd_HHmm for the Domain <domain>.txt.
 
 	For Microsoft Word and PDF, uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -432,7 +464,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-	The script runs remotelyy against DHCP server DHCPServer.
+	The script runs remotely against the DHCP server DHCPServer.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -SmtpServer mail.domain.tld -From 
 	XDAdmin@domain.tld -To ITGroup@domain.tld	
@@ -440,7 +472,7 @@
 	The script uses the email server mail.domain.tld, sending from XDAdmin@domain.tld, 
 	sending to ITGroup@domain.tld.
 
-	The script uses the default SMTP port 25 and will not use SSL.
+	The script uses the default SMTP port 25 and does not use SSL.
 
 	If the current user's credentials are not valid to send an email, 
 	the script prompts the user to enter valid credentials.
@@ -456,7 +488,7 @@
 	To send unauthenticated email using an email relay server requires the From email account 
 	to use the name Anonymous.
 
-	The script uses the default SMTP port 25 and will not use SSL.
+	The script uses the default SMTP port 25 and does not use SSL.
 	
 	***GMAIL/G SUITE SMTP RELAY***
 	https://support.google.com/a/answer/2956491?hl=en
@@ -466,7 +498,7 @@
 	the "Less secure app access" option on your account.
 	***GMAIL/G SUITE SMTP RELAY***
 
-	The script will generate an anonymous secure password for the anonymous@domain.tld 
+	The script generates an anonymous, secure password for the anonymous@domain.tld 
 	account.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -SmtpServer 
@@ -511,20 +543,20 @@
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -Dev -ScriptInfo -Log
 	
-	Creates a text file named DHCPInventoryScriptErrors_yyyy-MM-dd_HHmm.txt that 
-	contains up to the last 250 errors reported by the script.
+	Creates a text file named DHCPInventoryScriptErrors_yyyy-MM-dd_HHmm for the Domain 
+	<domain>.txt that contains up to the last 250 errors reported by the script.
 	
-	Creates a text file named DHCPInventoryScriptInfo_yyyy-MM-dd_HHmm.txt that 
-	contains all the script parameters and other basic information.
+	Creates a text file named DHCPInventoryScriptInfo_yyyy-MM-dd_HHmm for the Domain 
+	<domain>.txt that contains all the script parameters and other basic information.
 	
 	Creates a text file for transcript logging named 
-	DHCPDocScriptTranscript_yyyy-MM-dd_HHmm.txt.
+	DHCPDocScriptTranscript_yyyy-MM-dd_HHmm for the Domain <domain>.txt.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName DHCPServer01 -Hardware
 	
-	Adds additional information for each server about its hardware.
+	Adds additional information for the server about its hardware.
 	
-	The The script runs remotelyy against DHCP server DHCPServer01.
+	The script runs remotely against the DHCP server DHCPServer01.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -AllDHCPServers
 	
@@ -536,15 +568,15 @@
 	Even though DHCPServer01 is specified, the script finds all Authorized DHCP servers 
 	and processes all online servers.
 .INPUTS
-	None.  You cannot pipe objects to this script.
+	None. You cannot pipe objects to this script.
 .OUTPUTS
 	No objects are output from this script.  This script creates a Word, PDF, HTML or 
 	formatted text document.
 .NOTES
 	NAME: DHCP_Inventory_V2.ps1
-	VERSION: 2.00
+	VERSION: 2.01
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: October 25, 2020
+	LASTEDIT: October 30, 2020
 #>
 
 #endregion
@@ -667,6 +699,17 @@ Param(
 
 #Version 1.0 released to the community on May 31, 2014
 
+#Version 2.01 30-Oct-2020
+#	Added variable $Script:RptDomain
+#	For the -Dev, -Log, and -ScriptInfo output files, add the text "for the Domain <domain>"
+#	Updated the help text
+#	Updated the ReadMe file (https://carlwebster.sharefile.com/d-s6b941ce3a4643df8)
+#	Updated the report title and output filenames to:
+#		For using -ComputerName:
+#			DHCP Inventory Report for Server <DHCPServerName> for the Domain <domain>
+#		For using AllDHCPServers:
+#			DHCP Inventory Report for All DHCP Servers for the Domain <domain>
+#
 #Version 2.00 26-Oct-2020
 #	Changed all Word/PDF tables to Ian Brighton's table functions
 #	Changed color variables $wdColorGray15 and $wdColorGray05 from [long] to [int]
@@ -883,6 +926,7 @@ $PSDefaultParameterValues = @{"*:Verbose"=$True}
 $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
 $global:emailCredentials = $Null
+$Script:RptDomain = (Get-WmiObject -computername $ComputerName win32_computersystem).Domain
 
 If($MSWord -eq $False -and $PDF -eq $False -and $Text -eq $False -and $HTML -eq $False)
 {
@@ -969,7 +1013,7 @@ If($Script:pwdpath.EndsWith("\"))
 If($Log) 
 {
 	#start transcript logging
-	$Script:LogPath = "$($Script:pwdpath)\DHCPDocScriptTranscript_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	$Script:LogPath = "$($Script:pwdpath)\DHCPDocScriptTranscript_$(Get-Date -f yyyy-MM-dd_HHmm) for the Domain $Script:RptDomain.txt"
 	
 	try 
 	{
@@ -987,7 +1031,7 @@ If($Log)
 If($Dev)
 {
 	$Error.Clear()
-	$Script:DevErrorFile = "$($Script:pwdpath)\DHCPInventoryScriptErrors_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	$Script:DevErrorFile = "$($Script:pwdpath)\DHCPInventoryScriptErrors_$(Get-Date -f yyyy-MM-dd_HHmm) for the Domain $Script:RptDomain.txt"
 }
 
 If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($To))
@@ -13624,7 +13668,7 @@ Function ProcessScriptSetup
 				Write-Verbose "$(Get-Date): $($cnt) DHCP server was found"
 			}
 			
-			$Script:BadDHCPErrorFile = "$($Script:pwdpath)\BadDHCPServers_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+			$Script:BadDHCPErrorFile = "$($Script:pwdpath)\BadDHCPServers_$(Get-Date -f yyyy-MM-dd_HHmm) for the Domain $Script:RptDomain.txt"
 
 			ForEach($Server in $AllServers)
 			{
@@ -13673,7 +13717,7 @@ Function ProcessScriptEnd
 
 	If($ScriptInfo)
 	{
-		$SIFile = "$($Script:pwdpath)\DHCPInventoryScriptInfo_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+		$SIFile = "$($Script:pwdpath)\DHCPInventoryScriptInfo_$(Get-Date -f yyyy-MM-dd_HHmm) for the Domain $Script:RptDomain.txt"
 		Out-File -FilePath $SIFile -InputObject "" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Add DateTime       : $($AddDateTime)" 4>$Null
 		If($MSWORD -or $PDF)
@@ -13763,12 +13807,6 @@ Function ProcessScriptEnd
 	$runtime = $Null
 	$Str = $Null
 	$ErrorActionPreference = $SaveEAPreference
-			
-	Write-Host "                                                                                    " -BackgroundColor Black -ForegroundColor White
-	Write-Host "               This FREE script was brought to you by Conversant Group              " -BackgroundColor Black -ForegroundColor White
-	Write-Host "We design, build, and manage infrastructure for a secure, dependable user experience" -BackgroundColor Black -ForegroundColor White
-	Write-Host "                       Visit our website conversantgroup.com                        " -BackgroundColor Black -ForegroundColor White
-	Write-Host "                                                                                    " -BackgroundColor Black -ForegroundColor White
 }
 #endregion
 
@@ -13779,13 +13817,13 @@ ProcessScriptSetup
 
 If($AllDHCPServers -eq $False)
 {
-	[string]$Script:Title = "DHCP Inventory Report for Server $($Script:DHCPServerNames[0])"
-	SetFileNames "$($Script:DHCPServerNames[0])_DHCP_Inventory"
+	[string]$Script:Title = "DHCP Inventory Report for Server $($Script:DHCPServerNames[0]) for the Domain $Script:RptDomain"
+	SetFileNames "DHCP Inventory Report for Server $($Script:DHCPServerNames[0]) for the Domain $Script:RptDomain"
 }
 Else
 {
-	[string]$Script:Title = "DHCP Inventory Report for All DHCP Servers"
-	SetFileNames "DHCP Inventory for All DHCP Servers"
+	[string]$Script:Title = "DHCP Inventory Report for All DHCP Servers for the Domain $Script:RptDomain"
+	SetFileNames "DHCP Inventory for All DHCP Servers for the Domain $Script:RptDomain"
 }
 
 ForEach($DHCPServer in $Script:DHCPServerNames)
@@ -13834,8 +13872,9 @@ Write-Verbose "$(Get-Date): "
 Write-Verbose "$(Get-Date): Finishing up document"
 #end of document processing
 
-$AbstractTitle = "DHCP Inventory"
-$SubjectTitle = "DHCP Inventory"
+$AbstractTitle = "DHCP Inventory Report"
+$SubjectTitle = "DHCP Inventory Report"
+
 UpdateDocumentProperties $AbstractTitle $SubjectTitle
 
 ProcessDocumentOutput
