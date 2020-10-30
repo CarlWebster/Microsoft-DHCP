@@ -8,6 +8,17 @@
 #@essentialexch on Twitter
 #https://www.essential.exchange/blog/
 
+#Version 2.01 30-Oct-2020
+#	Added variable $Script:RptDomain
+#	For the -Dev, -Log, and -ScriptInfo output files, add the text "for the Domain <domain>"
+#	Updated the help text
+#	Updated the ReadMe file (https://carlwebster.sharefile.com/d-s6b941ce3a4643df8)
+#	Updated the report title and output filenames to:
+#		For using -ComputerName:
+#			DHCP Inventory Report for Server <DHCPServerName> for the Domain <domain>
+#		For using AllDHCPServers:
+#			DHCP Inventory Report for All DHCP Servers for the Domain <domain>
+
 #Version 2.00 26-Oct-2020
 #	Changed all Word/PDF tables to Ian Brighton's table functions
 #	Changed color variables $wdColorGray15 and $wdColorGray05 from [long] to [int]
