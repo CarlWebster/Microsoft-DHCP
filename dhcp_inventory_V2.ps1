@@ -13872,8 +13872,9 @@ Write-Verbose "$(Get-Date): "
 Write-Verbose "$(Get-Date): Finishing up document"
 #end of document processing
 
-$AbstractTitle = "DHCP Inventory"
-$SubjectTitle = "DHCP Inventory"
+$AbstractTitle = "DHCP Inventory Report"
+$SubjectTitle = "DHCP Inventory Report"
+
 UpdateDocumentProperties $AbstractTitle $SubjectTitle
 
 ProcessDocumentOutput
