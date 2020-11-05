@@ -8,6 +8,10 @@
 #@essentialexch on Twitter
 #https://www.essential.exchange/blog/
 
+#Version 2.02 5-Nov-2020
+#	Added to the server properties, "Is a domain controller" with a value of Yes or No
+#	Changed all Write-Verbose $(Get-Date) to add -Format G to put the dates in the user's locale
+
 #Version 2.01 30-Oct-2020
 #	Added variable $Script:RptDomain
 #	For the -Dev, -Log, and -ScriptInfo output files, add the text "for the Domain <domain>"
