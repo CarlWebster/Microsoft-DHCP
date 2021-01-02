@@ -31,10 +31,10 @@
 	The script can run on a DHCP server or a Windows 8.x or Windows 10 computer with RSAT installed.
 		
 	Remote Server Administration Tools for Windows 8 
-		http://www.microsoft.com/en-us/download/details.aspx?id=28972
+		https://carlwebster.sharefile.com/d-s791075d451fc415ca83ec8958b385a95
 		
 	Remote Server Administration Tools for Windows 8.1 
-		http://www.microsoft.com/en-us/download/details.aspx?id=39296
+		https://carlwebster.sharefile.com/d-s37209afb73dc48f497745924ed854226
 		
 	Remote Server Administration Tools for Windows 10
 		http://www.microsoft.com/en-us/download/details.aspx?id=45520
@@ -84,21 +84,6 @@
 		Spanish
 		Swedish
 		
-.PARAMETER HTML
-	Creates an HTML file with an .html extension.
-	This parameter is set True if no other output format is selected.
-.PARAMETER MSWord
-	SaveAs DOCX file
-	This parameter is disabled by default.
-.PARAMETER PDF
-	SaveAs PDF file instead of DOCX file.
-	This parameter is disabled by default.
-	The PDF file is roughly 5X to 10X larger than the DOCX file.
-	This parameter requires Microsoft Word to be installed.
-	This parameter uses the Word SaveAs PDF capability.
-.PARAMETER Text
-	Creates a formatted text file with a .txt extension.
-	This parameter is disabled by default.
 .PARAMETER ComputerName
 	DHCP server to run the script against.
 	The computername is used for the report title.
@@ -108,14 +93,6 @@
 	computer name.
 	
 	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
-.PARAMETER AddDateTime
-	Adds a date Timestamp to the end of the file name.
-	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will either be:
-		DHCP Inventory Report for Server <server> for the Domain <domain>_2020-06-01_1800.html (or .txt or .docx or .pdf)
-		DHCP Inventory for All DHCP Servers for the Domain <domain>_2020-06-01_1800.html (or .txt or .docx or .pdf)
-	This parameter is disabled by default.
 .PARAMETER AllDHCPServers
 	The script processes all Authorized DHCP servers that are online.
 	"All DHCP Servers" is used for the report title.
@@ -123,6 +100,66 @@
 	
 	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
 	This parameter has an alias of ALL.
+.PARAMETER HTML
+	Creates an HTML file with an .html extension.
+	This parameter is set True if no other output format is selected.
+.PARAMETER Text
+	Creates a formatted text file with a .txt extension.
+	This parameter is disabled by default.
+.PARAMETER Hardware
+	Use WMI to gather hardware information on Computer System, Disks, Processor, and 
+	Network Interface Cards
+
+	This parameter may require the script runs from an elevated PowerShell session 
+	using an account with permission to retrieve hardware information (i.e., Domain 
+	Admin or Local Administrator).
+
+	Selecting this parameter adds to both the time it takes to run the script and 
+	size of the report.
+
+	This parameter is disabled by default.
+	This parameter has an alias of HW.
+.PARAMETER IncludeLeases
+	Include DHCP lease information.
+	The default is to not included lease information.
+.PARAMETER IncludeOptions
+	Include DHCP Options information.
+	The default is to not included Options information.
+.PARAMETER AddDateTime
+	Adds a date Timestamp to the end of the file name.
+	The timestamp is in the format of yyyy-MM-dd_HHmm.
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	Output filename will either be:
+		DHCP Inventory Report for Server <server> for the Domain <domain>_2021-06-01_1800.html (or .txt or .docx or .pdf)
+		DHCP Inventory for All DHCP Servers for the Domain <domain>_2021-06-01_1800.html (or .txt or .docx or .pdf)
+	This parameter is disabled by default.
+.PARAMETER Dev
+	Clears errors at the beginning of the script.
+	Outputs all errors to a text file at the end of the script.
+	
+	This is used when the script developer requests more troubleshooting data.
+	The text file is placed in the same folder from where the script runs.
+	
+	This parameter is disabled by default.
+.PARAMETER Folder
+	Specifies the optional output folder to save the output report. 
+.PARAMETER Log
+	Generates a log file for troubleshooting.
+.PARAMETER ScriptInfo
+	Outputs information about the script to a text file.
+	The text file is placed in the same folder from where the script runs.
+	
+	This parameter is disabled by default.
+	This parameter has an alias of SI.
+.PARAMETER MSWord
+	SaveAs DOCX file
+	This parameter is disabled by default.
+.PARAMETER PDF
+	SaveAs PDF file instead of DOCX file.
+	This parameter is disabled by default.
+	The PDF file is roughly 5X to 10X larger than the DOCX file.
+	This parameter requires Microsoft Word to be installed.
+	This parameter uses the Word SaveAs PDF capability.
 .PARAMETER CompanyAddress
 	Company Address used for the Cover Page, if the Cover Page has the Address field.
 	
@@ -220,43 +257,11 @@
 	The default value is Sideline.
 	This parameter has an alias of CP.
 	This parameter is only valid with the MSWORD and PDF output parameters.
-.PARAMETER Dev
-	Clears errors at the beginning of the script.
-	Outputs all errors to a text file at the end of the script.
-	
-	This is used when the script developer requests more troubleshooting data.
-	The text file is placed in the same folder from where the script runs.
-	
-	This parameter is disabled by default.
-.PARAMETER Folder
-	Specifies the optional output folder to save the output report. 
-.PARAMETER Hardware
-	Use WMI to gather hardware information on Computer System, Disks, Processor, and 
-	Network Interface Cards
-
-	This parameter may require the script runs from an elevated PowerShell session 
-	using an account with permission to retrieve hardware information (i.e., Domain 
-	Admin or Local Administrator).
-
-	Selecting this parameter adds to both the time it takes to run the script and 
-	size of the report.
-
-	This parameter is disabled by default.
-	This parameter has an alias of HW.
-.PARAMETER IncludeLeases
-	Include DHCP lease information.
-	The default is to not included lease information.
-.PARAMETER IncludeOptions
-	Include DHCP Options information.
-	The default is to not included Options information.
-.PARAMETER Log
-	Generates a log file for troubleshooting.
-.PARAMETER ScriptInfo
-	Outputs information about the script to a text file.
-	The text file is placed in the same folder from where the script runs.
-	
-	This parameter is disabled by default.
-	This parameter has an alias of SI.
+.PARAMETER UserName
+	Username used for the Cover Page and Footer.
+	The default value is contained in $env:username
+	This parameter has an alias of UN.
+	This parameter is only valid with the MSWORD and PDF output parameters.
 .PARAMETER SmtpServer
 	Specifies the optional email server to send the output report. 
 .PARAMETER SmtpPort
@@ -271,11 +276,6 @@
 .PARAMETER To
 	Specifies the username for the To email address.
 	If SmtpServer is used, this is a required parameter.
-.PARAMETER UserName
-	Username used for the Cover Page and Footer.
-	The default value is contained in $env:username
-	This parameter has an alias of UN.
-	This parameter is only valid with the MSWORD and PDF output parameters.
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName DHCPServer01 -MSWord
 	
@@ -392,9 +392,9 @@
 	
 	Adds a date Timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	July 25, 2020 at 6PM is 2020-07-25_1800.
+	July 25, 2021 at 6PM is 2021-07-25_1800.
 	The output filename will be DHCP Inventory Report for Server <server> for the Domain 
-	<domain>_2020-07-25_1800.html
+	<domain>_2021-07-25_1800.html
 .EXAMPLE
 	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -PDF -AddDateTime
 	
@@ -410,9 +410,9 @@
 
 	Adds a date Timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	July 25, 2020 at 6PM is 2020-07-25_1800.
+	July 25, 2021 at 6PM is 2021-07-25_1800.
 	The output filename will be DHCP Inventory Report for Server <server> for the Domain 
-	<domain>_2020-07-25_1800.pdf
+	<domain>_2021-07-25_1800.pdf
 .EXAMPLE
 	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -MSWord -CompanyName "Sherlock Holmes 
 	Consulting" -CoverPage Exposure -UserName "Dr. Watson" -CompanyAddress "221B Baker 
@@ -574,9 +574,9 @@
 	formatted text document.
 .NOTES
 	NAME: DHCP_Inventory_V2.ps1
-	VERSION: 2.02
+	VERSION: 2.03
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: November 5, 2020
+	LASTEDIT: January 2, 2021
 #>
 
 #endregion
@@ -588,27 +588,50 @@
 
 Param(
 	[parameter(Mandatory=$False)] 
+	[string]$ComputerName="LocalHost",
+	
+	[parameter(Mandatory=$False)] 
+	[Alias("ALL")]
+	[Switch]$AllDHCPServers=$False,
+	
+	[parameter(Mandatory=$False)] 
 	[Switch]$HTML=$False,
 
+	[parameter(Mandatory=$False)] 
+	[Switch]$Text=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Alias("HW")]
+	[Switch]$Hardware=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$IncludeLeases=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$IncludeOptions=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$AddDateTime=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[Switch]$Dev=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[string]$Folder="",
+	
+	[parameter(Mandatory=$False)] 
+	[Switch]$Log=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[Alias("SI")]
+	[Switch]$ScriptInfo=$False,
+	
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Switch]$MSWord=$False,
 
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Switch]$PDF=$False,
 
-	[parameter(Mandatory=$False)] 
-	[Switch]$Text=$False,
-
-	[parameter(Mandatory=$False)] 
-	[string]$ComputerName="LocalHost",
-	
-	[parameter(Mandatory=$False)] 
-	[Switch]$AddDateTime=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[Alias("ALL")]
-	[Switch]$AllDHCPServers=$False,
-	
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Alias("CA")]
 	[ValidateNotNullOrEmpty()]
@@ -639,29 +662,6 @@ Param(
 	[ValidateNotNullOrEmpty()]
 	[string]$CoverPage="Sideline", 
 
-	[parameter(Mandatory=$False)] 
-	[Switch]$Dev=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[string]$Folder="",
-	
-	[parameter(Mandatory=$False)] 
-	[Alias("HW")]
-	[Switch]$Hardware=$False,
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$IncludeLeases=$False,
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$IncludeOptions=$False,
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$Log=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[Alias("SI")]
-	[Switch]$ScriptInfo=$False,
-	
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Alias("UN")]
 	[ValidateNotNullOrEmpty()]
@@ -699,6 +699,12 @@ Param(
 
 #Version 1.0 released to the community on May 31, 2014
 
+#Version 2.03
+#	Added to the Computer Hardware section, the server's Power Plan
+#	Reordered parameters in an order recommended by Guy Leech
+#	Updated help text
+#	Updated ReadMe file
+#
 #Version 2.02 5-Nov-2020
 #	Added to the server properties, "Is a domain controller" with a value of Yes or No
 #	Changed all Write-Verbose $(Get-Date) to add -Format G to put the dates in the user's locale
@@ -1307,7 +1313,7 @@ Function GetComputerWMIInfo
 
 		ForEach($Item in $ComputerItems)
 		{
-			OutputComputerItem $Item $ComputerOS
+			OutputComputerItem $Item $ComputerOS $RemoteComputerName
 		}
 	}
 	ElseIf(!$?)
@@ -1688,7 +1694,25 @@ Function GetComputerWMIInfo
 
 Function OutputComputerItem
 {
-	Param([object]$Item, [string]$OS)
+	Param([object]$Item, [string]$OS, [string]$RemoteComputerName)
+	
+	#get computer's power plan
+	#https://techcommunity.microsoft.com/t5/core-infrastructure-and-security/get-the-active-power-plan-of-multiple-servers-with-powershell/ba-p/370429
+	
+	try 
+	{
+
+		$PowerPlan = (Get-WmiObject -ComputerName $RemoteComputerName -Class Win32_PowerPlan -Namespace "root\cimv2\power" |
+			Where-Object {$_.IsActive -eq $true} |
+			Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+	}
+
+	catch 
+	{
+
+		$PowerPlan = $_.Exception
+
+	}	
 	
 	If($MSWord -or $PDF)
 	{
@@ -1697,6 +1721,7 @@ Function OutputComputerItem
 		$ItemInformation.Add(@{ Data = "Model"; Value = $Item.model; }) > $Null
 		$ItemInformation.Add(@{ Data = "Domain"; Value = $Item.domain; }) > $Null
 		$ItemInformation.Add(@{ Data = "Operating System"; Value = $OS; }) > $Null
+		$ItemInformation.Add(@{ Data = "Power Plan"; Value = $PowerPlan; }) > $Null
 		$ItemInformation.Add(@{ Data = "Total Ram"; Value = "$($Item.totalphysicalram) GB"; }) > $Null
 		$ItemInformation.Add(@{ Data = "Physical Processors (sockets)"; Value = $Item.NumberOfProcessors; }) > $Null
 		$ItemInformation.Add(@{ Data = "Logical Processors (cores w/HT)"; Value = $Item.NumberOfLogicalProcessors; }) > $Null
@@ -1725,6 +1750,7 @@ Function OutputComputerItem
 		Line 2 "Model`t`t`t`t: " $Item.model
 		Line 2 "Domain`t`t`t`t: " $Item.domain
 		Line 2 "Operating System`t`t: " $OS
+		Line 2 "Power Plan`t`t`t: " $PowerPlan
 		Line 2 "Total Ram`t`t`t: $($Item.totalphysicalram) GB"
 		Line 2 "Physical Processors (sockets)`t: " $Item.NumberOfProcessors
 		Line 2 "Logical Processors (cores w/HT)`t: " $Item.NumberOfLogicalProcessors
@@ -1736,6 +1762,8 @@ Function OutputComputerItem
 		$columnHeaders = @("Manufacturer",($htmlsilver -bor $htmlBold),$Item.manufacturer,$htmlwhite)
 		$rowdata += @(,('Model',($htmlsilver -bor $htmlBold),$Item.model,$htmlwhite))
 		$rowdata += @(,('Domain',($htmlsilver -bor $htmlBold),$Item.domain,$htmlwhite))
+		$rowdata += @(,('Operating System',($htmlsilver -bor $htmlBold),$OS,$htmlwhite))
+		$rowdata += @(,('Power Plan',($htmlsilver -bor $htmlBold),$PowerPlan,$htmlwhite))
 		$rowdata += @(,('Total Ram',($htmlsilver -bor $htmlBold),"$($Item.totalphysicalram) GB",$htmlwhite))
 		$rowdata += @(,('Physical Processors (sockets)',($htmlsilver -bor $htmlBold),$Item.NumberOfProcessors,$htmlwhite))
 		$rowdata += @(,('Logical Processors (cores w/HT)',($htmlsilver -bor $htmlBold),$Item.NumberOfLogicalProcessors,$htmlwhite))
