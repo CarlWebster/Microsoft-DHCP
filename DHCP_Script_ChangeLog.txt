@@ -8,6 +8,13 @@
 #@essentialexch on Twitter
 #https://www.essential.exchange/blog/
 
+#Version 2.03 9-Jan-2021
+#	Added to the Computer Hardware section, the server's Power Plan
+#	Fixed Date calculation errors with IPv4 and IPv6 statistics and script runtime
+#	Reordered parameters in an order recommended by Guy Leech
+#	Updated help text
+#	Updated ReadMe file
+
 #Version 2.02 5-Nov-2020
 #	Added to the server properties, "Is a domain controller" with a value of Yes or No
 #	Changed all Write-Verbose $(Get-Date) to add -Format G to put the dates in the user's locale
