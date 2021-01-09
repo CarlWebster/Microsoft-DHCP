@@ -8,8 +8,9 @@
 #@essentialexch on Twitter
 #https://www.essential.exchange/blog/
 
-#Version 2.03
+#Version 2.03 9-Jan-2021
 #	Added to the Computer Hardware section, the server's Power Plan
+#	Fixed Date calculation errors with IPv4 and IPv6 statistics and script runtime
 #	Reordered parameters in an order recommended by Guy Leech
 #	Updated help text
 #	Updated ReadMe file

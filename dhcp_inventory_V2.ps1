@@ -1,4 +1,4 @@
-﻿#requires -Version 4.0
+﻿InsertBlankLine#requires -Version 4.0
 #requires -Module DHCPServer
 #This File is in Unicode format.  Do not edit in an ASCII editor. Notepad++ UTF-8-BOM
 
@@ -576,7 +576,7 @@
 	NAME: DHCP_Inventory_V2.ps1
 	VERSION: 2.03
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: January 2, 2021
+	LASTEDIT: January 9, 2021
 #>
 
 #endregion
@@ -699,8 +699,9 @@ Param(
 
 #Version 1.0 released to the community on May 31, 2014
 
-#Version 2.03
+#Version 2.03 9-Jan-2021
 #	Added to the Computer Hardware section, the server's Power Plan
+#	Fixed Date calculation errors with IPv4 and IPv6 statistics and script runtime
 #	Reordered parameters in an order recommended by Guy Leech
 #	Updated help text
 #	Updated ReadMe file
@@ -7021,7 +7022,7 @@ Function ProcessIPv4Statistics
 
 	If($? -and $Null -ne $Statistics)
 	{
-		$UpTime = $(Get-Date -Format G) - $Statistics.ServerStartTime
+		$UpTime = $(Get-Date) - $Statistics.ServerStartTime
 		$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3} seconds", `
 			$UpTime.Days, `
 			$UpTime.Hours, `
@@ -13090,7 +13091,7 @@ Function ProcessIPv6Properties
 
 	If($? -and $Null -ne $Statistics)
 	{
-		$UpTime = $(Get-Date -Format G) - $Statistics.ServerStartTime
+		$UpTime = $(Get-Date) - $Statistics.ServerStartTime
 		$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3} seconds", `
 			$UpTime.Days, `
 			$UpTime.Hours, `
@@ -13740,7 +13741,7 @@ Function ProcessScriptEnd
 	#http://poshtips.com/measuring-elapsed-time-in-powershell/
 	Write-Verbose "$(Get-Date -Format G): Script started: $($Script:StartTime)"
 	Write-Verbose "$(Get-Date -Format G): Script ended: $(Get-Date -Format G)"
-	$runtime = $(Get-Date -Format G) - $Script:StartTime
+	$runtime = $(Get-Date) - $Script:StartTime
 	$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds", `
 		$runtime.Days, `
 		$runtime.Hours, `
