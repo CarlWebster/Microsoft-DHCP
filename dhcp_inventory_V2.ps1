@@ -1,4 +1,4 @@
-﻿InsertBlankLine#requires -Version 4.0
+﻿#requires -Version 4.0
 #requires -Module DHCPServer
 #This File is in Unicode format.  Do not edit in an ASCII editor. Notepad++ UTF-8-BOM
 
