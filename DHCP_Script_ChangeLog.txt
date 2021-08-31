@@ -8,6 +8,22 @@
 #@essentialexch on Twitter
 #https://www.essential.exchange/blog/
 
+#Version 2.04 31-Aug-2021
+#	Add array error checking for non-empty arrays before attempting to create the Word table for most Word tables
+#	Add Function OutputReportFooter
+#	Add Parameter ReportFooter
+#		Outputs a footer section at the end of the report.
+#		Report Footer
+#			Report information:
+#				Created with: <Script Name> - Release Date: <Script Release Date>
+#				Script version: <Script Version>
+#				Started on <Date Time in Local Format>
+#				Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+#				Ran from domain <Domain Name> by user <Username>
+#				Ran from the folder <Folder Name>
+#	Update Functions SaveandCloseTextDocument and SaveandCloseHTMLDocument to add a "Report Complete" line
+#	Update Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
+
 #Version 2.03 9-Jan-2021
 #	Added to the Computer Hardware section, the server's Power Plan
 #	Fixed Date calculation errors with IPv4 and IPv6 statistics and script runtime
