@@ -597,7 +597,7 @@
 	NAME: DHCP_Inventory_V2.ps1
 	VERSION: 2.04
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: August 31, 2021
+	LASTEDIT: September 11, 2021
 #>
 
 #endregion
@@ -724,10 +724,10 @@ Param(
 
 #Version 1.0 released to the community on May 31, 2014
 
-#Version 2.04 31-Aug-2021
-#	Add array error checking for non-empty arrays before attempting to create the Word table for most Word tables
-#	Add Function OutputReportFooter
-#	Add Parameter ReportFooter
+#Version 2.04 11-Sep-2021
+#	Added array error checking for non-empty arrays before attempting to create the Word table for most Word tables
+#	Added Function OutputReportFooter
+#	Added Parameter ReportFooter
 #		Outputs a footer section at the end of the report.
 #		Report Footer
 #			Report information:
@@ -737,8 +737,10 @@ Param(
 #				Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
 #				Ran from domain <Domain Name> by user <Username>
 #				Ran from the folder <Folder Name>
-#	Update Functions SaveandCloseTextDocument and SaveandCloseHTMLDocument to add a "Report Complete" line
-#	Update Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
+#	Updated Functions SaveandCloseTextDocument and SaveandCloseHTMLDocument to add a "Report Complete" line
+#	Updated Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
+#	Updated the help text
+#	Updated the ReadMe file
 #
 #Version 2.03 9-Jan-2021
 #	Added to the Computer Hardware section, the server's Power Plan
@@ -981,7 +983,7 @@ $global:emailCredentials  = $Null
 $Script:RptDomain         = (Get-WmiObject -computername $ComputerName win32_computersystem).Domain
 $script:MyVersion         = '2.04'
 $Script:ScriptName        = "DHCP_Inventory_V2.ps1"
-$tmpdate                  = [datetime] "08/31/2021"
+$tmpdate                  = [datetime] "09/11/2021"
 $Script:ReleaseDate       = $tmpdate.ToUniversalTime().ToShortDateString()
 
 
