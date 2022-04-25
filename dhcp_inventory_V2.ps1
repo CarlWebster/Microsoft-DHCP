@@ -2305,7 +2305,7 @@ Function OutputNicItem
 	If($nic.dhcpenabled)
 	{
 		$DHCPLeaseObtainedDate = $nic.dhcpleaseobtained.ToLocalTime()
-		$DHCPLeaseExpiresDate = $nic.dhcpleaseexpires.ToLocalTIme()
+		$DHCPLeaseExpiresDate = (Get-Date).AddSeconds([UInt32]::MaxValue).ToLocalTime()
 	}
 		
 	If($MSWORD -or $PDF)
