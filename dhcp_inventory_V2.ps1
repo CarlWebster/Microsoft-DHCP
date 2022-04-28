@@ -725,7 +725,7 @@ Param(
 #Version 1.0 released to the community on May 31, 2014
 
 #Version 2.06 24-Apr-2022
-#	Change all Get-WMIObject to Get-CIMInstance
+#	Change all but one Get-WMIObject to Get-CIMInstance
 #	In Function OutputNicItem, fixed several issues with DHCP data
 #	Some general code cleanup
 #
@@ -1054,13 +1054,14 @@ $PSDefaultParameterValues = @{"*:Verbose"=$True}
 $SaveEAPreference         = $ErrorActionPreference
 $ErrorActionPreference    = 'SilentlyContinue'
 $global:emailCredentials  = $Null
+#Don't change this get-wmiobject to get-ciminstance because a non-domain-joined computer cannot get the domain name using get-ciminstance
 If($ComputerName -eq $env:computername)
 {
-	$Script:RptDomain     = (Get-CIMInstance win32_computersystem -Verbose:$False).Domain
+	$Script:RptDomain     = (Get-WMIObject win32_computersystem -Verbose:$False).Domain
 }
 Else
 {
-	$Script:RptDomain     = (Get-CIMInstance -CIMSession $ComputerName win32_computersystem -Verbose:$False).Domain
+	$Script:RptDomain     = (Get-WMIObject -ComputerName $ComputerName win32_computersystem -Verbose:$False).Domain
 }
 $script:MyVersion         = '2.06'
 $Script:ScriptName        = "DHCP_Inventory_V2.ps1"

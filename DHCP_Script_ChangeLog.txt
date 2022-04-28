@@ -9,7 +9,7 @@
 #https://www.essential.exchange/blog/
 
 #Version 2.06 24-Apr-2022
-#	Change all Get-WMIObject to Get-CIMInstance
+#	Change all but one Get-WMIObject to Get-CIMInstance
 #	In Function OutputNicItem, fixed several issues with DHCP data
 #	Some general code cleanup
 
